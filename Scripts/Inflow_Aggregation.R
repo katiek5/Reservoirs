@@ -363,10 +363,12 @@ lvl_boxplot
 ggsave(filename = "./Data/DataNotYetUploadedToEDI/Raw_inflow/BVR_lvl_boxplot.png", lvl_boxplot, device = "png")
 
 ##plots for Whitney
-inf <- read_csv('./Data/DataAlreadyUploadedToEDI/EDIProductionFiles/MakeEMLInflow/inflow_for_EDI_2013_2018.csv') %>%
-  filter(year(DateTime) == 2018 & month(DateTime) == 9)
+inf <- read_csv('./Data/DataAlreadyUploadedToEDI/EDIProductionFiles/MakeEMLInflow/inflow.csv') %>%
+  filter(year(DateTime) == 2018 & month(DateTime) == 10)
 
 Sept <- ggplot(data = inf, aes(x = DateTime, y = Flow_cms))+
   geom_line(size = 1)+
+  xlab("")+
+  ylab("Flow (cms)")+
   theme_bw()
 Sept
