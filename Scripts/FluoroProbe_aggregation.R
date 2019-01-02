@@ -209,9 +209,11 @@ fp$Flag_570nm <- 0
 fp$Flag_610nm <- 0
 fp$Flag_370nm <- 0
 fp$Flag_590nm <- 0
-fp$Flag_370nm <- 0
+fp$Flag_470nm <- 0
+colnames(fp)[20] <- "Flag_BluegreenAlgae"
 
 write.csv(fp, "./Data/DataAlreadyUploadedToEDI/EDIProductionFiles/MakeEMLFluoroProbe/FluoroProbe.csv", row.names = FALSE)
+fp <- read_csv("./Data/DataAlreadyUploadedToEDI/EDIProductionFiles/MakeEMLFluoroProbe/FluoroProbe.csv")
 
 ##look at temperature data
 
