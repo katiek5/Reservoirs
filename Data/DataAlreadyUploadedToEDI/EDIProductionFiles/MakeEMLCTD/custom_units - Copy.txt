@@ -1,0 +1,2 @@
+id	unitType	parentSI	multiplierToSI	description
+microSiemenPerCentimeter	conductance	siemenPerMeter	1.00E-04	microSiemenPerCentimeter

@@ -1,0 +1,5 @@
+id	unitType	parentSI	multiplierToSI	description
+microSiemensPerCentimeter	conductance	siemenPerMeter	1.00E-04	microSiemenPerCentimeter
+RelativeFluorescenceUnits	dimensionless	NA	NA	measurement of the relative amount of fluorescence excitation detected in response to particular wavelength of light
+QuinineSulfateUnits	dimensionless	NA	NA	measurement of the relative amount of fluorescence excitation detected in response to fluorescent dissolved organic matter
+psig	arealMassDensity	kilogramsPerSquareMeter	17.85	pounds per square inch guage

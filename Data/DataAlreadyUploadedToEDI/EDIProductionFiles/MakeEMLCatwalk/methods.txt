@@ -1,0 +1,36 @@
+Depth profiles of multiple water quality variables were collected at the deep hole of Falling Creek Reservoir in 2018 using water temperature thermistors, dissolved oxygen sensors, and a YSI EXO sonde. Profiles were collected every ten minutes from July to December. We deployed the thermistors and 5 and 9 m dissolved oxygen sondes in July 2018 and the EXO sonde at 1 m depth was deployed in August 2018. 
+
+The thermistor string was factory calibrated and verified against a NIST-traceable thermistor to meet measurement precision. The in situ dissolved oxygen sensors were calibrated using a one point calibration according to the standards and practices outlined in the user manual. The YSI EXO Sonde sensors, except for temperature, were user calibrated with one point calibration as outlined in the user manual. 
+
+Instruments, manual, and serial numbers used in 2018:
+Multiple sensors and instruments were added over time; below we note serial numbers of sensors with accompanying depths and provide links to the accompanying instrument manuals.
+
+NexSens T-Node FR Thermistors (July 2018 - December 2018)
+https://www.fondriest.com/pdf/nexsens_t-node_fr_manual.pdf
+Serial No. 3718; Depth 0.1m
+Serial No. 3724; Depth 1m
+Serial No. 3741; Depth 2m
+Serial No. 3746; Depth 3m
+Serial No. 3747; Depth 4m
+Serial No. 3751; Depth 5m
+Serial No. 3786; Depth 6m
+Serial No. 3823; Depth 7m
+Serial No. 3851; Depth 8m
+Serial No. 3857; Depth 9m
+
+InSitu RDO Pro-X Dissolved Oxygen Sensor with Anti-Fouling Guard (July 2018 - December 2018)
+https://in-situ.com/wp-content/uploads/2014/11/RDO_PRO-X_Manual.pdf
+Serial No. 584491; Depth 5m
+Calibration from July 5, 2018 to December 19, 2018; slope = 1.0361, offset = 0.00
+Serial No. 584488; Depth 9m
+Calibration from July 5, 2018 to August 20, 2018; slope = 1.0743, offset = 0.00
+Calibration from August 20, 2018 to December 19, 2018; slope = 1.0000, offset = 0.00
+
+YSI EXO2 Sonde Serial No. 18D103367 (August 2018 - December 2018)
+Wiped Conductivity/Temperature Sensor Serial No. 18C102992
+Central Wiper for Conductivity/Temperature Sensor Serial No. 18D101236
+Dissolved Oxygen Sensor Serial No. 18D101168
+Total Algae Sensor Serial No. 18D102222
+fDOM Sensor Serial No. 18C100625
+Pressure Transducer Serial No. 17K100864
+https://www.ysi.com/File%20Library/Documents/Manuals/EXO-User-Manual-Web.pdf 			

@@ -1,0 +1,47 @@
+attributeName	attributeDefinition	class	unit	dateTimeFormatString	missingValueCode	missingValueCodeExplanation
+Reservoir	Three-letter code corresponding to sampled reservoir	character			NA	value is missing
+Site	"Sampling site within each reservoir; 50=Deep hole or site nearest to dam in each reservoir, 100=Inflow stream of Falling Creek Reservoir, 20=Upstream pelagic site nearest to inflow stream at Falling Creek Reservoir"	numeric	dimensionless		NA	value is missing
+DateTime	"Date and time of sampling. All data were collected in the eastern time zone of the U.S.A., with daylight savings time not observed, GMT -4"	Date		YYYY-MM-DD hh:mm:ss	NA	value is missing
+ThermistorTemp_C_surface	water temperature at the surface as measured by the thermistor	numeric	celsius		NA	value is missing
+ThermistorTemp_C_1	water temperature at 1 meter depth as measured by the thermistor	numeric	celsius		NA	value is missing
+ThermistorTemp_C_2	water temperature at 2 meter depth as measured by the thermistor	numeric	celsius		NA	value is missing
+ThermistorTemp_C_3	water temperature at 3 meter depth as measured by the thermistor	numeric	celsius		NA	value is missing
+ThermistorTemp_C_4	water temperature at 4 meter depth as measured by the thermistor	numeric	celsius		NA	value is missing
+ThermistorTemp_C_5	water temperature at 5 meter depth as measured by the thermistor	numeric	celsius		NA	value is missing
+ThermistorTemp_C_6	water temperature at 6 meter depth as measured by the thermistor	numeric	celsius		NA	value is missing
+ThermistorTemp_C_7	water temperature at 7 meter depth as measured by the thermistor	numeric	celsius		NA	value is missing
+ThermistorTemp_C_8	water temperature at 8 meter depth as measured by the thermistor	numeric	celsius		NA	value is missing
+ThermistorTemp_C_9	water temperature at 9 meter depth as measured by the thermistor	numeric	celsius		NA	value is missing
+RDO_mgL_5	Dissolved Oxygen (DO) concentration at 5 meter depth as measured by the RDO Sensor	numeric	milligramsPerLiter		NA	value is missing
+RDOsat_percent_5	Dissolved Oxygen (DO) percent saturation at 5 meter depth as measured by the RDO Sensor	numeric	dimensionless		NA	value is missing
+RDOTemp_C_5	Water temperature as measured by the DO sonde at 5 meter depth as measured by the RDO Sensor	numeric	celsius		NA	value is missing
+RDO_mgL_9	Dissolved Oxygen (DO) concentration at 9 meter depth as measured by the RDO Sensor	numeric	milligramsPerLiter		NA	value is missing
+RDOsat_percent_9	Dissolved Oxygen (DO) percent saturation at 9 meter depth as measured by the RDO Sensor	numeric	dimensionless		NA	value is missing
+RDOTemp_C_9	Water temperature as measured by the DO sonde at 9 meter depth as measured by the RDO Sensor	numeric	celsius		NA	value is missing
+EXOTemp_C_1	water temperature at 1 meter depth as measured by the EXO Sonde	numeric	celsius		NA	value is missing
+EXOCond_uScm_1	Conductivity at 1 meter depth as measured by the EXO Sonde	numeric	microSiemensPerCentimeter		NA	value is missing
+EXOSpCond_uScm_1	Specific conductivity at 1 meter depth as measured by the EXO Sonde	numeric	microSiemensPerCentimeter		NA	value is missing
+EXOTDS_mgL_1	Total Dissolved Solids (TDS) at 1 meter depth as measured by the EXO Sonde as measured by the EXO Sonde	numeric	milligramsPerLiter		NA	value is missing
+EXODOsat_percent_1	Dissolved Oxygen percent saturation at 1 meter depth as measured by the EXO Sonde	numeric	dimensionless		NA	value is missing
+EXODO_mgL_1	Dissolved Oxygen at 1 meter depth as measured by the EXO Sonde	numeric	milligramsPerLiter		NA	value is missing
+EXOChla_RFU_1	Total Chlorophyll a at 1 meter depth as measured by the EXO Sonde	numeric	RelativeFluorescenceUnits		NA	value is missing
+EXOChla_ugL_1	Total Chlorophyll a at 1 meter depth as measured by the EXO Sonde	numeric	microgramsPerLiter		NA	value is missing
+EXOBGAPC_RFU_1	Blue-Green Algae Phyocycanin at 1 meter depth as measured by the EXO Sonde	numeric	RelativeFluorescenceUnits		NA	value is missing
+EXOBGAPC_ugL_1	Blue-Green Algae Phycoycanin at 1 meter depth as measured by the EXO Sonde	numeric	milligramsPerLiter		NA	value is missing
+EXOfDOM_RFU_1	Fine Dissolved Organic Matter at 1 meter depth as measured by the EXO Sonde	numeric	RelativeFluorescenceUnits		NA	value is missing
+EXOfDOM_QSU_1	Fine Dissolved Organic Matter at 1 meter depth as measured by the EXO Sonde	numeric	QuinineSulfateUnits		NA	value is missing
+EXO_pressure	"Gauge pressure of EXO sonde at 1 m, measured relative to ambient atmospheric pressure."	numeric	psig		NA	value is missing
+EXO_depth	Depth of the EXO sonde as measured by the EXO sonde.	numeric	meter		NA	value is missing
+EXO_battery	Voltage of the EXO sonde internal batteries.	numeric	volt		NA	value is missing
+EXO_cablepower	Measure of power being used by the cable connected to the CR6 datalogger as measured by the EXO sonde.	numeric	volt		NA	value is missing
+EXO_wiper	Wiper brush cleaning system activation signal as measured by the EXO sonde.	numeric	volt		NA	value is missing
+RECORD	The nth record collected since the instrument was turned on or the program was altered.	numeric	number		NA	value is missing
+CR6_Batt_V	The battery voltage of the CR6 at that time.	numeric	volt		NA	value is missing
+CR6Panel_Temp_C	Panel temperature of the CR6 data logger	numeric	celsius		NA	value is missing
+Flag_All	"Data flag for all data parameters (ThermistorTemp_C_surface, ThermistorTemp_C_1, ??ThermistorTemp_C_2, ThermistorTemp_C_3, ?ThermistorTemp_C_4, ThermistorTemp_C_5, ThermistorTemp_C_6, ThermistorTemp_C_7, ThermistorTemp_C_8, ThermistorTemp_C_9, RDO_mgL_5, RDOsat_percent_5, RDOTemp_C_5, RDO_mgL_9, RDOsat_percent_9, RDOTemp_C_9, EXOTemp_C_1, EXOCond_uScm_1, EXOSpCond _uScm_1, EXOTDS_mgL_1, EXODOsat_percent_1, EXODO_mgL_1, EXOChla_RFU_1, EXOChla_ugL_1, EXOBGAPC_RFU_1, EXOBGAPC _ugL_1, EXOfDOM_RFU_1, EXOfDOM_QSU_???"	categorical				
+Flag_DO_1	"Data flag for EXO DO data at 1 meter depth (EXODOsat_percent_1, EXODO_mgL_1)"	categorical				
+Flag_DO_5	"Data flag for DO data at 5 meter depth (RDO_mgL_5, RDOsat_percent_5)"	categorical				
+Flag_DO_9	"Data flag for DO data at 9 meter depth (RDO_mgL_9, RDOsat_percent_9)"	categorical				
+Flag_Chla	Data flag for chlorophyll data (EXOChla_ugL_1 and EXOChla_RFU_1)	categorical				
+Flag_Phyco	Data flag for phycocyanin data (EXOBGAPC _ugL_1) 	categorical				
+Flag_TDS	Data flag for total dissolved solids data (EXOTDS_mgL_1)	categorical				

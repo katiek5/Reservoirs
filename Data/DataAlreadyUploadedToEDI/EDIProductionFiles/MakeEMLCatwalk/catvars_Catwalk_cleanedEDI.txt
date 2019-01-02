@@ -1,0 +1,18 @@
+attributeName	code	definition
+Flag_All	0	no flag
+Flag_All	1	value removed due to maintenance and set to NA
+Flag_DO_1	0	no flag
+Flag_DO_5	0	no flag
+Flag_DO_5	3	negative values set to 0
+Flag_DO_5	1	value removed due to maintenance and set to NA
+Flag_DO_9	0	no flag
+Flag_DO_9	3	negative values set to 0
+Flag_DO_9	1	value removed due to maintenance and set to NA
+Flag_Chla	0	no flag
+Flag_Chla	NA	data not collected
+Flag_Chla	4	value removed due to fouling and set to NA
+Flag_Phyco	0	no flag
+Flag_Phyco	4	value removed due to fouling and set to NA
+Flag_Phyco	5	questionable value due to potential fouling
+Flag_TDS	1	value removed due to maintenance and set to NA
+Flag_TDS	0	no flag
