@@ -1,0 +1,6 @@
+attributeName	attributeDefinition	class	unit	dateTimeFormatString	missingValueCode	missingValueCodeExplanation
+Reservoir	Three-letter code corresponding to sampled reservoir; BVR=Beaverdam Reservoir, CCR= Carvins Cove Reservoir, FCR=Falling Creek Reservoir, GWR=Gatewood Reservoir, SHR=Spring Hollow Reservoir	categorical			NA	No data
+Site	Sampling site within each reservoir; 50=Deep hole or site nearest to dam in each reservoir, 45=Transect 45 in Falling Creek Reservoir, 30=Transect 30 in Falling Creek Reservoir, 20=Transect 20 in Falling Creek Reservoir, 10=Transect 10 in Falling Creek Reservoir, 100=Inflow stream of Falling Creek Reservoir	numeric	dimensionless		NA	No data
+DateTime	Date and time of sampling. All data were collected in the eastern time zone of the U.S.A., with daylight savings time observed	Date		YYYY-MM-DD hh:mm:ss	NA	No data
+Secchi_m	Secchi disk depth	numeric	meter		NA	No data
+Flag_Secchi	Data flag for Secchi depths; 0=not suspect, 1=sample not taken	numeric	dimensionless			
