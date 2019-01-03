@@ -1,8 +1,8 @@
-﻿Depth profiles of multiple water-quality variables were collected from 2013 through 2017 using a Conductivity, Temperature and Depth (CTD) profiler from SeaBird Electronics (SBE, Bellevue Washington, USA). Profiles were collected, at minimum, monthly between May to October (usually weekly or subweekly), and bimonthly between November to April. Most CTD casts were collected from 9:00 to 15:00, however, some CTD casts were collected at night.
+﻿Depth profiles of multiple water-quality variables were collected from 2013 through 2018 using a Conductivity, Temperature and Depth (CTD) profiler from SeaBird Electronics (SBE, Bellevue Washington, USA). Profiles were collected, at minimum, monthly between May to October (usually weekly or subweekly), and bimonthly between November to April. Most CTD casts were collected from 9:00 to 15:00, however, some CTD casts were collected at night.
 
 The CTD was calibrated by the manufacturer yearly (usually in December-February) according to the standards and practices of SBE and the companies with secondary sensors coupled to the instrument. 
 
-Instruments, manual, and serial numbers used between 			2013 - 2017
+Instruments, manual, and serial numbers used between 			2013 - 2018
 Multiple sensors and instruments were added over time; below we note changes in the CTD software, sensor versions, and provide links to the accompanying instrument manuals.
 
 Seacat 19Plus V 1.6  SERIAL NO. 4397 							2013 - 2016
@@ -10,22 +10,26 @@ http://www.seabird.com/sites/default/files/documents/19plus_018_0.pdf
 For CTD processing, refer to the SeaBird Data processing manual.
 http://www.seabird.com/sites/default/files/documents/SBEDataProcessing_7.26.7.pdf
 
-SBE 43 Dissolved Oxygen Sensor SERIAL NO. 0434 					2013 - 2017
+SBE 43 Dissolved Oxygen Sensor SERIAL NO. 0434 					2013 - 2018
 http://www.seabird.com/sites/default/files/documents/appnote64Jun13.pdf
 
-FluoroWetlabECO_AFL_FL_Sensor SERIAL NO. 2496 					2013 - 2017
-Turbidity Meter  WET Labs  ECO-NTU SERIAL NO. 2496				2013 - 2017
+FluoroWetlabECO_AFL_FL_Sensor SERIAL NO. 2496 					2013 - 2018
+Turbidity Meter  WET Labs  ECO-NTU SERIAL NO. 2496				2013 - 2018
 http://www.seabird.com/sites/default/files/documents/manual-ECOMasterben.pdf
 
 OxidationReductionPotentialSensor SensorID = 41 SERIAL NO. 0363	2017
 http://www.seabird.com/sites/default/files/documents/appnote18-1Sep14.pdf
 
-Sea-Bird SBE19plus V2 SERIAL NO. 7809							2017
+Photosynthetically Active Radiation (PAR) Sensor SERIAL NO. 1122			2017 - 2018
+https://www.seabird.com/product.detail-print.version.jsa?id=54627923891
+
+Sea-Bird SBE19plus V2 SERIAL NO. 7809							2017 - 2018
 http://www.seabird.com/sites/default/files/documents/19plusV2_015.pdf
+
 For CTD processing refer to the SeaBird Data processing manual.
 http://www.seabird.com/sites/default/files/documents/SBEDataProcessing_7.26.7.pdf
 
-From 2013 to 2017, multiple whole-ecosystem manipulations were conducted at Falling Creek Reservoir. These manipulations include intermittent operation of hypolimnetic oxygenation and pulsed epilimnetic mixing engineering systems. For a detailed description of the hypolimnetic oxygenation engineered system, see Gerling et al. (2014) and for a detailed description of the epilimnetic mixing engineered system, see Chen et al. (2017). These systems were operated over time following Table 1 in Gerling et al. (2016), Table 1 in Munger et al. (2016), and Table 2 in McClure et al. (2018).
+From 2013 to 2018, multiple whole-ecosystem manipulations were conducted at Falling Creek Reservoir. These manipulations include intermittent operation of hypolimnetic oxygenation and pulsed epilimnetic mixing engineering systems. For a detailed description of the hypolimnetic oxygenation engineered system, see Gerling et al. (2014) and for a detailed description of the epilimnetic mixing engineered system, see Chen et al. (2017). These systems were operated over time following Table 1 in Gerling et al. (2016), Table 1 in Munger et al. (2016), and Table 2 in McClure et al. (2018).
 
 Chen, S., C. Lei, C.C. Carey, and J.C. Little. 2016. Modelling the effect of artificial mixing on thermal stability and substance transport in a drinking-water reservoir using a 3D hydrodynamic model. Proceedings of the 20th Australasian Fluid Mechanics Conference. Perth, Australia, 5-8 December 2016.
 

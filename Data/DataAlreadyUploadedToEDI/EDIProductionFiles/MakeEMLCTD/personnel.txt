@@ -2,9 +2,11 @@ givenName	middleInitial	surName	organizationName	electronicMailAddress	userId	ro
 Cayelan	C.	Carey	Virginia Tech	cayelan@vt.edu	0000-0001-8835-4476	creator			
 Cayelan	C.	Carey	Virginia Tech	cayelan@vt.edu	0000-0001-8835-4476	contact			
 Cayelan	C.	Carey	Virginia Tech	cayelan@vt.edu	0000-0001-8835-4476	PI		Western Virginia Water Authority	
-Cayelan	C.	Carey	Virginia Tech	cayelan@vt.edu	0000-0001-8835-4476	PI	Dynamics of coupled P-Fe-Mn cycling in drinking water reservoirs and implications for water quality	Institute of Critical Technology and Applied Scienc	
+Cayelan	C.	Carey	Virginia Tech	cayelan@vt.edu	0000-0001-8835-4476	PI	Dynamics of coupled P-Fe-Mn cycling in drinking water reservoirs and implications for water quality	Institute of Critical Technology and Applied Science	
 Cayelan	C.	Carey	Virginia Tech	cayelan@vt.edu	0000-0001-8835-4476	PI		Virginia Tech Global Change Center	
 Cayelan	C.	Carey	Virginia Tech	cayelan@vt.edu	0000-0001-8835-4476	PI		Fralin Life Sciences Institute	
+Cayelan	C.	Carey	Virginia Tech	cayelan@vt.edu	0000-0001-8835-4476	PI	SCC-IRG Track 2: Resilient Water Systems: Integrating Environmental Sensor Networks and Real-Time Forecasting to Adaptively Manage Drinking Water Quality and Build Social Trust	National Science Foundation: 1737424
+Cayelan	C.	Carey	Virginia Tech	cayelan@vt.edu	0000-0001-8835-4476	PI	Collaborative Research: Consequences of changing oxygen availability for carbon cycling in freshwater ecosystems	National Science Foundation: 1753639
 Ryan	P.	McClure	Virginia Tech	ryan333@vt.edu	0000-0001-6370-3852	creator			
 Alexandra	B.	Gerling	Virginia Tech	alexg13@vt.edu		creator			
 Jonathan	P.	Doubek	Virginia Tech	jpdoubek@vt.edu	0000-0003-2651-4715	creator			

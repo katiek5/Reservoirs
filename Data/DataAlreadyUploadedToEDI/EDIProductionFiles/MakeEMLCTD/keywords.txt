@@ -8,6 +8,7 @@ High-frequency Sensors
 "Oxygen, Dissolved"	
 Conductivity	
 Specific conductivity	
+Photosynthetic active radiation
 Chlorophyll a	
 Turbidity	
 pH	
