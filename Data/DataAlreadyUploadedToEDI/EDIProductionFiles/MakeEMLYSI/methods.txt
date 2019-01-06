@@ -1,0 +1,28 @@
+﻿Field sample collection
+
+At each sampling site in each reservoir, temperature, dissolved oxygen (DO), conductivity, pH, and oxidation-reduction potential (ORP) were collected at discrete, approximately 1 m increments from the water surface to the deepest portion of the reservoir using a YSI ProPlus with Quatro cable (pH, ORP, conductivity) or YSI ProODO optical dissolved oxygen meter (dissolved oxygen, temperature). Dissolved oxygen was calibrated approximately weekly using the water-saturated air technique. The pH sensor was calibrated approximately weekly using a series of three  standardized pH solutions (pH 4, 7, 10) and the ORP sensor was calibrated approximately weekly using Zobell solution.,  
+
+Photosynthetically active radiation (PAR) was collected at discrete, approximately 1 m increments from the water surface to the depth of light extinction (~ 0 micromole m-2 s-1) using a LiCor LI-192
+underwater quantum sensor. PAR was also measured in air approximately 0.1 m above the water surface; these depths are recorded as -0.1m. 
+
+Secchi disk depth was measured using a standard 20 cm diameter circular Secchi disk attached to a calibrated rope. Secchi depth measurements were made without the aid of a plexiglass viewer. The disk was lowered from the shaded side of the boat or dock, and the water depths at which the disk disappeared while being lowered and reappeared while being raised were averaged to determine Secchi depth. 
+
+YSI and PAR profiles, and Secchi depths, were collected approximately fortnightly in the spring months (Mar. - May), weekly in the summer and early autumn (Jun. - Sept.), and monthly in the late autumn and winter (Oct. - Feb.).  Most sampling occurred between the hours of 9:00 and 15:00, and are denoted in the DateTime as 12:00. Some sampling occurred outside of these hours, including some overnight sampling; these instances are noted by the actual sampling time within the DateTime column. For more information about nighttime sampling, see Doubek et. al. 2018.
+
+The YSI and PAR depth profiles and Secchi depths were measured at the deepest site of each reservoir adjacent to the dam (Site 50), as well as at a gauged weir on the primary inflow tributary (Site 100) at Falling Creek Reservoir and other in-reservoir transects in Falling Creek Reservoir (Site 45, 30, 20, 10). For a map of the transects in Falling Creek Reservoir, see Chen et al. 2016.
+
+From 2013 to 2018, multiple whole-ecosystem manipulations were conducted at Falling Creek Reservoir. These manipulations include intermittent operation of hypolimnetic oxygenation and pulsed epilimnetic mixing engineering systems. For a detailed description of the hypolimnetic oxygenation engineered system, see Gerling et al. (2014) and for a detailed description of the epilimnetic mixing engineered system, see Chen et al. (2017). These systems were operated over time following Table 1 in Gerling et al. (2016), Table 1 in Munger et al. (2016), and Table 2 in McClure et al. (2018).
+
+References
+
+Chen, S., C. Lei, C.C. Carey, and J.C. Little. 2016. Modelling the effect of artificial mixing on thermal stability and substance transport in a drinking-water reservoir using a 3D hydrodynamic model. Proceedings of the 20th Australasian Fluid Mechanics Conference. Perth, Australia, 5-8 December 2016.
+
+Chen, S., C. Lei, C.C. Carey, P.A. Gantzer, and J.C. Little. 2017. Predicting hypolimnetic oxygenation and epilimnetic mixing in a shallow eutrophic reservoir using a coupled three-dimensional hydrodynamic model. Water Resources Research. 53: 470-484. DOI: 10.1002/2016WR019279 
+
+Gerling, A.B., Browne, R.G., Gantzer, P.A., Mobley, M.H., Little, J.C., and C.C. Carey. 2014. First report of the successful operation of a side stream supersaturation hypolimnetic oxygenation system in a eutrophic, shallow reservoir.  Water Research. 67: 129-143. doi: 10.1016/j.watres.2014.09.002
+
+Gerling, A.B., Z.W. Munger, J.P. Doubek, K.D. Hamre, P.A. Gantzer, J.C. Little, and C.C. Carey. 2016. Whole-catchment manipulations of internal and external loading reveal the sensitivity of a century-old reservoir to hypoxia. Ecosystems. 19:555-571. DOI: 10.1007/s10021-015-9951-0
+
+McClure, R.P., K.D. Hamre, B.R. Niederlehner, Z.W. Munger, S. Chen, M.E. Lofton, M.E. Schreiber, and C.C. Carey. 2018 Metalimnetic oxygen minima alter the vertical profiles of carbon dioxide and methane in a managed freshwater reservoir. Science of the Total Environment 636: 610-620. DOI: 10.1016/j.scitotenv.2018.04.255
+
+Munger, Z.W., C.C. Carey, A.B. Gerling, K.D. Hamre, J.P. Doubek, S.D. Klepatzki, R.P. McClure, and M.E. Schreiber. 2016. Effectiveness of hypolimnetic oxygenation for preventing accumulation of Fe and Mn in a drinking water reservoir. Water Research. 106: 1-14. DOI: 10.1016/j.watres.2016.09.038.

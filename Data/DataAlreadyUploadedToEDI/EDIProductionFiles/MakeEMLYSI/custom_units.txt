@@ -1,0 +1,4 @@
+id	unitType	parentSI	multiplierToSI	description
+microSiemenPerCentimeter	conductance	siemenPerMeter	1.00E-04	microSiemenPerCentimeter
+micromolePerMeterSquaredPerSecond	arealMassDensityRate	molePerMeterSquaredPerDay	0.0864	micromole per meter squared per second
+percent	dimensionless	NA	NA	precent saturation
