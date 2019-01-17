@@ -53,6 +53,15 @@ for(i in 2:length(Met$RECORD)){ #this identifies if there are any data gaps in t
 RemoveMet=read.table("/Users/bethany1/Desktop/MET_EDI/MET_MaintenanceLog.txt", sep = ",", header = T)
 #set flags for flag 1 using maintenance log
 
+###BattV
+#flag 2
+Met$Flag=ifelse(Met$BattV = NA & Met$Flag == 0, 2, Met$Flag)
+Met$Note=ifelse(Met$BattV = NA & Met$Flag == 2, "BattV NA preexisting", Met$Note)
+
+###Panel Temp
+#flag 2
+Met$Flag=ifelse(Met$PTemp_C = NA & Met$Flag == 0, 2, Met$Flag)
+Met$Note=ifelse(Met$PTemp_C = NA & Met$Flag == 2, "PanelTemp NA preexisting", Met$Note)
 
 ###PAR Avg + Total
 #Should have same flag and NA removal
@@ -62,18 +71,22 @@ Met$Flag=ifelse(Met$PAR_Den_Avg = NA & Met$Flag == 0, 2, Met$Flag)
 Met$Note=ifelse(Met$PAR_Den_Avg = NA & Met$Flag == 2, "PAR Avg NA preexisting", Met$Note)
 
 Met$Flag=ifelse(Met$PAR_Den_Avg = NA & Met$Flag == 0, 2, Met$Flag)
-Met$Note=ifelse(Met$PAR_Den_Avg = NA & Met$Flag == 2, "PAR Avg NA preexisting", Met$Note)
+Met$Note=ifelse(Met$PAR_Den_Avg = NA & Met$Flag == 2, "PAR Tot NA preexisting", Met$Note)
 
-##Barometric Pressure
+###Barometric Pressure
 #BP flag #2
+Met$Flag=ifelse(Met$BP_kPa_Avg = NA & Met$Flag == 0, 2, Met$Flag)
+Met$Note=ifelse(Met$BP_kPa_Avg = NA & Met$Flag == 2, "BP NA preexisting", Met$Note)
 
-#remove negative values
+#remove negative values flag 3
 Met$Flag=ifelse(Met$BP_kPa_Avg < 0 & Met$Flag == 0, 3, Met$Flag)
-Met$Note=ifelse(Met$BP_kPa_Avg < 0 & Met$Flag == 3, "Rainfall set to 0", Met$Note)
+Met$Note=ifelse(Met$BP_kPa_Avg < 0 & Met$Flag == 3, "BP set to 0", Met$Note)
 Met$BP_kPa_Avg=ifelse(Met$BP_kPa_Avg < 0 & Met$Flag == 3, 0, Met$BP_kPa_Avg)
 
 ###AirTemp
 #AirTemp flag 2
+Met$Flag=ifelse(Met$AirTC_Avg = NA & Met$Flag == 0, 2, Met$Flag)
+Met$Note=ifelse(Met$AirTC_Avg = NA & Met$Flag == 2, "AirTemp NA preexisting", Met$Note)
 
 #AirTemp flag 4
 #remove >
@@ -84,6 +97,10 @@ if(Met$Flag>0 & Met$RH<0) {print("Flag overlap")}
 Met$Flag=ifelse(Met$RH < 0 & Met$Flag > 0, 5, Met$Flag)
 Met$Flag=ifelse(Met$RH > 100 & Met$Flag > 0, 5, Met$Flag)
 #need better solution to check flags..
+
+#flag 2
+Met$Flag=ifelse(Met$RH = NA & Met$Flag == 0, 2, Met$Flag)
+Met$Note=ifelse(Met$RH = NA & Met$Flag == 2, "RH NA preexisting", Met$Note)
 
 #set neg val to 0, insert flag, attach note for flag
 Met$Flag=ifelse(Met$RH < 0 & Met$Flag == 0, 3, Met$Flag)
@@ -99,24 +116,45 @@ plot(Met$TIMESTAMP, Met$RH, type = 'l')
 plot(Met$TIMESTAMP, Met$Flag, type = 'p')
 
 ###Rainfall
+#flag 2
+Met$Flag=ifelse(Met$Rain_mm_Tot = NA & Met$Flag == 0, 2, Met$Flag)
+Met$Note=ifelse(Met$Rain_mm_Tot = NA & Met$Flag == 2, "Rainfall NA preexisting", Met$Note)
+
 #remove negative values
 Met$Flag=ifelse(Met$Rain_mm_Tot < 0 & Met$Flag == 0, 3, Met$Flag)
 Met$Note=ifelse(Met$Rain_mm_Tot < 0 & Met$Flag == 3, "Rainfall set to 0", Met$Note)
 Met$Rain_mm_Tot=ifelse(Met$Rain_mm_Tot < 0 & Met$Flag == 3, 0, Met$Rain_mm_Tot)
 
 ###Wind speed + direction
+#flag 2
+Met$Flag=ifelse(Met$WS_ms_Avg = NA & Met$Flag == 0, 2, Met$Flag)
+Met$Note=ifelse(Met$WS_ms_Avg = NA & Met$Flag == 2, "WS Avg NA preexisting", Met$Note)
+
+Met$Flag=ifelse(Met$WindDir = NA & Met$Flag == 0, 2, Met$Flag)
+Met$Note=ifelse(Met$WindDir = NA & Met$Flag == 2, "WindDir NA preexisting", Met$Note)
+
 #remove negative values
 Met$Flag=ifelse(Met$WS_ms_Avg < 0 & Met$Flag == 0, 3, Met$Flag)
 Met$Note=ifelse(Met$WS_ms_Avg < 0 & Met$Flag == 3, "Rainfall set to 0", Met$Note)
 Met$WS_ms_Avg=ifelse(Met$WS_ms_Avg < 0 & Met$Flag == 3, 0, Met$WS_ms_Avg)
 
 ###Short wave radiation
-
+#Flag 2
+Met$Flag=ifelse(Met$SR01Up_Avg = NA & Met$Flag == 0, 2, Met$Flag)
+Met$Note=ifelse(Met$SR01Up_Avg = NA & Met$Flag == 2, "SR Up Avg NA preexisting", Met$Note)
+Met$Flag=ifelse(Met$SR01Dn_Avg = NA & Met$Flag == 0, 2, Met$Flag)
+Met$Note=ifelse(Met$SR01Dn_Avg = NA & Met$Flag == 2, "SR Dn Avg NA preexisting", Met$Note)
 ###Long wave radiation
+#flag 2 
+Met$Flag=ifelse(Met$IR01UpCo_Avg = NA & Met$Flag == 0, 2, Met$Flag)
+Met$Note=ifelse(Met$IR01UpCo_Avg = NA & Met$Flag == 2, "IR Up Avg NA preexisting", Met$Note)
+Met$Flag=ifelse(Met$IR01DnCo_Avg = NA & Met$Flag == 0, 2, Met$Flag)
+Met$Note=ifelse(Met$IR01DnCo_Avg = NA & Met$Flag == 2, "IR Dn Avg NA preexisting", Met$Note)
+###Albedo
+#flag 2
+Met$Flag=ifelse(Met$Albedo_Avg = NA & Met$Flag == 0, 2, Met$Flag)
+Met$Note=ifelse(Met$Albedo_Avg = NA & Met$Flag == 2, "Albedo Avg NA preexisting", Met$Note)
 
-###Albedo???
-
-###Remove maintenance datetime
 
 #fix column names and order
 Met_final=Met[,c(18:19,1:17,20:21)] #fixes order, does not fix names yet
