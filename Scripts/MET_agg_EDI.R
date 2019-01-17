@@ -265,18 +265,15 @@ plot(Met$TIMESTAMP, Met$Flag, type = 'p')
 Met2=Met
 #gonna try a for loop
 for (i in 1:nrow(RemoveMet)){ #makes i # of rows in Maintenance log
-  
+  #plug in flag and notes from timeframe
+  Met2$Flag[Met2$TIMESTAMP>=RemoveMet$TIMESTAMP_start[i] & Met2$TIMESTAMP<=RemoveMet$TIMESTAMP_end[i]]=RemoveMet$flag[i]
+  Met2$Notes[Met2$TIMESTAMP>=RemoveMet$TIMESTAMP_start[i] & Met2$TIMESTAMP<=RemoveMet$TIMESTAMP_end[i]]=RemoveMet$notes[i] 
 }
-#separate time frame
+
 #if flag == 1, set paramter to NA
-#Met$Flag[i]=ifelse(Met$flag==0,RemoveMet$flag, Met$Flag) #boo
-
-if(Met2$TIMESTAMP>=RemoveMet$TIMESTAMP_start[i] & Met2$TIMESTAMP<=RemoveMet$TIMESTAMP_end[i]){
-  Met2$Flag=RemoveMet$flag[i]
-}
-#plug in flag and notes from timeframe
-
-
+time_remove=RemoveMet[,c(2:3)]
+sub_remove=RemoveMet[,c(4:5)]
+flip_remove=data.frame(t(sub_remove))
 #fix column names and order
 Met_final=Met[,c(18:19,1:17,20:21)] #fixes order, does not fix names yet
 names(Met_final) = c("Site", "Reservoir", "DateTime","Record", "CR3000_Batt_V", "CR3000Panel_temp_C", 
