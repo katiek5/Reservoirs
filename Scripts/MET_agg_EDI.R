@@ -1,9 +1,10 @@
 ###EDI MET STATION File
 
-##Tasks Left:
+##Tasks/Questions Left:
 #1. Relative paths
 #2. Flag 1
 #3. Flag 3 check
+  #3b. Can radiation be negative? Specifically, Infrared has negative values. Is that ok?
 #4. Flag 4 check
 #5. Flag overlap check
 #6. Plots
@@ -58,7 +59,7 @@ for(i in 2:length(Met$RECORD)){ #this identifies if there are any data gaps in t
 
 #c. load in maintenance txt file
 RemoveMet=read.table("/Users/bethany1/Desktop/MET_EDI/MET_MaintenanceLog.txt", sep = ",", header = T)
-#set flags for flag 1 using maintenance log
+#set flags for flag 1 using maintenance log below
 
 ###############Data Cleaning in order of columns#####################
 ###BattV
@@ -223,20 +224,25 @@ plot(Met$TIMESTAMP, Met$WS_ms_Avg, type = 'l')
 plot(Met$TIMESTAMP, Met$WindDir, type = 'p')
 #plot(Met$TIMESTAMP, Met$Flag, type = 'p')
 
-###Short wave radiation
+###Short wave radiation and Albedo
+#note: When SR up = NA, so does Albedo
 #flag 2 check
 Met$Flag=ifelse(is.na(Met$SR01Up_Avg) & Met$Flag > 0, 99, Met$Flag)
 Met$Flag=ifelse(is.na(Met$SR01Dn_Avg) & Met$Flag > 0, 99, Met$Flag)
+Met$Flag=ifelse(is.na(Met$Albedo_Avg) & Met$Flag > 0, 99, Met$Flag)
 #length(which(Met$Flag==99)) #good to go
 
 #Flag 2
-Met$Flag=ifelse(is.na(Met$SR01Up_Avg) & Met$Flag == 0, 2, Met$Flag)
-Met$Note=ifelse(is.na(Met$SR01Up_Avg) & Met$Flag == 2, "SR Up Avg NA preexisting", Met$Note)
 Met$Flag=ifelse(is.na(Met$SR01Dn_Avg) & Met$Flag == 0, 2, Met$Flag)
 Met$Note=ifelse(is.na(Met$SR01Dn_Avg) & Met$Flag == 2, "SR Dn Avg NA preexisting", Met$Note)
+Met$Flag=ifelse(is.na(Met$Albedo_Avg) & Met$Flag == 0, 2, Met$Flag)
+Met$Note=ifelse(is.na(Met$Albedo_Avg) & Met$Flag == 2, "Albedo Avg NA preexisting", Met$Note)
+Met$Flag=ifelse(is.na(Met$SR01Up_Avg) & Met$Flag == 0, 2, Met$Flag)
+Met$Note=ifelse(is.na(Met$SR01Up_Avg) & Met$Flag == 2, "SR Up Avg and Albedo NA preexisting", Met$Note)
 
 plot(Met$TIMESTAMP, Met$SR01Up_Avg, type = 'l')
 plot(Met$TIMESTAMP, Met$SR01Dn_Avg, type = 'l')
+plot(Met$TIMESTAMP, Met$Albedo_Avg, type = 'l')
 #plot(Met$TIMESTAMP, Met$Flag, type = 'p')
 
 ###Long wave radiation
@@ -255,17 +261,10 @@ plot(Met$TIMESTAMP, Met$IR01UpCo_Avg, type = 'l')
 plot(Met$TIMESTAMP, Met$IR01DnCo_Avg, type = 'l')
 #plot(Met$TIMESTAMP, Met$Flag, type = 'p')
 
-###Albedo
-#flag 2 check
-Met$Flag=ifelse(is.na(Met$Albedo_Avg) & Met$Flag > 0, 99, Met$Flag)
-#length(which(Met$Flag==99)) #109 flags.. where is the problem?
-
-#flag 2
-Met$Flag=ifelse(is.na(Met$Albedo_Avg) & Met$Flag == 0, 2, Met$Flag)
-Met$Note=ifelse(is.na(Met$Albedo_Avg) & Met$Flag == 2, "Albedo Avg NA preexisting", Met$Note)
-
-plot(Met$TIMESTAMP, Met$Albedo_Avg, type = 'l')
+#Plot for flags 2&3
 plot(Met$TIMESTAMP, Met$Flag, type = 'p')
+
+#Flag 1
 
 #fix column names and order
 Met_final=Met[,c(18:19,1:17,20:21)] #fixes order, does not fix names yet
