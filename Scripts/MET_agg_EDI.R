@@ -8,7 +8,7 @@
 #5. Flag overlap check
 #6. Plots
 #7. Uploading Large Files to Github
-#8. Flag 2, change == NA to is.na()
+#8. Albedo has overlapping flag 2
 #9. Order by timestamp
 
 ###packages needed
@@ -62,29 +62,33 @@ RemoveMet=read.table("/Users/bethany1/Desktop/MET_EDI/MET_MaintenanceLog.txt", s
 
 ###############Data Cleaning in order of columns#####################
 ###BattV
+#flag 2 overlap check
+Met$Flag=ifelse(is.na(Met$BattV) & Met$Flag > 0, 99, Met$Flag) #inserting error flag
+
 #flag 2
 Met$Flag=ifelse(is.na(Met$BattV) & Met$Flag == 0, 2, Met$Flag)
 Met$Note=ifelse(is.na(Met$BattV) & Met$Flag == 2, "BattV NA preexisting", Met$Note)
-
-#flag overlap check
-Met$Flag=ifelse(is.na(Met$BattV) & Met$Flag > 0, 99, Met$Flag) #inserting error flag
 
 plot(Met$TIMESTAMP, Met$BattV, type = 'l')
 ##length(which(Met$Flag==99)); plot(Met$TIMESTAMP, Met$Flag, type = 'p') # # of error flags; plot to check for error flags looking good
 
 ###Panel Temp
+#flag 2 overlap check
+Met$Flag=ifelse(is.na(Met$PTemp_C) & Met$Flag > 0, 99, Met$Flag) #error flag
+
 #flag 2
 Met$Flag=ifelse(is.na(Met$PTemp_C) & Met$Flag == 0, 2, Met$Flag)
 Met$Note=ifelse(is.na(Met$PTemp_C) & Met$Flag == 2, "PanelTemp NA preexisting", Met$Note)
-
-#flag overlap check
-Met$Flag=ifelse(is.na(Met$PTemp_C) & Met$Flag > 0, 99, Met$Flag) #error flag
 
 plot(Met$TIMESTAMP, Met$PTemp_C, type = 'l')
 #length(which(Met$Flag==99)); plot(Met$TIMESTAMP, Met$Flag, type = 'p') #good to go
 
 ###PAR Avg + Total
 #Should have same flag and NA removal for flag 1
+#flag 2 overlap check
+Met$Flag=ifelse(is.na(Met$PAR_Den_Avg) & Met$Flag > 0, 99, Met$Flag)
+Met$Flag=ifelse(is.na(Met$PAR_Tot_Tot) & Met$Flag > 0, 99, Met$Flag)
+#length(which(Met$Flag==99)); plot(Met$TIMESTAMP, Met$Flag, type = 'p') #good to go
 
 #PAR flag 2
 Met$Flag=ifelse(is.na(Met$PAR_Den_Avg) & Met$Flag == 0, 2, Met$Flag)
@@ -93,21 +97,20 @@ Met$Note=ifelse(is.na(Met$PAR_Den_Avg) & Met$Flag == 2, "PAR Avg NA preexisting"
 Met$Flag=ifelse(is.na(Met$PAR_Den_Avg) & Met$Flag == 0, 2, Met$Flag)
 Met$Note=ifelse(is.na(Met$PAR_Den_Avg) & Met$Flag == 2, "PAR Tot NA preexisting", Met$Note)
 
-#flag overlap check
-Met$Flag=ifelse(is.na(Met$PAR_Den_Avg) & Met$Flag > 0, 99, Met$Flag)
-Met$Flag=ifelse(is.na(Met$PAR_Tot_Tot) & Met$Flag > 0, 99, Met$Flag)
-
 plot(Met$TIMESTAMP, Met$PAR_Den_Avg, type = 'l')
 plot(Met$TIMESTAMP, Met$PAR_Tot_Tot, type = 'l')
-#length(which(Met$Flag==99)); plot(Met$TIMESTAMP, Met$Flag, type = 'p') #good to go
 
 ###Barometric Pressure
+#flag 2 over lap check
+Met$Flag=ifelse(is.na(Met$BP_kPa_Avg) & Met$Flag > 0, 99, Met$Flag)
+#length(which(Met$Flag==99)) #good
+
 #BP flag #2
 Met$Flag=ifelse(is.na(Met$BP_kPa_Avg) & Met$Flag == 0, 2, Met$Flag)
 Met$Note=ifelse(is.na(Met$BP_kPa_Avg) & Met$Flag == 2, "BP NA preexisting", Met$Note)
 
-#flag over lap
-Met$Flag=ifelse(is.na(Met$BP_kPa_Avg) & Met$Flag > 0, 99, Met$Flag)
+#flag 3 overlap check
+Met$Flag=ifelse(Met$BP_kPa_Avg < 0 & Met$Flag > 0, 99, Met$Flag)
 #length(which(Met$Flag==99)) #good
 
 #remove negative values flag 3
@@ -115,20 +118,21 @@ Met$Flag=ifelse(Met$BP_kPa_Avg < 0 & Met$Flag == 0, 3, Met$Flag)
 Met$Note=ifelse(Met$BP_kPa_Avg < 0 & Met$Flag == 3, "BP set to 0", Met$Note)
 Met$BP_kPa_Avg=ifelse(Met$BP_kPa_Avg < 0 & Met$Flag == 3, 0, Met$BP_kPa_Avg)
 
-#flag overlap
-Met$Flag=ifelse(is.na(Met$BP_kPa_Avg) & Met$Flag > 0, 99, Met$Flag)
-#length(which(Met$Flag==99)) #good
-
 plot(Met$TIMESTAMP, Met$BP_kPa_Avg, type = 'l')
 #plot(Met$TIMESTAMP, Met$Flag, type = 'p')
 
 ###AirTemp
+#flag 2 overlap check
+Met$Flag=ifelse(is.na(Met$AirTC_Avg) & Met$Flag > 0, 99, Met$Flag)
+#length(which(Met$Flag==99)) #good to go
+
 #AirTemp flag 2
 Met$Flag=ifelse(is.na(Met$AirTC_Avg) & Met$Flag == 0, 2, Met$Flag)
 Met$Note=ifelse(is.na(Met$AirTC_Avg) & Met$Flag == 2, "AirTemp NA preexisting", Met$Note)
 
-Met$Flag=ifelse(is.na(Met$AirTC_Avg) & Met$Flag > 0, 99, Met$Flag)
-#length(which(Met$Flag==99)) 
+#flag 4 overlap check
+Met$Flag=ifelse(Met$AirTC_Avg > 40.56 & Met$Flag > 0, 99, Met$Flag)
+#length(which(Met$Flag==99)) #good to go
 
 #AirTemp flag 4
 #remove > 40.56
@@ -138,20 +142,23 @@ Met$AirTC_Avg=ifelse(Met$AirTC_Avg > 40.56 & Met$Flag == 0, NA, Met$AirTC_Avg)
 
 #plots
 plot(Met$TIMESTAMP, Met$AirTC_Avg, type = 'l')
-plot(Met$TIMESTAMP, Met$Flag, type = 'p')
+#plot(Met$TIMESTAMP, Met$Flag, type = 'p')
 
 ###Relative Humidity
-#create if statement for flagging, need this to check if there are existing flags
-if(Met$Flag>0 & Met$RH<0) {print("Flag overlap")} 
-Met$Flag=ifelse(Met$RH < 0 & Met$Flag > 0, 5, Met$Flag)
-Met$Flag=ifelse(Met$RH > 100 & Met$Flag > 0, 5, Met$Flag)
-#need better solution to check flags..
+#flag 2 check
+Met$Flag=ifelse(is.na(Met$RH) & Met$Flag > 0, 99, Met$Flag)
+#length(which(Met$Flag==99)) #good to go
 
 #flag 2
 Met$Flag=ifelse(Met$RH = NA & Met$Flag == 0, 2, Met$Flag)
 Met$Note=ifelse(Met$RH = NA & Met$Flag == 2, "RH NA preexisting", Met$Note)
 
-#set neg val to 0, insert flag, attach note for flag
+#flag 3 check
+Met$Flag=ifelse(Met$RH < 0 & Met$Flag > 0, 99, Met$Flag)
+Met$Flag=ifelse(Met$RH < 100 & Met$Flag > 0, 99, Met$Flag)
+#length(which(Met$Flag==99)) #good to go
+
+#flag 3 set neg val to 0, insert flag, attach note for flag
 Met$Flag=ifelse(Met$RH < 0 & Met$Flag == 0, 3, Met$Flag)
 Met$Note=ifelse(Met$RH < 0 & Met$Flag == 3, "RH set to 0", Met$Note)
 Met$RH=ifelse(Met$RH < 0 & Met$Flag == 3, 0, Met$RH)
@@ -165,19 +172,32 @@ plot(Met$TIMESTAMP, Met$RH, type = 'l')
 plot(Met$TIMESTAMP, Met$Flag, type = 'p')
 
 ###Rainfall
+#flag 2 check
+Met$Flag=ifelse(is.na(Met$Rain_mm_Tot) & Met$Flag > 0, 99, Met$Flag)
+#length(which(Met$Flag==99)) #good to go
+
 #flag 2
 Met$Flag=ifelse(Met$Rain_mm_Tot = NA & Met$Flag == 0, 2, Met$Flag)
 Met$Note=ifelse(Met$Rain_mm_Tot = NA & Met$Flag == 2, "Rainfall NA preexisting", Met$Note)
 
-#remove negative values
+#flag 3 check
+Met$Flag=ifelse(Met$RH < 0 & Met$Flag > 0, 99, Met$Flag)
+#length(which(Met$Flag==99)) #good to go
+
+#flag 3 remove negative values
 Met$Flag=ifelse(Met$Rain_mm_Tot < 0 & Met$Flag == 0, 3, Met$Flag)
 Met$Note=ifelse(Met$Rain_mm_Tot < 0 & Met$Flag == 3, "Rainfall set to 0", Met$Note)
 Met$Rain_mm_Tot=ifelse(Met$Rain_mm_Tot < 0 & Met$Flag == 3, 0, Met$Rain_mm_Tot)
 
 plot(Met$TIMESTAMP, Met$RH, type = 'h')
-plot(Met$TIMESTAMP, Met$Flag, type = 'p')
+#plot(Met$TIMESTAMP, Met$Flag, type = 'p')
 
 ###Wind speed + direction
+#flag 2 check
+Met$Flag=ifelse(is.na(Met$WS_ms_Avg) & Met$Flag > 0, 99, Met$Flag)
+Met$Flag=ifelse(is.na(Met$WindDir) & Met$Flag > 0, 99, Met$Flag)
+#length(which(Met$Flag==99)) #good to go
+
 #flag 2
 Met$Flag=ifelse(Met$WS_ms_Avg = NA & Met$Flag == 0, 2, Met$Flag)
 Met$Note=ifelse(Met$WS_ms_Avg = NA & Met$Flag == 2, "WS Avg NA preexisting", Met$Note)
@@ -185,7 +205,12 @@ Met$Note=ifelse(Met$WS_ms_Avg = NA & Met$Flag == 2, "WS Avg NA preexisting", Met
 Met$Flag=ifelse(Met$WindDir = NA & Met$Flag == 0, 2, Met$Flag)
 Met$Note=ifelse(Met$WindDir = NA & Met$Flag == 2, "WindDir NA preexisting", Met$Note)
 
-#remove negative values
+#flag 3 check
+Met$Flag=ifelse(Met$WS_ms_Avg < 0 & Met$Flag > 0, 99, Met$Flag)
+Met$Flag=ifelse(Met$WindDir < 0 & Met$Flag > 0, 99, Met$Flag)
+#length(which(Met$Flag==99)) #good to go
+
+#flag 3 remove negative values
 Met$Flag=ifelse(Met$WS_ms_Avg < 0 & Met$Flag == 0, 3, Met$Flag)
 Met$Note=ifelse(Met$WS_ms_Avg < 0 & Met$Flag == 3, "Rainfall set to 0", Met$Note)
 Met$WS_ms_Avg=ifelse(Met$WS_ms_Avg < 0 & Met$Flag == 3, 0, Met$WS_ms_Avg)
@@ -196,34 +221,48 @@ Met$WindDir=ifelse(Met$WindDir < 0 & Met$Flag == 3, 0, Met$WindDir)
 
 plot(Met$TIMESTAMP, Met$WS_ms_Avg, type = 'l')
 plot(Met$TIMESTAMP, Met$WindDir, type = 'p')
-plot(Met$TIMESTAMP, Met$Flag, type = 'p')
+#plot(Met$TIMESTAMP, Met$Flag, type = 'p')
 
 ###Short wave radiation
+#flag 2 check
+Met$Flag=ifelse(is.na(Met$SR01Up_Avg) & Met$Flag > 0, 99, Met$Flag)
+Met$Flag=ifelse(is.na(Met$SR01Dn_Avg) & Met$Flag > 0, 99, Met$Flag)
+#length(which(Met$Flag==99)) #good to go
+
 #Flag 2
-Met$Flag=ifelse(Met$SR01Up_Avg = NA & Met$Flag == 0, 2, Met$Flag)
-Met$Note=ifelse(Met$SR01Up_Avg = NA & Met$Flag == 2, "SR Up Avg NA preexisting", Met$Note)
-Met$Flag=ifelse(Met$SR01Dn_Avg = NA & Met$Flag == 0, 2, Met$Flag)
-Met$Note=ifelse(Met$SR01Dn_Avg = NA & Met$Flag == 2, "SR Dn Avg NA preexisting", Met$Note)
+Met$Flag=ifelse(is.na(Met$SR01Up_Avg) & Met$Flag == 0, 2, Met$Flag)
+Met$Note=ifelse(is.na(Met$SR01Up_Avg) & Met$Flag == 2, "SR Up Avg NA preexisting", Met$Note)
+Met$Flag=ifelse(is.na(Met$SR01Dn_Avg) & Met$Flag == 0, 2, Met$Flag)
+Met$Note=ifelse(is.na(Met$SR01Dn_Avg) & Met$Flag == 2, "SR Dn Avg NA preexisting", Met$Note)
 
 plot(Met$TIMESTAMP, Met$SR01Up_Avg, type = 'l')
 plot(Met$TIMESTAMP, Met$SR01Dn_Avg, type = 'l')
-plot(Met$TIMESTAMP, Met$Flag, type = 'p')
+#plot(Met$TIMESTAMP, Met$Flag, type = 'p')
 
 ###Long wave radiation
+#flag 2 check
+Met$Flag=ifelse(is.na(Met$IR01UpCo_Avg) & Met$Flag > 0, 99, Met$Flag)
+Met$Flag=ifelse(is.na(Met$IR01DnCo_Avg) & Met$Flag > 0, 99, Met$Flag)
+#length(which(Met$Flag==99)) #good to go
+
 #flag 2 
-Met$Flag=ifelse(Met$IR01UpCo_Avg = NA & Met$Flag == 0, 2, Met$Flag)
-Met$Note=ifelse(Met$IR01UpCo_Avg = NA & Met$Flag == 2, "IR Up Avg NA preexisting", Met$Note)
-Met$Flag=ifelse(Met$IR01DnCo_Avg = NA & Met$Flag == 0, 2, Met$Flag)
-Met$Note=ifelse(Met$IR01DnCo_Avg = NA & Met$Flag == 2, "IR Dn Avg NA preexisting", Met$Note)
+Met$Flag=ifelse(is.na(Met$IR01UpCo_Avg) & Met$Flag == 0, 2, Met$Flag)
+Met$Note=ifelse(is.na(Met$IR01UpCo_Avg) & Met$Flag == 2, "IR Up Avg NA preexisting", Met$Note)
+Met$Flag=ifelse(is.na(Met$IR01DnCo_Avg) & Met$Flag == 0, 2, Met$Flag)
+Met$Note=ifelse(is.na(Met$IR01DnCo_Avg) & Met$Flag == 2, "IR Dn Avg NA preexisting", Met$Note)
 
 plot(Met$TIMESTAMP, Met$IR01UpCo_Avg, type = 'l')
 plot(Met$TIMESTAMP, Met$IR01DnCo_Avg, type = 'l')
-plot(Met$TIMESTAMP, Met$Flag, type = 'p')
+#plot(Met$TIMESTAMP, Met$Flag, type = 'p')
 
 ###Albedo
+#flag 2 check
+Met$Flag=ifelse(is.na(Met$Albedo_Avg) & Met$Flag > 0, 99, Met$Flag)
+#length(which(Met$Flag==99)) #109 flags.. where is the problem?
+
 #flag 2
-Met$Flag=ifelse(Met$Albedo_Avg = NA & Met$Flag == 0, 2, Met$Flag)
-Met$Note=ifelse(Met$Albedo_Avg = NA & Met$Flag == 2, "Albedo Avg NA preexisting", Met$Note)
+Met$Flag=ifelse(is.na(Met$Albedo_Avg) & Met$Flag == 0, 2, Met$Flag)
+Met$Note=ifelse(is.na(Met$Albedo_Avg) & Met$Flag == 2, "Albedo Avg NA preexisting", Met$Note)
 
 plot(Met$TIMESTAMP, Met$Albedo_Avg, type = 'l')
 plot(Met$TIMESTAMP, Met$Flag, type = 'p')
