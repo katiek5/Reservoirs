@@ -8,6 +8,8 @@
 #5. Flag overlap check
 #6. Plots
 #7. Uploading Large Files to Github
+#8. Flag 2, change == NA to is.na()
+#9. Order by timestamp
 
 ###packages needed
 library("lubridate")
@@ -45,6 +47,8 @@ Met$Reservoir= "FCR"#add reservoir
 Met$Flag= 0 #add flags
 Met$Note = NA #add notes for flags
 
+#order data by timestamp
+#dplyr::arrange(Met, TIMESTAMP)
 #check record for gaps
 for(i in 2:length(Met$RECORD)){ #this identifies if there are any data gaps in the long-term record, and where they are by record number
   if(Met$RECORD[i]-Met$RECORD[i-1]>1){
@@ -59,61 +63,72 @@ RemoveMet=read.table("/Users/bethany1/Desktop/MET_EDI/MET_MaintenanceLog.txt", s
 ###############Data Cleaning in order of columns#####################
 ###BattV
 #flag 2
-Met$Flag=ifelse(Met$BattV = NA & Met$Flag == 0, 2, Met$Flag)
-Met$Note=ifelse(Met$BattV = NA & Met$Flag == 2, "BattV NA preexisting", Met$Note)
+Met$Flag=ifelse(is.na(Met$BattV) & Met$Flag == 0, 2, Met$Flag)
+Met$Note=ifelse(is.na(Met$BattV) & Met$Flag == 2, "BattV NA preexisting", Met$Note)
 
 #flag overlap check
-Met$Flag=ifelse(Met$BattV = NA & Met$Flag > 0, 99, Met$Flag)
+Met$Flag=ifelse(is.na(Met$BattV) & Met$Flag > 0, 99, Met$Flag) #inserting error flag
 
 plot(Met$TIMESTAMP, Met$BattV, type = 'l')
-plot(Met$TIMESTAMP, Met$Flag, type = 'p')
+##length(which(Met$Flag==99)); plot(Met$TIMESTAMP, Met$Flag, type = 'p') # # of error flags; plot to check for error flags looking good
 
 ###Panel Temp
 #flag 2
-Met$Flag=ifelse(Met$PTemp_C = NA & Met$Flag == 0, 2, Met$Flag)
-Met$Note=ifelse(Met$PTemp_C = NA & Met$Flag == 2, "PanelTemp NA preexisting", Met$Note)
+Met$Flag=ifelse(is.na(Met$PTemp_C) & Met$Flag == 0, 2, Met$Flag)
+Met$Note=ifelse(is.na(Met$PTemp_C) & Met$Flag == 2, "PanelTemp NA preexisting", Met$Note)
 
 #flag overlap check
-Met$Flag=ifelse(Met$PTemp_C = NA & Met$Flag > 0, 99, Met$Flag)
+Met$Flag=ifelse(is.na(Met$PTemp_C) & Met$Flag > 0, 99, Met$Flag) #error flag
 
 plot(Met$TIMESTAMP, Met$PTemp_C, type = 'l')
-plot(Met$TIMESTAMP, Met$Flag, type = 'p')
+#length(which(Met$Flag==99)); plot(Met$TIMESTAMP, Met$Flag, type = 'p') #good to go
 
 ###PAR Avg + Total
 #Should have same flag and NA removal for flag 1
 
 #PAR flag 2
-Met$Flag=ifelse(Met$PAR_Den_Avg = NA & Met$Flag == 0, 2, Met$Flag)
-Met$Note=ifelse(Met$PAR_Den_Avg = NA & Met$Flag == 2, "PAR Avg NA preexisting", Met$Note)
+Met$Flag=ifelse(is.na(Met$PAR_Den_Avg) & Met$Flag == 0, 2, Met$Flag)
+Met$Note=ifelse(is.na(Met$PAR_Den_Avg) & Met$Flag == 2, "PAR Avg NA preexisting", Met$Note)
 
-Met$Flag=ifelse(Met$PAR_Den_Avg = NA & Met$Flag == 0, 2, Met$Flag)
-Met$Note=ifelse(Met$PAR_Den_Avg = NA & Met$Flag == 2, "PAR Tot NA preexisting", Met$Note)
+Met$Flag=ifelse(is.na(Met$PAR_Den_Avg) & Met$Flag == 0, 2, Met$Flag)
+Met$Note=ifelse(is.na(Met$PAR_Den_Avg) & Met$Flag == 2, "PAR Tot NA preexisting", Met$Note)
 
 #flag overlap check
-Met$Flag=ifelse(Met$PAR_Den_Avg = NA & Met$Flag > 0, 99, Met$Flag)
-Met$Flag=ifelse(Met$PAR_Tot_Tot = NA & Met$Flag > 0, 99, Met$Flag)
+Met$Flag=ifelse(is.na(Met$PAR_Den_Avg) & Met$Flag > 0, 99, Met$Flag)
+Met$Flag=ifelse(is.na(Met$PAR_Tot_Tot) & Met$Flag > 0, 99, Met$Flag)
 
 plot(Met$TIMESTAMP, Met$PAR_Den_Avg, type = 'l')
 plot(Met$TIMESTAMP, Met$PAR_Tot_Tot, type = 'l')
-plot(Met$TIMESTAMP, Met$Flag, type = 'p')
+#length(which(Met$Flag==99)); plot(Met$TIMESTAMP, Met$Flag, type = 'p') #good to go
 
 ###Barometric Pressure
 #BP flag #2
-Met$Flag=ifelse(Met$BP_kPa_Avg = NA & Met$Flag == 0, 2, Met$Flag)
-Met$Note=ifelse(Met$BP_kPa_Avg = NA & Met$Flag == 2, "BP NA preexisting", Met$Note)
+Met$Flag=ifelse(is.na(Met$BP_kPa_Avg) & Met$Flag == 0, 2, Met$Flag)
+Met$Note=ifelse(is.na(Met$BP_kPa_Avg) & Met$Flag == 2, "BP NA preexisting", Met$Note)
+
+#flag over lap
+Met$Flag=ifelse(is.na(Met$BP_kPa_Avg) & Met$Flag > 0, 99, Met$Flag)
+#length(which(Met$Flag==99)) #good
 
 #remove negative values flag 3
 Met$Flag=ifelse(Met$BP_kPa_Avg < 0 & Met$Flag == 0, 3, Met$Flag)
 Met$Note=ifelse(Met$BP_kPa_Avg < 0 & Met$Flag == 3, "BP set to 0", Met$Note)
 Met$BP_kPa_Avg=ifelse(Met$BP_kPa_Avg < 0 & Met$Flag == 3, 0, Met$BP_kPa_Avg)
 
+#flag overlap
+Met$Flag=ifelse(is.na(Met$BP_kPa_Avg) & Met$Flag > 0, 99, Met$Flag)
+#length(which(Met$Flag==99)) #good
+
 plot(Met$TIMESTAMP, Met$BP_kPa_Avg, type = 'l')
-plot(Met$TIMESTAMP, Met$Flag, type = 'p')
+#plot(Met$TIMESTAMP, Met$Flag, type = 'p')
 
 ###AirTemp
 #AirTemp flag 2
-Met$Flag=ifelse(Met$AirTC_Avg = NA & Met$Flag == 0, 2, Met$Flag)
-Met$Note=ifelse(Met$AirTC_Avg = NA & Met$Flag == 2, "AirTemp NA preexisting", Met$Note)
+Met$Flag=ifelse(is.na(Met$AirTC_Avg) & Met$Flag == 0, 2, Met$Flag)
+Met$Note=ifelse(is.na(Met$AirTC_Avg) & Met$Flag == 2, "AirTemp NA preexisting", Met$Note)
+
+Met$Flag=ifelse(is.na(Met$AirTC_Avg) & Met$Flag > 0, 99, Met$Flag)
+#length(which(Met$Flag==99)) 
 
 #AirTemp flag 4
 #remove > 40.56
