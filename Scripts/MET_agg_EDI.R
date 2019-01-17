@@ -1,17 +1,27 @@
 ###EDI MET STATION File
-##Let's get the data together and looking good
-#Probably should put this in a Git workflow friendly format.. oh well.
 
-#packages needed
+##Tasks Left:
+#1. Relative paths
+#2. Flag 1
+#3. Flag 3 check
+#4. Flag 4 check
+#5. Flag overlap check
+#6. Plots
+#7. Uploading Large Files to Github
+
+###packages needed
 library("lubridate")
 install.packages("tidyverse")
 library(tidyverse)
 
+###Loading in 3 datasets and aggregating: 
+#a. Past Met data, manual downloads
 setwd("/Users/bethany1/Desktop/MET_EDI/") #need to make into a relative path for EDI folder..
 
 Met_past=read.csv("AllRawMetData_20181119.csv", sep = ",") #loads in data from FCR_GLM repository
 Met_past$TIMESTAMP=ymd_hms(Met_past$TIMESTAMP, tz="Etc/GMT+4")
 
+#b. Current Met data, loaded to Github by Carina
 Met_now=read.csv("https://raw.githubusercontent.com/CareyLabVT/SCCData/carina-data/FCRmet.csv", skip = 4, header = F) #loads in data from SCC_data repository for latest push
 if(length(names(Met_now))>17){ #removes NR01TK_Avg column, which was downloaded on some but not all days
   Met_now$V17<-NULL #remove extra column
@@ -49,10 +59,11 @@ for(i in 2:length(Met$RECORD)){ #this identifies if there are any data gaps in t
   }
 }
 
-#load in maintenance txt file
+#c. load in maintenance txt file
 RemoveMet=read.table("/Users/bethany1/Desktop/MET_EDI/MET_MaintenanceLog.txt", sep = ",", header = T)
 #set flags for flag 1 using maintenance log
 
+###Data Cleaning in order of columns
 ###BattV
 #flag 2
 Met$Flag=ifelse(Met$BattV = NA & Met$Flag == 0, 2, Met$Flag)
@@ -64,7 +75,7 @@ Met$Flag=ifelse(Met$PTemp_C = NA & Met$Flag == 0, 2, Met$Flag)
 Met$Note=ifelse(Met$PTemp_C = NA & Met$Flag == 2, "PanelTemp NA preexisting", Met$Note)
 
 ###PAR Avg + Total
-#Should have same flag and NA removal
+#Should have same flag and NA removal for flag 1
 
 #PAR flag 2
 Met$Flag=ifelse(Met$PAR_Den_Avg = NA & Met$Flag == 0, 2, Met$Flag)
@@ -89,7 +100,7 @@ Met$Flag=ifelse(Met$AirTC_Avg = NA & Met$Flag == 0, 2, Met$Flag)
 Met$Note=ifelse(Met$AirTC_Avg = NA & Met$Flag == 2, "AirTemp NA preexisting", Met$Note)
 
 #AirTemp flag 4
-#remove >
+#remove > 40.56
 
 ###Relative Humidity
 #create if statement for flagging, need this to check if there are existing flags
@@ -144,12 +155,14 @@ Met$Flag=ifelse(Met$SR01Up_Avg = NA & Met$Flag == 0, 2, Met$Flag)
 Met$Note=ifelse(Met$SR01Up_Avg = NA & Met$Flag == 2, "SR Up Avg NA preexisting", Met$Note)
 Met$Flag=ifelse(Met$SR01Dn_Avg = NA & Met$Flag == 0, 2, Met$Flag)
 Met$Note=ifelse(Met$SR01Dn_Avg = NA & Met$Flag == 2, "SR Dn Avg NA preexisting", Met$Note)
+
 ###Long wave radiation
 #flag 2 
 Met$Flag=ifelse(Met$IR01UpCo_Avg = NA & Met$Flag == 0, 2, Met$Flag)
 Met$Note=ifelse(Met$IR01UpCo_Avg = NA & Met$Flag == 2, "IR Up Avg NA preexisting", Met$Note)
 Met$Flag=ifelse(Met$IR01DnCo_Avg = NA & Met$Flag == 0, 2, Met$Flag)
 Met$Note=ifelse(Met$IR01DnCo_Avg = NA & Met$Flag == 2, "IR Dn Avg NA preexisting", Met$Note)
+
 ###Albedo
 #flag 2
 Met$Flag=ifelse(Met$Albedo_Avg = NA & Met$Flag == 0, 2, Met$Flag)
