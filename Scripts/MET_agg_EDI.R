@@ -7,10 +7,10 @@
   #3b. Can radiation be negative? Specifically, Infrared has negative values. Is that ok?
 #4. Flag 4 check
 #5. Flag overlap check
-#6. Plots
-#7. Uploading Large Files to Github
-#8. Albedo has overlapping flag 2
-#9. Order by timestamp
+#6. Uploading Large Files to Github
+#7. Order by timestamp
+#8. Double check airtemp
+#9. Move plotting script after flags are done
 
 ###packages needed
 library("lubridate")
@@ -59,6 +59,9 @@ for(i in 2:length(Met$RECORD)){ #this identifies if there are any data gaps in t
 
 #c. load in maintenance txt file
 RemoveMet=read.table("/Users/bethany1/Desktop/MET_EDI/MET_MaintenanceLog.txt", sep = ",", header = T)
+str(RemoveMet)
+RemoveMet$TIMESTAMP_start=ymd_hms(RemoveMet$TIMESTAMP_start, tz="Etc/GMT+4")
+RemoveMet$TIMESTAMP_end=ymd_hms(RemoveMet$TIMESTAMP_end, tz="Etc/GMT+4")
 #set flags for flag 1 using maintenance log below
 
 ###############Data Cleaning in order of columns#####################
@@ -188,7 +191,7 @@ Met$Flag=ifelse(Met$Rain_mm_Tot < 0 & Met$Flag == 0, 3, Met$Flag)
 Met$Note=ifelse(Met$Rain_mm_Tot < 0 & Met$Flag == 3, "Rainfall set to 0", Met$Note)
 Met$Rain_mm_Tot=ifelse(Met$Rain_mm_Tot < 0 & Met$Flag == 3, 0, Met$Rain_mm_Tot)
 
-plot(Met$TIMESTAMP, Met$RH, type = 'h')
+plot(Met$TIMESTAMP, Met$Rain_mm_Tot, type = 'h')
 
 ###Wind speed + direction
 #flag 2 check
@@ -259,6 +262,20 @@ plot(Met$TIMESTAMP, Met$IR01DnCo_Avg, type = 'l')
 plot(Met$TIMESTAMP, Met$Flag, type = 'p')
 
 #Flag 1
+Met2=Met
+#gonna try a for loop
+for (i in 1:nrow(RemoveMet)){ #makes i # of rows in Maintenance log
+  
+}
+#separate time frame
+#if flag == 1, set paramter to NA
+#Met$Flag[i]=ifelse(Met$flag==0,RemoveMet$flag, Met$Flag) #boo
+
+if(Met2$TIMESTAMP>=RemoveMet$TIMESTAMP_start[i] & Met2$TIMESTAMP<=RemoveMet$TIMESTAMP_end[i]){
+  Met2$Flag=RemoveMet$flag[i]
+}
+#plug in flag and notes from timeframe
+
 
 #fix column names and order
 Met_final=Met[,c(18:19,1:17,20:21)] #fixes order, does not fix names yet
