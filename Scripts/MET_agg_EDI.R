@@ -51,20 +51,31 @@ for(i in 2:length(Met$RECORD)){ #this identifies if there are any data gaps in t
 
 #load in maintenance txt file
 RemoveMet=read.table("/Users/bethany1/Desktop/MET_EDI/MET_MaintenanceLog.txt", sep = ",", header = T)
+#set flags for flag 1 using maintenance log
+
 
 ###PAR Avg + Total
 #Should have same flag and NA removal
 
+#PAR flag 2
+Met$Flag=ifelse(Met$PAR_Den_Avg = NA & Met$Flag == 0, 2, Met$Flag)
+Met$Note=ifelse(Met$PAR_Den_Avg = NA & Met$Flag == 2, "PAR Avg NA preexisting", Met$Note)
 
-
+Met$Flag=ifelse(Met$PAR_Den_Avg = NA & Met$Flag == 0, 2, Met$Flag)
+Met$Note=ifelse(Met$PAR_Den_Avg = NA & Met$Flag == 2, "PAR Avg NA preexisting", Met$Note)
 
 ##Barometric Pressure
+#BP flag #2
+
 #remove negative values
 Met$Flag=ifelse(Met$BP_kPa_Avg < 0 & Met$Flag == 0, 3, Met$Flag)
 Met$Note=ifelse(Met$BP_kPa_Avg < 0 & Met$Flag == 3, "Rainfall set to 0", Met$Note)
 Met$BP_kPa_Avg=ifelse(Met$BP_kPa_Avg < 0 & Met$Flag == 3, 0, Met$BP_kPa_Avg)
 
 ###AirTemp
+#AirTemp flag 2
+
+#AirTemp flag 4
 #remove >
 
 ###Relative Humidity
