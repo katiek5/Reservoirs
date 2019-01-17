@@ -24,17 +24,21 @@ Met_now$PAR_Tot_Tot=as.numeric(Met_now$PAR_Tot_Tot)
 #renames rows for easy bind
 
 Met_agg<-rbind(Met_past,Met_now) #binds past and current data from Met station
-#Met=Met[-c(which(duplicated(Met))),] #removes duplicate data, takes a long time... unique() is also an option
-Met= distinct(Met_agg) #tidy version, identifies duplicated rows and saves first row, removing any duplicates
-length(which(is.na(Met))) #check for rows that are only NA
+#Met=Met[!duplicated(Met),] #removes duplicate data, takes a long time... unique() is also an option
 
+Met= Met_agg
+Met$TIMESTAMP=ymd_hms(Met$TIMESTAMP, tz="Etc/GMT+4") #resulted in 1 failed parse
+#Met %>% distinct(TIMESTAMP, RECORD, .keep_all = TRUE)
+#why doesn't this work??? UGH Need to fix
+Met = Met[!duplicated(Met$TIMESTAMP),]
+
+length(which(is.na(Met))) #check for rows that are only NA
+Met=Met[-c(which(is.na(Met))),]
 ##Fix Time
 #a couple options for timezones GMT -4 or America/Puerto_Rico or any timezone that does not change for daylight.
 #Met_timetest=ymd_hms(Met_now$TIMESTAMP, tz="America/Puerto_Rico")
 #Met_time2=ymd_hms(Met_now$TIMESTAMP, tz="Etc/GMT+4")
 #OlsonNames() #valid time zones, wiki link to what these mean: https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
-
-Met$TIMESTAMP=ymd_hms(Met$TIMESTAMP, tz="Etc/GMT+4") #resulted in 1 failed parse
 
 
 ###Time to do the hard part. Cleaning up the data.###
