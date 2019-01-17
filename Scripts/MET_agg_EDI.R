@@ -63,6 +63,11 @@ Met$RH[Met$RH<=0] <- NA #remove negative values
 Met$RH[Met$RH>100] <- 100 #reset values >100 = 100
 
 
+if(Met$RH[Met$RH<0]&&Met$Flag[Met$RH>0==NA]){
+  Met$Flag[Met$RH] <- 3 #sets flag to 3
+  Met$RH[Met$RH<=0] <- 0 #sets negative to 
+  
+} else if(Met$Flag[!Met$RH>0==NA]) {print("Flag overlap")}
 ###Rainfall
 #remove negative values
 
