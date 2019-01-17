@@ -120,7 +120,6 @@ Met$Note=ifelse(Met$BP_kPa_Avg < 0 & Met$Flag == 3, "BP set to 0", Met$Note)
 Met$BP_kPa_Avg=ifelse(Met$BP_kPa_Avg < 0 & Met$Flag == 3, 0, Met$BP_kPa_Avg)
 
 plot(Met$TIMESTAMP, Met$BP_kPa_Avg, type = 'l')
-#plot(Met$TIMESTAMP, Met$Flag, type = 'p')
 
 ###AirTemp
 #flag 2 overlap check
@@ -143,7 +142,6 @@ Met$AirTC_Avg=ifelse(Met$AirTC_Avg > 40.56 & Met$Flag == 0, NA, Met$AirTC_Avg)
 
 #plots
 plot(Met$TIMESTAMP, Met$AirTC_Avg, type = 'l')
-#plot(Met$TIMESTAMP, Met$Flag, type = 'p')
 
 ###Relative Humidity
 #flag 2 check
@@ -191,7 +189,6 @@ Met$Note=ifelse(Met$Rain_mm_Tot < 0 & Met$Flag == 3, "Rainfall set to 0", Met$No
 Met$Rain_mm_Tot=ifelse(Met$Rain_mm_Tot < 0 & Met$Flag == 3, 0, Met$Rain_mm_Tot)
 
 plot(Met$TIMESTAMP, Met$RH, type = 'h')
-#plot(Met$TIMESTAMP, Met$Flag, type = 'p')
 
 ###Wind speed + direction
 #flag 2 check
@@ -222,7 +219,6 @@ Met$WindDir=ifelse(Met$WindDir < 0 & Met$Flag == 3, 0, Met$WindDir)
 
 plot(Met$TIMESTAMP, Met$WS_ms_Avg, type = 'l')
 plot(Met$TIMESTAMP, Met$WindDir, type = 'p')
-#plot(Met$TIMESTAMP, Met$Flag, type = 'p')
 
 ###Short wave radiation and Albedo
 #note: When SR up = NA, so does Albedo
@@ -243,7 +239,6 @@ Met$Note=ifelse(is.na(Met$SR01Up_Avg) & Met$Flag == 2, "SR Up Avg and Albedo NA 
 plot(Met$TIMESTAMP, Met$SR01Up_Avg, type = 'l')
 plot(Met$TIMESTAMP, Met$SR01Dn_Avg, type = 'l')
 plot(Met$TIMESTAMP, Met$Albedo_Avg, type = 'l')
-#plot(Met$TIMESTAMP, Met$Flag, type = 'p')
 
 ###Long wave radiation
 #flag 2 check
@@ -259,7 +254,6 @@ Met$Note=ifelse(is.na(Met$IR01DnCo_Avg) & Met$Flag == 2, "IR Dn Avg NA preexisti
 
 plot(Met$TIMESTAMP, Met$IR01UpCo_Avg, type = 'l')
 plot(Met$TIMESTAMP, Met$IR01DnCo_Avg, type = 'l')
-#plot(Met$TIMESTAMP, Met$Flag, type = 'p')
 
 #Plot for flags 2&3
 plot(Met$TIMESTAMP, Met$Flag, type = 'p')
