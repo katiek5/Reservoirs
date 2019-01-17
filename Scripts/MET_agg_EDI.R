@@ -39,18 +39,24 @@ Met$Site=50 #add site
 Met$Reservoir= "FCR"#add reservoir
 Met$Flag= 0 #add flags
 Met$Note = NA #add notes for flags
-Met2=Met #Backup dataset to not run above lines of code
-Met=Met2
-###Time to do the hard part. Cleaning up the data.###
+#Met2=Met #Backup dataset to not run above lines of code
+#Met=Met2
 
-#check record
+#check record for gaps
 for(i in 2:length(Met$RECORD)){ #this identifies if there are any data gaps in the long-term record, and where they are by record number
   if(Met$RECORD[i]-Met$RECORD[i-1]>1){
     print(c(Met$TIMESTAMP[i-1],Met$TIMESTAMP[i]))
   }
 }
 
-###PAR
+#load in maintenance txt file
+RemoveMet=read.table("/Users/bethany1/Desktop/MET_EDI/MET_MaintenanceLog.txt", sep = ",", header = T)
+
+###PAR Avg + Total
+#Should have same flag and NA removal
+
+
+
 
 ##Barometric Pressure
 #remove negative values
