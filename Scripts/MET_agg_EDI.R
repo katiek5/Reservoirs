@@ -34,6 +34,12 @@ Met = Met[!duplicated(Met$TIMESTAMP),] #takes out duplicated values by timestamp
 length(which(is.na(Met))) #check for rows that are only NA
 Met=Met[-c(which(is.na(Met))),] #doesn't seem to actually work..
 
+##Add rows
+Met$Site=50 #add site
+Met$Reservoir= "FCR"#add reservoir
+Met$Flag= 0 #add flags
+Met$Note = NA #add notes for flags
+
 ###Time to do the hard part. Cleaning up the data.###
 
 #check record
@@ -52,9 +58,10 @@ for(i in 2:length(Met$RECORD)){ #this identifies if there are any data gaps in t
 #remove >
 
 ###Relative Humidity
-#remove negative values
-#remove >100
-Met$RH=
+#create if statement for flagging
+Met$RH[Met$RH<=0] <- NA #remove negative values
+Met$RH[Met$RH>100] <- 100 #reset values >100 = 100
+
 
 ###Rainfall
 #remove negative values
@@ -69,12 +76,6 @@ Met$RH=
 ###Albedo???
 
 ###Remove maintenance datetime
-
-##Format data for EDI##
-Met$Site=50 #add site
-Met$Reservoir= "FCR"#add reservoir
-Met$Flag= 0 #add flags
-#add notes for flags?? still think about
 
 #fix column names and order
 Met=Met[,c(18:20,1:17)] #fixes order, does not fix names yet
