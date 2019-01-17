@@ -39,7 +39,8 @@ Met$Site=50 #add site
 Met$Reservoir= "FCR"#add reservoir
 Met$Flag= 0 #add flags
 Met$Note = NA #add notes for flags
-
+Met2=Met #Backup dataset to not run above lines of code
+Met=Met2
 ###Time to do the hard part. Cleaning up the data.###
 
 #check record
@@ -59,15 +60,22 @@ for(i in 2:length(Met$RECORD)){ #this identifies if there are any data gaps in t
 
 ###Relative Humidity
 #create if statement for flagging
-Met$RH[Met$RH<=0] <- NA #remove negative values
-Met$RH[Met$RH>100] <- 100 #reset values >100 = 100
 
+if(Met$Flag[Met$RH<0]>0) {print("Flag overlap")} 
 
-if(Met$RH[Met$RH<0]&&Met$Flag[Met$RH>0==NA]){
-  Met$Flag[Met$RH] <- 3 #sets flag to 3
-  Met$RH[Met$RH<=0] <- 0 #sets negative to 
-  
-} else if(Met$Flag[!Met$RH>0==NA]) {print("Flag overlap")}
+#set neg val to 0, insert flag, attach note for flag
+Met$Flag=ifelse(Met$RH < 0 & Met$Flag == 0, 3, Met$Flag)
+Met$Note=ifelse(Met$RH < 0 & Met$Flag == 3, "RH set to 0", Met$Note)
+Met$RH=ifelse(Met$RH < 0 & Met$Flag == 3, 0, Met$RH)
+
+#set val to 100, insert flag, attach note for flag
+Met$Flag=ifelse(Met$RH > 100 & Met$Flag == 0, 3, Met$Flag)
+Met$Note=ifelse(Met$RH > 100 & Met$Flag == 3, "RH set to 100", Met$Note)
+Met$RH=ifelse(Met$RH > 100 & Met$Flag == 3, 100, Met$RH)
+
+plot(Met$TIMESTAMP, Met$RH, type = 'l')
+plot(Met$TIMESTAMP, Met$Flag, type = 'p')
+
 ###Rainfall
 #remove negative values
 
