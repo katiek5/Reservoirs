@@ -30,27 +30,20 @@ if(length(names(Met_now))>17){ #removes NR01TK_Avg column, which was downloaded 
 names(Met_now) = c("TIMESTAMP","RECORD","BattV","PTemp_C","PAR_Den_Avg","PAR_Tot_Tot","BP_kPa_Avg","AirTC_Avg","RH","Rain_mm_Tot","WS_ms_Avg","WindDir","SR01Up_Avg","SR01Dn_Avg","IR01UpCo_Avg","IR01DnCo_Avg","Albedo_Avg")
 Met_now$TIMESTAMP=ymd_hms(Met_now$TIMESTAMP, tz="Etc/GMT+4")
 Met_now=Met_now[-c(which(is.na(Met_now$TIMESTAMP))),] #checks for NA from failed parse, and deletes from dataset
-Met_now$PAR_Tot_Tot=as.numeric(Met_now$PAR_Tot_Tot)
+Met_now$PAR_Tot_Tot=as.numeric(Met_now$PAR_Tot_Tot) #matching str to past data
 #str(Met_now); str(Met_past) #checks structure for matching
 
 Met_agg<-rbind(Met_past,Met_now) #binds past and current data from Met station
+Met_agg = Met_agg[!duplicated(Met_agg$TIMESTAMP),] #takes out duplicated values by timestamp
 
 Met= Met_agg
-Met$TIMESTAMP=ymd_hms(Met$TIMESTAMP, tz="Etc/GMT+4") #formats timestamp
-#resulted in 1 failed parse
+Met$TIMESTAMP=ymd_hms(Met$TIMESTAMP, tz="Etc/GMT+4") #formats timestamp as double check; resulted in 1 failed parse
 
-Met = Met[!duplicated(Met$TIMESTAMP),] #takes out duplicated values by timestamp
-
-length(which(is.na(Met))) #check for rows that are only NA
-Met=Met[-c(which(is.na(Met))),] #doesn't seem to actually work..
-
-##Add rows
+##Add rows for EDI and flagging
 Met$Site=50 #add site
 Met$Reservoir= "FCR"#add reservoir
 Met$Flag= 0 #add flags
 Met$Note = NA #add notes for flags
-#Met2=Met #Backup dataset to not run above lines of code
-#Met=Met2
 
 #check record for gaps
 for(i in 2:length(Met$RECORD)){ #this identifies if there are any data gaps in the long-term record, and where they are by record number
@@ -69,10 +62,16 @@ RemoveMet=read.table("/Users/bethany1/Desktop/MET_EDI/MET_MaintenanceLog.txt", s
 Met$Flag=ifelse(Met$BattV = NA & Met$Flag == 0, 2, Met$Flag)
 Met$Note=ifelse(Met$BattV = NA & Met$Flag == 2, "BattV NA preexisting", Met$Note)
 
+#flag overlap check
+Met$Flag=ifelse(Met$BattV = NA & Met$Flag > 0, 99, Met$Flag)
+
 ###Panel Temp
 #flag 2
 Met$Flag=ifelse(Met$PTemp_C = NA & Met$Flag == 0, 2, Met$Flag)
 Met$Note=ifelse(Met$PTemp_C = NA & Met$Flag == 2, "PanelTemp NA preexisting", Met$Note)
+
+#flag overlap check
+Met$Flag=ifelse(Met$PTemp_C = NA & Met$Flag > 0, 99, Met$Flag)
 
 ###PAR Avg + Total
 #Should have same flag and NA removal for flag 1
@@ -83,6 +82,10 @@ Met$Note=ifelse(Met$PAR_Den_Avg = NA & Met$Flag == 2, "PAR Avg NA preexisting", 
 
 Met$Flag=ifelse(Met$PAR_Den_Avg = NA & Met$Flag == 0, 2, Met$Flag)
 Met$Note=ifelse(Met$PAR_Den_Avg = NA & Met$Flag == 2, "PAR Tot NA preexisting", Met$Note)
+
+#flag overlap check
+Met$Flag=ifelse(Met$PAR_Den_Avg = NA & Met$Flag > 0, 99, Met$Flag)
+Met$Flag=ifelse(Met$PAR_Tot_Tot = NA & Met$Flag > 0, 99, Met$Flag)
 
 ###Barometric Pressure
 #BP flag #2
