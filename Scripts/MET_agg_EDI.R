@@ -102,5 +102,9 @@ Met$WS_ms_Avg=ifelse(Met$WS_ms_Avg < 0 & Met$Flag == 3, 0, Met$WS_ms_Avg)
 ###Remove maintenance datetime
 
 #fix column names and order
-Met=Met[,c(18:20,1:17)] #fixes order, does not fix names yet
-names(Met_now) = c("Site", "Reservoir", "DateTime","Record") #fill out rest of col names when finalized
+Met_final=Met[,c(18:19,1:17,20:21)] #fixes order, does not fix names yet
+names(Met_final) = c("Site", "Reservoir", "DateTime","Record", "CR3000_Batt_V", "CR3000Panel_temp_C", 
+                   "PAR_Average_umol_s_m2", "PAR_Total_mmol_m2", "BP_Average_kPa", "AirTemp_Average_C", 
+                   "RH_percent", "Rain_Total_mm", "WindSpeed_Average_m_s", "WindDir_degrees", "ShortwaveRadiationUp_Average_W_m2",
+                   "ShortwaveRadiationDown_Average_W_m2", "InfaredRadiationUp_Average_W_m2",
+                   "InfaredRadiationDown_Average_W_m2", "Albedo_Average_W_m2", "Flag", "Notes") #finalized column names
