@@ -54,14 +54,19 @@ for(i in 2:length(Met$RECORD)){ #this identifies if there are any data gaps in t
 
 ##Barometric Pressure
 #remove negative values
+Met$Flag=ifelse(Met$BP_kPa_Avg < 0 & Met$Flag == 0, 3, Met$Flag)
+Met$Note=ifelse(Met$BP_kPa_Avg < 0 & Met$Flag == 3, "Rainfall set to 0", Met$Note)
+Met$BP_kPa_Avg=ifelse(Met$BP_kPa_Avg < 0 & Met$Flag == 3, 0, Met$BP_kPa_Avg)
 
 ###AirTemp
 #remove >
 
 ###Relative Humidity
-#create if statement for flagging
-
-if(Met$Flag[Met$RH<0]>0) {print("Flag overlap")} 
+#create if statement for flagging, need this to check if there are existing flags
+if(Met$Flag>0 & Met$RH<0) {print("Flag overlap")} 
+Met$Flag=ifelse(Met$RH < 0 & Met$Flag > 0, 5, Met$Flag)
+Met$Flag=ifelse(Met$RH > 100 & Met$Flag > 0, 5, Met$Flag)
+#need better solution to check flags..
 
 #set neg val to 0, insert flag, attach note for flag
 Met$Flag=ifelse(Met$RH < 0 & Met$Flag == 0, 3, Met$Flag)
@@ -78,9 +83,15 @@ plot(Met$TIMESTAMP, Met$Flag, type = 'p')
 
 ###Rainfall
 #remove negative values
+Met$Flag=ifelse(Met$Rain_mm_Tot < 0 & Met$Flag == 0, 3, Met$Flag)
+Met$Note=ifelse(Met$Rain_mm_Tot < 0 & Met$Flag == 3, "Rainfall set to 0", Met$Note)
+Met$Rain_mm_Tot=ifelse(Met$Rain_mm_Tot < 0 & Met$Flag == 3, 0, Met$Rain_mm_Tot)
 
 ###Wind speed + direction
 #remove negative values
+Met$Flag=ifelse(Met$WS_ms_Avg < 0 & Met$Flag == 0, 3, Met$Flag)
+Met$Note=ifelse(Met$WS_ms_Avg < 0 & Met$Flag == 3, "Rainfall set to 0", Met$Note)
+Met$WS_ms_Avg=ifelse(Met$WS_ms_Avg < 0 & Met$Flag == 3, 0, Met$WS_ms_Avg)
 
 ###Short wave radiation
 
