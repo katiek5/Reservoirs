@@ -104,6 +104,13 @@ Met$Note=ifelse(Met$AirTC_Avg = NA & Met$Flag == 2, "AirTemp NA preexisting", Me
 
 #AirTemp flag 4
 #remove > 40.56
+Met$Flag=ifelse(Met$AirTC_Avg > 40.56 & Met$Flag == 0, 4, Met$Flag)
+Met$Note=ifelse(Met$AirTC_Avg > 40.56 & Met$Flag == 4, "AirTemp set to NA over max temp", Met$Note)
+Met$AirTC_Avg=ifelse(Met$AirTC_Avg > 40.56 & Met$Flag == 0, NA, Met$AirTC_Avg)
+
+#plots
+plot(Met$TIMESTAMP, Met$AirTC_Avg, type = 'l')
+plot(Met$TIMESTAMP, Met$Flag, type = 'p')
 
 ###Relative Humidity
 #create if statement for flagging, need this to check if there are existing flags
