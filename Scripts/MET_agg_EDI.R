@@ -144,8 +144,8 @@ Met$Flag=ifelse(is.na(Met$RH) & Met$Flag > 0, 99, Met$Flag)
 #length(which(Met$Flag==99)) #good to go
 
 #flag 2
-Met$Flag=ifelse(Met$RH = NA & Met$Flag == 0, 2, Met$Flag)
-Met$Note=ifelse(Met$RH = NA & Met$Flag == 2, "RH NA preexisting", Met$Note)
+Met$Flag=ifelse(is.na(Met$RH) & Met$Flag == 0, 2, Met$Flag)
+Met$Note=ifelse(is.na(Met$RH) & Met$Flag == 2, "RH NA preexisting", Met$Note)
 
 #flag 3 check
 Met$Flag=ifelse(Met$RH < 0 & Met$Flag > 0, 99, Met$Flag)
@@ -168,8 +168,8 @@ Met$Flag=ifelse(is.na(Met$Rain_mm_Tot) & Met$Flag > 0, 99, Met$Flag)
 #length(which(Met$Flag==99)) #good to go
 
 #flag 2
-Met$Flag=ifelse(Met$Rain_mm_Tot = NA & Met$Flag == 0, 2, Met$Flag)
-Met$Note=ifelse(Met$Rain_mm_Tot = NA & Met$Flag == 2, "Rainfall NA preexisting", Met$Note)
+Met$Flag=ifelse(is.na(Met$Rain_mm_Tot) & Met$Flag == 0, 2, Met$Flag)
+Met$Note=ifelse(is.na(Met$Rain_mm_Tot) & Met$Flag == 2, "Rainfall NA preexisting", Met$Note)
 
 #flag 3 check
 Met$Flag=ifelse(Met$RH < 0 & Met$Flag > 0, 99, Met$Flag)
@@ -187,11 +187,11 @@ Met$Flag=ifelse(is.na(Met$WindDir) & Met$Flag > 0, 99, Met$Flag)
 #length(which(Met$Flag==99)) #good to go
 
 #flag 2
-Met$Flag=ifelse(Met$WS_ms_Avg = NA & Met$Flag == 0, 2, Met$Flag)
-Met$Note=ifelse(Met$WS_ms_Avg = NA & Met$Flag == 2, "WS Avg NA preexisting", Met$Note)
+Met$Flag=ifelse(is.na(Met$WS_ms_Avg) & Met$Flag == 0, 2, Met$Flag)
+Met$Note=ifelse(is.na(Met$WS_ms_Avg) & Met$Flag == 2, "WS Avg NA preexisting", Met$Note)
 
-Met$Flag=ifelse(Met$WindDir = NA & Met$Flag == 0, 2, Met$Flag)
-Met$Note=ifelse(Met$WindDir = NA & Met$Flag == 2, "WindDir NA preexisting", Met$Note)
+Met$Flag=ifelse(is.na(Met$WindDir) & Met$Flag == 0, 2, Met$Flag)
+Met$Note=ifelse(is.na(Met$WindDir) & Met$Flag == 2, "WindDir NA preexisting", Met$Note)
 
 #flag 3 check
 Met$Flag=ifelse(Met$WS_ms_Avg < 0 & Met$Flag > 0, 99, Met$Flag)
@@ -242,11 +242,11 @@ plot(Met$TIMESTAMP, Met$Flag, type = 'p')
 #for loop inserts flags and notes, then sets relevant data to NA
 for (i in 1:nrow(RemoveMet)){ #makes i # of rows in Maintenance log
   #plug in flag and notes from timeframe
-  Met2$Flag[Met$TIMESTAMP>=RemoveMet$TIMESTAMP_start[i] & Met$TIMESTAMP<=RemoveMet$TIMESTAMP_end[i]]=RemoveMet$flag[i]
-  Met2$Notes[Met$TIMESTAMP>=RemoveMet$TIMESTAMP_start[i] & Met$TIMESTAMP<=RemoveMet$TIMESTAMP_end[i]]=RemoveMet$notes[i] 
+  Met$Flag[Met$TIMESTAMP>=RemoveMet$TIMESTAMP_start[i] & Met$TIMESTAMP<=RemoveMet$TIMESTAMP_end[i]]=RemoveMet$flag[i]
+  Met$Notes[Met$TIMESTAMP>=RemoveMet$TIMESTAMP_start[i] & Met$TIMESTAMP<=RemoveMet$TIMESTAMP_end[i]]=RemoveMet$notes[i] 
   #if flag == 1, set parameter to NA
   if(RemoveMet$flag[i]==1)
-  {Met2[Met$TIMESTAMP>=RemoveMet$TIMESTAMP_start[i] & Met$TIMESTAMP<=RemoveMet$TIMESTAMP_end[i],
+  {Met[Met$TIMESTAMP>=RemoveMet$TIMESTAMP_start[i] & Met$TIMESTAMP<=RemoveMet$TIMESTAMP_end[i],
         RemoveMet$colnumber[i]] = NA}
   }
 
