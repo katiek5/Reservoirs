@@ -133,7 +133,7 @@ plot(Met$TIMESTAMP, Met$AirTC_Avg, type = 'l')
 #remove > 40.56
 Met$Flag=ifelse(Met$AirTC_Avg > 40.56 & Met$Flag == 0, 4, Met$Flag)
 Met$Note=ifelse(Met$AirTC_Avg > 40.56 & Met$Flag == 4, "AirTemp set to NA over max temp", Met$Note)
-Met$AirTC_Avg=ifelse(Met$AirTC_Avg > 40.56 & Met$Flag == 0, NA, Met$AirTC_Avg)
+Met$AirTC_Avg=ifelse(Met$AirTC_Avg > 40.56 & Met$Flag == 4, NA, Met$AirTC_Avg)
 
 #plots
 plot(Met$TIMESTAMP, Met$AirTC_Avg, type = 'l')
