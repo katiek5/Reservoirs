@@ -1,15 +1,13 @@
 ###EDI MET STATION File
 
 ##Tasks/Questions Left:
-#1. Relative paths
+#1. Relative paths + Uploading Large Files to Github
 #2. Flag 1
 #3. Flag 3 check
   #3b. Can radiation be negative? Specifically, Infrared has negative values. Is that ok?
 #4. Flag 4 check
 #5. Flag overlap check
-#6. Uploading Large Files to Github
-#7. Double check airtemp
-#8. Move plotting script after flags are done
+#6. Double check airtemp
 
 ###packages needed
 library("lubridate")
@@ -244,11 +242,11 @@ plot(Met$TIMESTAMP, Met$Flag, type = 'p')
 #for loop inserts flags and notes, then sets relevant data to NA
 for (i in 1:nrow(RemoveMet)){ #makes i # of rows in Maintenance log
   #plug in flag and notes from timeframe
-  Met2$Flag[Met2$TIMESTAMP>=RemoveMet$TIMESTAMP_start[i] & Met2$TIMESTAMP<=RemoveMet$TIMESTAMP_end[i]]=RemoveMet$flag[i]
-  Met2$Notes[Met2$TIMESTAMP>=RemoveMet$TIMESTAMP_start[i] & Met2$TIMESTAMP<=RemoveMet$TIMESTAMP_end[i]]=RemoveMet$notes[i] 
+  Met2$Flag[Met$TIMESTAMP>=RemoveMet$TIMESTAMP_start[i] & Met$TIMESTAMP<=RemoveMet$TIMESTAMP_end[i]]=RemoveMet$flag[i]
+  Met2$Notes[Met$TIMESTAMP>=RemoveMet$TIMESTAMP_start[i] & Met$TIMESTAMP<=RemoveMet$TIMESTAMP_end[i]]=RemoveMet$notes[i] 
   #if flag == 1, set parameter to NA
   if(RemoveMet$flag[i]==1)
-  {Met2[Met2$TIMESTAMP>=RemoveMet$TIMESTAMP_start[i] & Met2$TIMESTAMP<=RemoveMet$TIMESTAMP_end[i],
+  {Met2[Met$TIMESTAMP>=RemoveMet$TIMESTAMP_start[i] & Met$TIMESTAMP<=RemoveMet$TIMESTAMP_end[i],
         RemoveMet$colnumber[i]] = NA}
   }
 
