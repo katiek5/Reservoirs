@@ -144,13 +144,28 @@ plot(Met$TIMESTAMP, Met$AirTC_Avg, type = 'l')
 plot(Met$TIMESTAMP, Met$AirTC_Avg, type = 'l', col='red')
 plot(Met$TIMESTAMP, Met$PTemp_C, type = 'l')
 # 2. 1:1 Ptemp vs. Air temp whole time series
+lm_Met=lm(Met$PTemp_C ~ Met$AirTC_Avg)
+plot(Met$PTemp_C, Met$AirTC_Avg)
+abline(lm_Met, col = "blue")
+print(lm_Met$coefficients)
 # 3. Ptemp vs. Air Temp 2016 
+Met_16=Met[year(Met$TIMESTAMP) == 2016,]
+plot(Met_16$TIMESTAMP, Met_16$AirTC_Avg, type = 'l', col='red')
+plot(Met_16$TIMESTAMP, Met_16$PTemp_C, type = 'l')
 # 4. 1:1 Ptemp vs. AirTemp 2016
+lm_Met16=lm(Met_16$PTemp_C ~ Met_16$AirTC_Avg)
+plot(Met_16$PTemp_C, Met_16$AirTC_Avg)
+abline(lm_Met16, col = "blue")
+print(lm_Met16$coefficients)
 # 5. Ptemp vs. Air Temp after 2017 
+Met_hot=Met[Met$TIMESTAMP > "2016-12-31 23:59:00",]
 # 6. 1:1 Ptemp vs. AirTemp after 2017
 # 7. Ptemp vs. Air Temp 2018 plus line noting cleaning time
 # 8. 1:1 Ptemp vs. AirTemp Jan 2018 - Sep 2 2018
+Met_early18=Met[Met$TIMESTAMP > "2017-12-31 23:59:00"& Met$TIMESTAMP < "2018-09-03 00:00:00",]
 # 9. 1:1 Ptemp vs. AirTemp Sep 3 2018 - Dec 2018
+Met_late18=Met[Met$TIMESTAMP > "2018-09-02 23:59:00"& Met$TIMESTAMP < "2019-01-01 00:00:00",]
+
 
 ###Relative Humidity
 #flag 2 check
