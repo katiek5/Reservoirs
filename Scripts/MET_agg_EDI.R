@@ -142,30 +142,60 @@ plot(Met$TIMESTAMP, Met$AirTC_Avg, type = 'l')
 #air temp red, p temp black
 # 1. PTemp vs. Air Temp whole time series
 plot(Met$TIMESTAMP, Met$AirTC_Avg, type = 'l', col='red')
-plot(Met$TIMESTAMP, Met$PTemp_C, type = 'l')
+lines(Met$TIMESTAMP, Met$PTemp_C, type = 'l')
+
 # 2. 1:1 Ptemp vs. Air temp whole time series
 lm_Met=lm(Met$PTemp_C ~ Met$AirTC_Avg)
 plot(Met$PTemp_C, Met$AirTC_Avg)
 abline(lm_Met, col = "blue")
 print(lm_Met$coefficients)
+
 # 3. Ptemp vs. Air Temp 2016 
 Met_16=Met[year(Met$TIMESTAMP) == 2016,]
 plot(Met_16$TIMESTAMP, Met_16$AirTC_Avg, type = 'l', col='red')
-plot(Met_16$TIMESTAMP, Met_16$PTemp_C, type = 'l')
+lines(Met_16$TIMESTAMP, Met_16$PTemp_C, type = 'l')
+
 # 4. 1:1 Ptemp vs. AirTemp 2016
 lm_Met16=lm(Met_16$PTemp_C ~ Met_16$AirTC_Avg)
 plot(Met_16$PTemp_C, Met_16$AirTC_Avg)
 abline(lm_Met16, col = "blue")
 print(lm_Met16$coefficients)
+
 # 5. Ptemp vs. Air Temp after 2017 
 Met_hot=Met[Met$TIMESTAMP > "2016-12-31 23:59:00",]
+plot(Met_hot$TIMESTAMP, Met_hot$AirTC_Avg, type = 'l', col='red')
+lines(Met_hot$TIMESTAMP, Met_hot$PTemp_C, type = 'l')
+
 # 6. 1:1 Ptemp vs. AirTemp after 2017
+lm_Methot=lm(Met_hot$PTemp_C ~ Met_hot$AirTC_Avg)
+plot(Met_hot$PTemp_C, Met_hot$AirTC_Avg)
+abline(lm_Methot, col = "blue")
+print(lm_Methot$coefficients)
+
 # 7. Ptemp vs. Air Temp 2018 plus line noting cleaning time
+Met_18=Met[year(Met$TIMESTAMP) == 2018,]
+plot(Met_18$TIMESTAMP, Met_18$AirTC_Avg, type = 'l', col='red')
+lines(Met_18$TIMESTAMP, Met_18$PTemp_C, type = 'l')
+abline(v=ymd_hms("2018-09-03 11:40:00"), col="blue", lwd = 2)
+
+lm_Met18=lm(Met_18$PTemp_C ~ Met_18$AirTC_Avg)
+plot(Met_18$PTemp_C, Met_18$AirTC_Avg)
+abline(lm_Met18, col = "blue")
+print(lm_Met18$coefficients)
+
 # 8. 1:1 Ptemp vs. AirTemp Jan 2018 - Sep 2 2018
 Met_early18=Met[Met$TIMESTAMP > "2017-12-31 23:59:00"& Met$TIMESTAMP < "2018-09-03 00:00:00",]
+lm_Metearly18=lm(Met_early18$PTemp_C ~ Met_early18$AirTC_Avg)
+plot(Met_early18$PTemp_C, Met_early18$AirTC_Avg)
+abline(lm_Metearly18, col = "blue")
+print(lm_Metearly18$coefficients)
+
 # 9. 1:1 Ptemp vs. AirTemp Sep 3 2018 - Dec 2018
 Met_late18=Met[Met$TIMESTAMP > "2018-09-02 23:59:00"& Met$TIMESTAMP < "2019-01-01 00:00:00",]
-
+lm_Metlate18=lm(Met_late18$PTemp_C ~ Met_late18$AirTC_Avg)
+plot(Met_late18$PTemp_C, Met_late18$AirTC_Avg)
+abline(lm_Metlate18, col = "blue")
+print(lm_Metlate18$coefficients)
 
 ###Relative Humidity
 #flag 2 check
@@ -201,7 +231,7 @@ Met$Flag=ifelse(is.na(Met$Rain_mm_Tot) & Met$Flag == 0, 2, Met$Flag)
 Met$Note=ifelse(is.na(Met$Rain_mm_Tot) & Met$Flag == 2, "Rainfall NA preexisting", Met$Note)
 
 #flag 3 check
-Met$Flag=ifelse(Met$RH < 0 & Met$Flag > 0, 99, Met$Flag)
+Met$Flag=ifelse(Met$Rain_mm_Tot < 0 & Met$Flag > 0, 99, Met$Flag)
 #length(which(Met$Flag==99)) #good to go
 
 #flag 3 remove negative values
