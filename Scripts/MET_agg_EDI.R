@@ -138,6 +138,20 @@ Met$AirTC_Avg=ifelse(Met$AirTC_Avg > 40.56 & Met$Flag == 4, NA, Met$AirTC_Avg)
 #plots
 plot(Met$TIMESTAMP, Met$AirTC_Avg, type = 'l')
 
+####Air Temp vs. Panel Temp
+#air temp red, p temp black
+# 1. PTemp vs. Air Temp whole time series
+plot(Met$TIMESTAMP, Met$AirTC_Avg, type = 'l', col='red')
+plot(Met$TIMESTAMP, Met$PTemp_C, type = 'l')
+# 2. 1:1 Ptemp vs. Air temp whole time series
+# 3. Ptemp vs. Air Temp 2016 
+# 4. 1:1 Ptemp vs. AirTemp 2016
+# 5. Ptemp vs. Air Temp after 2017 
+# 6. 1:1 Ptemp vs. AirTemp after 2017
+# 7. Ptemp vs. Air Temp 2018 plus line noting cleaning time
+# 8. 1:1 Ptemp vs. AirTemp Jan 2018 - Sep 2 2018
+# 9. 1:1 Ptemp vs. AirTemp Sep 3 2018 - Dec 2018
+
 ###Relative Humidity
 #flag 2 check
 Met$Flag=ifelse(is.na(Met$RH) & Met$Flag > 0, 99, Met$Flag)
