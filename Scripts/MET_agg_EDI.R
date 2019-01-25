@@ -191,7 +191,7 @@ abline(lm_Metearly18, col = "blue")
 print(lm_Metearly18$coefficients)
 
 # 9. 1:1 Ptemp vs. AirTemp Sep 3 2018 - Dec 2018
-Met_late18=Met[Met$TIMESTAMP > "2018-09-02 23:59:00"& Met$TIMESTAMP < "2019-01-01 00:00:00",]
+Met_late18=Met[Met$TIMESTAMP > "2018-09-03 11:40:00"& Met$TIMESTAMP < "2019-01-01 00:00:00",]
 lm_Metlate18=lm(Met_late18$PTemp_C ~ Met_late18$AirTC_Avg)
 plot(Met_late18$PTemp_C, Met_late18$AirTC_Avg)
 abline(lm_Metlate18, col = "blue")
