@@ -62,7 +62,7 @@ for(i in 2:length(Met$RECORD)){ #this identifies if there are any data gaps in t
 
 #c. load in maintenance txt file
 RemoveMet=read.table("/Users/bethany1/Desktop/MET_EDI/MET_MaintenanceLog.txt", sep = ",", header = T)
-str(RemoveMet)
+#str(RemoveMet)
 RemoveMet$TIMESTAMP_start=ymd_hms(RemoveMet$TIMESTAMP_start, tz="Etc/GMT+4")
 RemoveMet$TIMESTAMP_end=ymd_hms(RemoveMet$TIMESTAMP_end, tz="Etc/GMT+4")
 #set flags for flag 1 using maintenance log below
@@ -317,12 +317,19 @@ plot(Met$TIMESTAMP, Met$AirTC_Avg, type = 'l')
 #for loop inserts flags and notes, then sets relevant data to NA
 for (i in 1:nrow(RemoveMet)){ #makes i # of rows in Maintenance log
   #plug in flag and notes from timeframe
-  Met$Flag[Met$TIMESTAMP>=RemoveMet$TIMESTAMP_start[i] & Met$TIMESTAMP<=RemoveMet$TIMESTAMP_end[i]]=RemoveMet$flag[i]
+  if(RemoveMet$colnumber[i]==8){ #set Air Temp flags
+    Met$Flag_AirTemp[Met$TIMESTAMP>=RemoveMet$TIMESTAMP_start[i] & Met$TIMESTAMP<=RemoveMet$TIMESTAMP_end[i]]=RemoveMet$flag[i]
+    Met$Notes_AirTemp[Met$TIMESTAMP>=RemoveMet$TIMESTAMP_start[i] & Met$TIMESTAMP<=RemoveMet$TIMESTAMP_end[i]]=RemoveMet$notes[i]
+      } 
+  #set all other flags
+  else {Met$Flag[Met$TIMESTAMP>=RemoveMet$TIMESTAMP_start[i] & Met$TIMESTAMP<=RemoveMet$TIMESTAMP_end[i]]=RemoveMet$flag[i]
   Met$Notes[Met$TIMESTAMP>=RemoveMet$TIMESTAMP_start[i] & Met$TIMESTAMP<=RemoveMet$TIMESTAMP_end[i]]=RemoveMet$notes[i] 
+ } 
   #if flag == 1, set parameter to NA
   if(RemoveMet$flag[i]==1)
   {Met[Met$TIMESTAMP>=RemoveMet$TIMESTAMP_start[i] & Met$TIMESTAMP<=RemoveMet$TIMESTAMP_end[i],
         RemoveMet$colnumber[i]] = NA}
+  
   }
 
 #######Plots For Days ######
