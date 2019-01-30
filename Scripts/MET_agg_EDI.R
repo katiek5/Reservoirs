@@ -44,6 +44,8 @@ Met$Site=50 #add site
 Met$Reservoir= "FCR"#add reservoir
 Met$Flag= 0 #add flags
 Met$Note = NA #add notes for flags
+Met$Flag_AirTemp = 0
+Met$Note_AirTemp = NA
 
 #order data by timestamp
 #dplyr::arrange(Met, TIMESTAMP)
@@ -55,6 +57,7 @@ for(i in 2:length(Met$RECORD)){ #this identifies if there are any data gaps in t
     print(c(Met$TIMESTAMP[i-1],Met$TIMESTAMP[i]))
   }
 }
+#length(is.na(Met$TIMESTAMP)) #checking NAs
 
 #c. load in maintenance txt file
 RemoveMet=read.table("/Users/bethany1/Desktop/MET_EDI/MET_MaintenanceLog.txt", sep = ",", header = T)
@@ -64,6 +67,7 @@ RemoveMet$TIMESTAMP_end=ymd_hms(RemoveMet$TIMESTAMP_end, tz="Etc/GMT+4")
 #set flags for flag 1 using maintenance log below
 
 ###############Data Cleaning in order of columns#####################
+#skips airtemp
 ###BattV
 #flag 2 overlap check
 Met$Flag=ifelse(is.na(Met$BattV) & Met$Flag > 0, 99, Met$Flag) #inserting error flag
@@ -113,89 +117,6 @@ Met$Flag=ifelse(Met$BP_kPa_Avg < 0 & Met$Flag > 0, 99, Met$Flag)
 Met$Flag=ifelse(Met$BP_kPa_Avg < 0 & Met$Flag == 0, 3, Met$Flag)
 Met$Note=ifelse(Met$BP_kPa_Avg < 0 & Met$Flag == 3, "BP set to 0", Met$Note)
 Met$BP_kPa_Avg=ifelse(Met$BP_kPa_Avg < 0 & Met$Flag == 3, 0, Met$BP_kPa_Avg)
-
-###AirTemp
-#flag 2 overlap check
-Met$Flag=ifelse(is.na(Met$AirTC_Avg) & Met$Flag > 0, 99, Met$Flag)
-#length(which(Met$Flag==99)) #good to go
-
-#AirTemp flag 2
-Met$Flag=ifelse(is.na(Met$AirTC_Avg) & Met$Flag == 0, 2, Met$Flag)
-Met$Note=ifelse(is.na(Met$AirTC_Avg) & Met$Flag == 2, "AirTemp NA preexisting", Met$Note)
-
-#flag 4 overlap check
-Met$Flag=ifelse(Met$AirTC_Avg > 40.56 & Met$Flag > 0, 99, Met$Flag)
-#length(which(Met$Flag==99)) #good to go
-
-plot(Met$TIMESTAMP, Met$AirTC_Avg, type = 'l')
-
-#AirTemp flag 4
-#remove > 40.56
-Met$Flag=ifelse(Met$AirTC_Avg > 40.56 & Met$Flag == 0, 4, Met$Flag)
-Met$Note=ifelse(Met$AirTC_Avg > 40.56 & Met$Flag == 4, "AirTemp set to NA over max temp", Met$Note)
-Met$AirTC_Avg=ifelse(Met$AirTC_Avg > 40.56 & Met$Flag == 4, NA, Met$AirTC_Avg)
-
-#plots
-plot(Met$TIMESTAMP, Met$AirTC_Avg, type = 'l')
-
-####Air Temp vs. Panel Temp
-#air temp red, p temp black
-# 1. PTemp vs. Air Temp whole time series
-plot(Met$TIMESTAMP, Met$AirTC_Avg, type = 'l', col='red')
-lines(Met$TIMESTAMP, Met$PTemp_C, type = 'l')
-
-# 2. 1:1 Ptemp vs. Air temp whole time series
-lm_Met=lm(Met$PTemp_C ~ Met$AirTC_Avg)
-plot(Met$PTemp_C, Met$AirTC_Avg)
-abline(lm_Met, col = "blue")
-print(lm_Met$coefficients)
-
-# 3. Ptemp vs. Air Temp 2016 
-Met_16=Met[year(Met$TIMESTAMP) == 2016,]
-plot(Met_16$TIMESTAMP, Met_16$AirTC_Avg, type = 'l', col='red')
-lines(Met_16$TIMESTAMP, Met_16$PTemp_C, type = 'l')
-
-# 4. 1:1 Ptemp vs. AirTemp 2016
-lm_Met16=lm(Met_16$PTemp_C ~ Met_16$AirTC_Avg)
-plot(Met_16$PTemp_C, Met_16$AirTC_Avg)
-abline(lm_Met16, col = "blue")
-print(lm_Met16$coefficients)
-
-# 5. Ptemp vs. Air Temp after 2017 
-Met_hot=Met[Met$TIMESTAMP > "2016-12-31 23:59:00",]
-plot(Met_hot$TIMESTAMP, Met_hot$AirTC_Avg, type = 'l', col='red')
-lines(Met_hot$TIMESTAMP, Met_hot$PTemp_C, type = 'l')
-
-# 6. 1:1 Ptemp vs. AirTemp after 2017
-lm_Methot=lm(Met_hot$PTemp_C ~ Met_hot$AirTC_Avg)
-plot(Met_hot$PTemp_C, Met_hot$AirTC_Avg)
-abline(lm_Methot, col = "blue")
-print(lm_Methot$coefficients)
-
-# 7. Ptemp vs. Air Temp 2018 plus line noting cleaning time
-Met_18=Met[year(Met$TIMESTAMP) == 2018,]
-plot(Met_18$TIMESTAMP, Met_18$AirTC_Avg, type = 'l', col='red')
-lines(Met_18$TIMESTAMP, Met_18$PTemp_C, type = 'l')
-abline(v=ymd_hms("2018-09-03 11:40:00"), col="blue", lwd = 2)
-
-lm_Met18=lm(Met_18$PTemp_C ~ Met_18$AirTC_Avg)
-plot(Met_18$PTemp_C, Met_18$AirTC_Avg)
-abline(lm_Met18, col = "blue")
-print(lm_Met18$coefficients)
-
-# 8. 1:1 Ptemp vs. AirTemp Jan 2018 - Sep 2 2018
-Met_early18=Met[Met$TIMESTAMP > "2017-12-31 23:59:00"& Met$TIMESTAMP < "2018-09-03 00:00:00",]
-lm_Metearly18=lm(Met_early18$PTemp_C ~ Met_early18$AirTC_Avg)
-plot(Met_early18$PTemp_C, Met_early18$AirTC_Avg)
-abline(lm_Metearly18, col = "blue")
-print(lm_Metearly18$coefficients)
-
-# 9. 1:1 Ptemp vs. AirTemp Sep 3 2018 - Dec 2018
-Met_late18=Met[Met$TIMESTAMP > "2018-09-03 11:40:00"& Met$TIMESTAMP < "2019-01-01 00:00:00",]
-lm_Metlate18=lm(Met_late18$PTemp_C ~ Met_late18$AirTC_Avg)
-plot(Met_late18$PTemp_C, Met_late18$AirTC_Avg)
-abline(lm_Metlate18, col = "blue")
-print(lm_Metlate18$coefficients)
 
 ###Relative Humidity
 #flag 2 check
@@ -296,6 +217,89 @@ Met$Note=ifelse(is.na(Met$IR01DnCo_Avg) & Met$Flag == 2, "IR Dn Avg NA preexisti
 
 #Plot for flags 2&3
 plot(Met$TIMESTAMP, Met$Flag, type = 'p')
+
+########### AirTemp ###########
+#flag 2 overlap check
+Met$Flag=ifelse(is.na(Met$AirTC_Avg) & Met$Flag > 0, 99, Met$Flag)
+#length(which(Met$Flag==99)) #good to go
+
+#AirTemp flag 2
+Met$Flag=ifelse(is.na(Met$AirTC_Avg) & Met$Flag == 0, 2, Met$Flag)
+Met$Note=ifelse(is.na(Met$AirTC_Avg) & Met$Flag == 2, "AirTemp NA preexisting", Met$Note)
+
+#flag 4 overlap check
+Met$Flag=ifelse(Met$AirTC_Avg > 40.56 & Met$Flag > 0, 99, Met$Flag)
+#length(which(Met$Flag==99)) #good to go
+
+plot(Met$TIMESTAMP, Met$AirTC_Avg, type = 'l')
+
+#AirTemp flag 4
+#remove > 40.56
+Met$Flag=ifelse(Met$AirTC_Avg > 40.56 & Met$Flag == 0, 4, Met$Flag)
+Met$Note=ifelse(Met$AirTC_Avg > 40.56 & Met$Flag == 4, "AirTemp set to NA over max temp", Met$Note)
+Met$AirTC_Avg=ifelse(Met$AirTC_Avg > 40.56 & Met$Flag == 4, NA, Met$AirTC_Avg)
+
+#plots
+plot(Met$TIMESTAMP, Met$AirTC_Avg, type = 'l')
+
+####Air Temp vs. Panel Temp
+#air temp red, p temp black
+# 1. PTemp vs. Air Temp whole time series
+plot(Met$TIMESTAMP, Met$AirTC_Avg, type = 'l', col='red')
+lines(Met$TIMESTAMP, Met$PTemp_C, type = 'l')
+
+# 2. 1:1 Ptemp vs. Air temp whole time series
+lm_Met=lm(Met$PTemp_C ~ Met$AirTC_Avg)
+plot(Met$PTemp_C, Met$AirTC_Avg)
+abline(lm_Met, col = "blue")
+print(lm_Met$coefficients)
+
+# 3. Ptemp vs. Air Temp 2016 
+Met_16=Met[year(Met$TIMESTAMP) == 2016,]
+plot(Met_16$TIMESTAMP, Met_16$AirTC_Avg, type = 'l', col='red')
+lines(Met_16$TIMESTAMP, Met_16$PTemp_C, type = 'l')
+
+# 4. 1:1 Ptemp vs. AirTemp 2016
+lm_Met16=lm(Met_16$PTemp_C ~ Met_16$AirTC_Avg)
+plot(Met_16$PTemp_C, Met_16$AirTC_Avg)
+abline(lm_Met16, col = "blue")
+print(lm_Met16$coefficients)
+
+# 5. Ptemp vs. Air Temp after 2017 
+Met_hot=Met[Met$TIMESTAMP > "2016-12-31 23:59:00",]
+plot(Met_hot$TIMESTAMP, Met_hot$AirTC_Avg, type = 'l', col='red')
+lines(Met_hot$TIMESTAMP, Met_hot$PTemp_C, type = 'l')
+
+# 6. 1:1 Ptemp vs. AirTemp after 2017
+lm_Methot=lm(Met_hot$PTemp_C ~ Met_hot$AirTC_Avg)
+plot(Met_hot$PTemp_C, Met_hot$AirTC_Avg)
+abline(lm_Methot, col = "blue")
+print(lm_Methot$coefficients)
+
+# 7. Ptemp vs. Air Temp 2018 plus line noting cleaning time
+Met_18=Met[year(Met$TIMESTAMP) == 2018,]
+plot(Met_18$TIMESTAMP, Met_18$AirTC_Avg, type = 'l', col='red')
+lines(Met_18$TIMESTAMP, Met_18$PTemp_C, type = 'l')
+abline(v=ymd_hms("2018-09-03 11:40:00"), col="blue", lwd = 2)
+
+lm_Met18=lm(Met_18$PTemp_C ~ Met_18$AirTC_Avg)
+plot(Met_18$PTemp_C, Met_18$AirTC_Avg)
+abline(lm_Met18, col = "blue")
+print(lm_Met18$coefficients)
+
+# 8. 1:1 Ptemp vs. AirTemp Jan 2018 - Sep 2 2018
+Met_early18=Met[Met$TIMESTAMP > "2017-12-31 23:59:00"& Met$TIMESTAMP < "2018-09-03 00:00:00",]
+lm_Metearly18=lm(Met_early18$PTemp_C ~ Met_early18$AirTC_Avg)
+plot(Met_early18$PTemp_C, Met_early18$AirTC_Avg)
+abline(lm_Metearly18, col = "blue")
+print(lm_Metearly18$coefficients)
+
+# 9. 1:1 Ptemp vs. AirTemp Sep 3 2018 - Dec 2018
+Met_late18=Met[Met$TIMESTAMP > "2018-09-03 11:40:00"& Met$TIMESTAMP < "2019-01-01 00:00:00",]
+lm_Metlate18=lm(Met_late18$PTemp_C ~ Met_late18$AirTC_Avg)
+plot(Met_late18$PTemp_C, Met_late18$AirTC_Avg)
+abline(lm_Metlate18, col = "blue")
+print(lm_Metlate18$coefficients)
 
 #Flag 1 & 4
 #for loop inserts flags and notes, then sets relevant data to NA
