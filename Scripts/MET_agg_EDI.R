@@ -190,10 +190,11 @@ Met$WindDir=ifelse(Met$WindDir < 0 & Met$Flag == 3, 0, Met$WindDir)
 
 ###Short wave radiation and Albedo
 #note: When SR up = NA, so does Albedo
+Met_prealb=Met
 #flag 2 check
 Met$Flag=ifelse(is.na(Met$SR01Up_Avg) & Met$Flag > 0, 99, Met$Flag)
-Met$Flag=ifelse(is.na(Met$SR01Dn_Avg) & Met$Flag > 0, 99, Met$Flag)
 Met$Flag=ifelse(is.na(Met$Albedo_Avg) & Met$Flag > 0, 99, Met$Flag)
+Met$Flag=ifelse(is.na(Met$SR01Dn_Avg) & Met$Flag > 0, 99, Met$Flag)
 #length(which(Met$Flag==99)) #good to go
 
 #Flag 2
@@ -224,15 +225,15 @@ Met$Flag=ifelse(Met$IR01DnCo_Avg < 0 & Met$Flag > 0, 99, Met$Flag)
 #flag 3 remove negative values
 Met$Flag=ifelse(Met$IR01UpCo_Avg < 0 & Met$Flag == 0, 3, Met$Flag)
 Met$Note=ifelse(Met$IR01UpCo_Avg < 0 & Met$Flag == 3, "Rainfall set to 0", Met$Note)
-Met$WS_ms_Avg=ifelse(Met$IR01UpCo_Avg < 0 & Met$Flag == 3, 0, Met$IR01UpCo_Avg)
+Met$IR01UpCo_Avg=ifelse(Met$IR01UpCo_Avg < 0 & Met$Flag == 3, 0, Met$IR01UpCo_Avg)
 
 Met$Flag=ifelse(Met$IR01DnCo_Avg < 0 & Met$Flag == 0, 3, Met$Flag)
 Met$Note=ifelse(Met$IR01DnCo_Avg < 0 & Met$Flag == 3, "Rainfall set to 0", Met$Note)
-Met$WS_ms_Avg=ifelse(Met$IR01DnCo_Avg < 0 & Met$Flag == 3, 0, Met$IR01UpCo_Avg)
+Met$IR01DnCo_Avg=ifelse(Met$IR01DnCo_Avg < 0 & Met$Flag == 3, 0, Met$IR01DnCo_Avg)
 
 #Plot for flags 2&3
-plot(Met$TIMESTAMP, Met$Flag, type = 'p')
-
+plot(Met$Flag, type = 'h')
+#plot(Met$TIMESTAMP, Met$Flag, type = 'p')
 ########### AirTemp ###########
 
 #AirTemp flag 2
