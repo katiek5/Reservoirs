@@ -38,14 +38,15 @@ Met_agg = Met_agg[!duplicated(Met_agg$TIMESTAMP),] #takes out duplicated values 
 
 Met= Met_agg
 Met$TIMESTAMP=ymd_hms(Met$TIMESTAMP, tz="Etc/GMT+4") #formats timestamp as double check; resulted in 1 failed parse
+Met = Met[Met$TIMESTAMP< "2019-01-01 00:00:00"] #all data before 2019
 
 ##Add rows for EDI and flagging
 Met$Site=50 #add site
 Met$Reservoir= "FCR"#add reservoir
 Met$Flag= 0 #add flags
 Met$Note = NA #add notes for flags
-Met$Flag_AirTemp = 0
-Met$Note_AirTemp = NA
+Met$Flag_AirTemp = 0 #add flag for airtemp
+Met$Note_AirTemp = NA #add note for airtemp flag
 
 #order data by timestamp
 #dplyr::arrange(Met, TIMESTAMP)
@@ -214,6 +215,20 @@ Met$Flag=ifelse(is.na(Met$IR01UpCo_Avg) & Met$Flag == 0, 2, Met$Flag)
 Met$Note=ifelse(is.na(Met$IR01UpCo_Avg) & Met$Flag == 2, "IR Up Avg NA preexisting", Met$Note)
 Met$Flag=ifelse(is.na(Met$IR01DnCo_Avg) & Met$Flag == 0, 2, Met$Flag)
 Met$Note=ifelse(is.na(Met$IR01DnCo_Avg) & Met$Flag == 2, "IR Dn Avg NA preexisting", Met$Note)
+
+#flag 3 check
+Met$Flag=ifelse(Met$IR01UpCo_Avg < 0 & Met$Flag > 0, 99, Met$Flag)
+Met$Flag=ifelse(Met$IR01DnCo_Avg < 0 & Met$Flag > 0, 99, Met$Flag)
+#length(which(Met$Flag==99)) #good to go
+
+#flag 3 remove negative values
+Met$Flag=ifelse(Met$IR01UpCo_Avg < 0 & Met$Flag == 0, 3, Met$Flag)
+Met$Note=ifelse(Met$IR01UpCo_Avg < 0 & Met$Flag == 3, "Rainfall set to 0", Met$Note)
+Met$WS_ms_Avg=ifelse(Met$IR01UpCo_Avg < 0 & Met$Flag == 3, 0, Met$IR01UpCo_Avg)
+
+Met$Flag=ifelse(Met$IR01DnCo_Avg < 0 & Met$Flag == 0, 3, Met$Flag)
+Met$Note=ifelse(Met$IR01DnCo_Avg < 0 & Met$Flag == 3, "Rainfall set to 0", Met$Note)
+Met$WS_ms_Avg=ifelse(Met$IR01DnCo_Avg < 0 & Met$Flag == 3, 0, Met$IR01UpCo_Avg)
 
 #Plot for flags 2&3
 plot(Met$TIMESTAMP, Met$Flag, type = 'p')
