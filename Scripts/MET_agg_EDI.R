@@ -1,13 +1,12 @@
 ###EDI MET STATION File
 
 ##Tasks/Questions Left:
-#1. Relative paths + Uploading Large Files to Github
-#2. Flag 1
-#3. Flag 3 check
-  #3b. Can radiation be negative? Specifically, Infrared has negative values. Is that ok?
-#4. Flag 4 check
-#5. Flag overlap check
-#6. Double check airtemp
+#1. Create flag + notes col for all relevant columns c(5:17)
+#2. Relative paths + Uploading Large Files to Github
+#3. Flag 1 - 4
+#4. Airtemp correction
+#5. Move EDI names to earlier in code
+#6. Finalize data
 
 ###packages needed
 library("lubridate")
@@ -363,7 +362,9 @@ for (i in nrow(Met)) {
   }
 }
 
-
+#### All Flags ####
+for(i in namevector) #for loop to create new columns in data frame
+  df[,i] <- NA
 
 #######Plots For Days ######
 plot(Met$TIMESTAMP, Met$BattV, type = 'l')
