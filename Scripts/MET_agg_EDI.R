@@ -331,7 +331,39 @@ for (i in 1:nrow(RemoveMet)){ #makes i # of rows in Maintenance log
   {Met[Met$TIMESTAMP>=RemoveMet$TIMESTAMP_start[i] & Met$TIMESTAMP<=RemoveMet$TIMESTAMP_end[i],
         RemoveMet$colnumber[i]] = NA}
   
+}
+
+### Alternative Flagging ####
+
+Met$Flag1= 0; Met$Note1= NA
+Met$Flag2= 0; Met$Note2= NA
+Met$Flag3= 0; Met$Note3= NA
+Met$Flag4= 0 ;Met$Note4= NA
+
+#flags for flag 2
+#pre-exisiting NAs
+
+for (i in nrow(Met)) {
+  if(sum(is.na(Met[i,c(1:17)]))>0){ #checks if there are any NAs in row
+    Met$Flag2[i]=2 #adds flag if there are NAs
+    Met$Note2[i] = paste0("Sample not collected:", colnames(Met[which(is.na(Met[i,c(1:17)]))]))
   }
+}
+
+
+#3 = negative values set to 0 or percent greater than 100 set to 100
+for (i in nrow(Met)) {
+  if(length(which(Met[i,c(3,5:7,9:17)]<0))>0){ #checks for any relevant columns with data <0
+    Met$Flag3[i]=3 #adds flag if there are NAs
+    Met$Note3[i] = paste0("Negative value set to 0:", colnames(Met[which(is.na(Met[i,c(1:17)]))]))
+  }
+  if(Met[i,9]>100){
+    Met$Flag3[i]=3
+    Met$Note3[i]= paste0(Met$Note3[i], "and ", colnames(Met[9]))
+  }
+}
+
+
 
 #######Plots For Days ######
 plot(Met$TIMESTAMP, Met$BattV, type = 'l')
