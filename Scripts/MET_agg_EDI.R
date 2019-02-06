@@ -17,8 +17,38 @@ library(tidyverse)
 #a. Past Met data, manual downloads
 setwd("/Users/bethany1/Desktop/MET_EDI/") #need to make into a relative path for EDI folder..
 
+#ADD IN FCR MET COMPILE SCRIPT
 Met_past=read.csv("AllRawMetData_20181119.csv", sep = ",") #loads in data from FCR_GLM repository
 Met_past$TIMESTAMP=ymd_hms(Met_past$TIMESTAMP, tz="Etc/GMT+4")
+
+# workingdir<-"./MetStationData"
+# setwd(workingdir)
+# 
+# metfiles<-list.files(path=getwd()) #creates a list of all met station files within the working directory
+# #sorted automatically by date. All files in here should be of the format:
+# #"CR3000_FCRmet_YYYYMMDD.dat"
+# 
+# obs<-read.csv(file=metfiles[1],skip=4,header=FALSE) #read in first file
+# names(obs) = c("TIMESTAMP","RECORD","BattV","PTemp_C","PAR_Den_Avg","PAR_Tot_Tot","BP_kPa_Avg","AirTC_Avg","RH","Rain_mm_Tot","WS_ms_Avg","WindDir","SR01Up_Avg","SR01Dn_Avg","IR01UpCo_Avg","IR01DnCo_Avg","Albedo_Avg")
+# units = c("TS","RN","Volts","Deg C","umol/s/m^2","mmol/m^2","kPa","Deg C","%","mm","meters/second","degrees","W/m^2","W/m^2","W/m^2","W/m^2","W/m^2") #creates list of units, skipped in line above
+# obs$TIMESTAMP = ymd_hms(obs$TIMESTAMP, tz="Etc/GMT+4") #CCC what do you think of this?
+# 
+# for(i in 2:length(metfiles)){ #reads in all files within folder in Github
+#   temp<-read.csv(file=metfiles[i],skip=4,header=FALSE)
+#   if(length(names(temp))>17){ #removes NR01TK_Avg column, which was downloaded on some but not all days
+#     temp$V17<-NULL #remove extra column
+#   }
+#   names(temp) = c("TIMESTAMP","RECORD","BattV","PTemp_C","PAR_Den_Avg","PAR_Tot_Tot","BP_kPa_Avg","AirTC_Avg","RH","Rain_mm_Tot","WS_ms_Avg","WindDir","SR01Up_Avg","SR01Dn_Avg","IR01UpCo_Avg","IR01DnCo_Avg","Albedo_Avg")
+#   temp$TIMESTAMP = ymd_hms(temp$TIMESTAMP, tz="Etc/GMT+4") #NOTE TO BETHANY to add lubridate here!!! #cayelan, how is this?
+#   obs<-rbind(obs,temp)
+#   #print(i)
+# }
+# 
+# for(i in 2:length(obs$RECORD)){ #this identifies if there are any data gaps in the long-term record, and where they are
+#   if(obs$RECORD[i]-obs$RECORD[i-1]>1){
+#     print(c(obs$TIMESTAMP[i-1],obs$TIMESTAMP[i]))
+#   }
+# }
 
 #b. Current Met data, loaded to Github by Carina
 Met_now=read.csv("https://raw.githubusercontent.com/CareyLabVT/SCCData/carina-data/FCRmet.csv", skip = 4, header = F) #loads in data from SCC_data repository for latest push
