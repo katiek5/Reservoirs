@@ -1,12 +1,10 @@
 ###EDI MET STATION File
 
 ##Tasks/Questions Left:
-#1. Create flag + notes col for all relevant columns c(5:17)
-#2. Relative paths + Uploading Large Files to Github
-#3. Flag 1 - 4
-#4. Airtemp correction
-#5. Move EDI names to earlier in code
-#6. Finalize data
+#1. Relative paths + Uploading Large Files to Github
+#2. Flag 1 & 4
+#3. Airtemp correction + flagging
+#4. Finalize data
 
 ###packages needed
 library("lubridate")
@@ -73,7 +71,6 @@ for(i in 2:length(Met$RECORD)){ #this identifies if there are any data gaps in t
     print(c(Met$TIMESTAMP[i-1],Met$TIMESTAMP[i]))
   }
 }
-#sum(is.na(Met$TIMESTAMP)) #checking NAs, looks good
 
 ##Add rows for EDI and flagging
 Met$Site=50 #add site
@@ -90,29 +87,27 @@ names(Met) = c("DateTime","Record", "CR3000_Batt_V", "CR3000Panel_temp_C",
 #c. load in maintenance txt file
 RemoveMet=read.table("https://raw.githubusercontent.com/CareyLabVT/SCCData/carina-data/MET_MaintenanceLog.txt", sep = ",", header = T)
 #str(RemoveMet)
-RemoveMet$TIMESTAMP_start=ymd_hms(RemoveMet$TIMESTAMP_start, tz="Etc/GMT+4")
-RemoveMet$TIMESTAMP_end=ymd_hms(RemoveMet$TIMESTAMP_end, tz="Etc/GMT+4")
-#set flags for flag 1 using maintenance log below
-
+RemoveMet$TIMESTAMP_start=ymd_hms(RemoveMet$TIMESTAMP_start, tz="Etc/GMT+4") #setting time zone
+RemoveMet$TIMESTAMP_end=ymd_hms(RemoveMet$TIMESTAMP_end, tz="Etc/GMT+4") #setting time zone
 
 #### Flag creation ####
 #create flag + notes columns for data columns c(5:17)
 
 for(i in 5:17) { #for loop to create new columns in data frame
-  Met[,paste0("Flag_",colnames(Met[i]))] <- 0
-  Met[,paste0("Note_",colnames(Met[i]))] <- NA
+  Met[,paste0("Flag_",colnames(Met[i]))] <- 0 #creates flag column + name of variable
+  Met[,paste0("Note_",colnames(Met[i]))] <- NA #creates note column + names of variable
   Met[which(is.na(Met[,i])),paste0("Flag_",colnames(Met[i]))] <-2 #puts in flag 2
   Met[which(is.na(Met[,i])),paste0("Note_",colnames(Met[i]))] <- "Sample not collected" #note for flag 2
   
-  if(i!=8) { #flag 3 for negative values
+  if(i!=8) { #flag 3 for negative values for everything except air temp
     Met[which(Met[,i])<0,paste0("Flag_",colnames(Met[i]))] <- 3
     Met[which(Met[,i])<0,paste0("Note_",colnames(Met[i]))] <- "Negative value set to 0"
-    Met[which(Met[,i])<0,i] <- 0
+    Met[which(Met[,i])<0,i] <- 0 #replaces value with 0
   }
   if(i==9) { #flag for RH over 100
     Met[which(Met[,i])>100,paste0("Flag_",colnames(Met[i]))] <- 3
     Met[which(Met[,i])>100,paste0("Note_",colnames(Met[i]))] <- "Value set to 100"
-    Met[which(Met[,i])>100,i] <- 100
+    Met[which(Met[,i])>100,i] <- 100 #replaces value with 100
   }
 }
 
@@ -127,6 +122,8 @@ for(j in 1:nrow(RemoveMet)){
   {Met[Met$TIMESTAMP>=RemoveMet$TIMESTAMP_start[i] & Met$TIMESTAMP<=RemoveMet$TIMESTAMP_end[i],
        RemoveMet$colnumber[i]] = NA}
 }
+
+
 #Flag 1 & 4
 #for loop inserts flags and notes, then sets relevant data to NA
 for (i in 1:nrow(RemoveMet)){ #makes i # of rows in Maintenance log
@@ -250,7 +247,6 @@ plot(Met$TIMESTAMP, Met$SR01Dn_Avg, type = 'l')
 plot(Met$TIMESTAMP, Met$Albedo_Avg, type = 'l')
 plot(Met$TIMESTAMP, Met$IR01UpCo_Avg, type = 'l')
 plot(Met$TIMESTAMP, Met$IR01DnCo_Avg, type = 'l')
-plot(Met$TIMESTAMP, Met$Flag, type = 'p')
 
-Met_final=Met[,c(18:19,1:17, 20:35)] #final column order
+Met_final=Met[,c(18:19,1:17, 20:45)] #final column order
 #write.csv(etc)
