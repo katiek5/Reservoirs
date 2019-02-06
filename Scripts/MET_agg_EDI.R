@@ -80,7 +80,11 @@ for(i in 5:17) { #for loop to create new columns in data frame
 }
 
 #create loop putting in all flags, order of flags in case of overwriting: 4 (?), 2 (NA not taken), 3 (0 or 100), 1 (NA main) 
-
+for(j in 1:nrow(RemoveMet)){
+  Met[,flagcolumn[Met[,1]>=RemoveMet[i,2] & Met[,1]<=RemoveMet[i,3]]]=RemoveMet$flag[i] #matching time frame, inserting flag
+  Met$Notes[Met$TIMESTAMP>=RemoveMet$TIMESTAMP_start[i] & Met$TIMESTAMP<=RemoveMet$TIMESTAMP_end[i]]=RemoveMet$notes[i] 
+  
+}
 #Flag 1 & 4
 #for loop inserts flags and notes, then sets relevant data to NA
 for (i in 1:nrow(RemoveMet)){ #makes i # of rows in Maintenance log
@@ -98,6 +102,28 @@ for (i in 1:nrow(RemoveMet)){ #makes i # of rows in Maintenance log
   {Met[Met$TIMESTAMP>=RemoveMet$TIMESTAMP_start[i] & Met$TIMESTAMP<=RemoveMet$TIMESTAMP_end[i],
        RemoveMet$colnumber[i]] = NA}
   
+}
+
+#flags for flag 2
+#pre-exisiting NAs
+for (i in nrow(Met)) {
+  if(sum(is.na(Met[i,c(1:17)]))>0){ #checks if there are any NAs in row
+    Met$Flag2[i]=2 #adds flag if there are NAs
+    Met$Note2[i] = paste0("Sample not collected:", colnames(Met[which(is.na(Met[i,c(1:17)]))]))
+  }
+}
+
+
+#3 = negative values set to 0 or percent greater than 100 set to 100
+for (i in nrow(Met)) {
+  if(length(which(Met[i,c(3,5:7,9:17)]<0))>0){ #checks for any relevant columns with data <0
+    Met$Flag3[i]=3 #adds flag if there are NAs
+    Met$Note3[i] = paste0("Negative value set to 0:", colnames(Met[which(is.na(Met[i,c(1:17)]))]))
+  }
+  if(Met[i,9]>100){
+    Met$Flag3[i]=3
+    Met$Note3[i]= paste0(Met$Note3[i], "and ", colnames(Met[9]))
+  }
 }
 
 ###############Data Cleaning in order of columns#####################
@@ -347,37 +373,6 @@ plot(Met$TIMESTAMP, Met$AirTC_Avg, type = 'l')
 # abline(lm_Metlate18, col = "blue")
 # print(lm_Metlate18$coefficients)
 
-
-
-### Alternative Flagging ####
-
-Met$Flag1= 0; Met$Note1= NA
-Met$Flag2= 0; Met$Note2= NA
-Met$Flag3= 0; Met$Note3= NA
-Met$Flag4= 0 ;Met$Note4= NA
-
-#flags for flag 2
-#pre-exisiting NAs
-
-for (i in nrow(Met)) {
-  if(sum(is.na(Met[i,c(1:17)]))>0){ #checks if there are any NAs in row
-    Met$Flag2[i]=2 #adds flag if there are NAs
-    Met$Note2[i] = paste0("Sample not collected:", colnames(Met[which(is.na(Met[i,c(1:17)]))]))
-  }
-}
-
-
-#3 = negative values set to 0 or percent greater than 100 set to 100
-for (i in nrow(Met)) {
-  if(length(which(Met[i,c(3,5:7,9:17)]<0))>0){ #checks for any relevant columns with data <0
-    Met$Flag3[i]=3 #adds flag if there are NAs
-    Met$Note3[i] = paste0("Negative value set to 0:", colnames(Met[which(is.na(Met[i,c(1:17)]))]))
-  }
-  if(Met[i,9]>100){
-    Met$Flag3[i]=3
-    Met$Note3[i]= paste0(Met$Note3[i], "and ", colnames(Met[9]))
-  }
-}
 
 
 #######Plots For Days ######
