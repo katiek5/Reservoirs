@@ -21,10 +21,9 @@ setwd("/Users/bethany1/Desktop/MET_EDI/") #need to make into a relative path for
 Met_past=read.csv("AllRawMetData_20181119.csv", sep = ",") #loads in data from FCR_GLM repository
 Met_past$TIMESTAMP=ymd_hms(Met_past$TIMESTAMP, tz="Etc/GMT+4")
 
-# workingdir<-"./MetStationData"
-# setwd(workingdir)
+# manualMet<-"https://github.com/CareyLabVT/FCR-GLM/tree/master/MetStationData/"
 # 
-# metfiles<-list.files(path=getwd()) #creates a list of all met station files within the working directory
+# metfiles<-list.files(path='https://github.com/CareyLabVT/FCR-GLM/tree/master/MetStationData/') #creates a list of all met station files within the working directory
 # #sorted automatically by date. All files in here should be of the format:
 # #"CR3000_FCRmet_YYYYMMDD.dat"
 # 
@@ -43,12 +42,7 @@ Met_past$TIMESTAMP=ymd_hms(Met_past$TIMESTAMP, tz="Etc/GMT+4")
 #   obs<-rbind(obs,temp)
 #   #print(i)
 # }
-# 
-# for(i in 2:length(obs$RECORD)){ #this identifies if there are any data gaps in the long-term record, and where they are
-#   if(obs$RECORD[i]-obs$RECORD[i-1]>1){
-#     print(c(obs$TIMESTAMP[i-1],obs$TIMESTAMP[i]))
-#   }
-# }
+
 
 #b. Current Met data, loaded to Github by Carina
 Met_now=read.csv("https://raw.githubusercontent.com/CareyLabVT/SCCData/carina-data/FCRmet.csv", skip = 4, header = F) #loads in data from SCC_data repository for latest push
