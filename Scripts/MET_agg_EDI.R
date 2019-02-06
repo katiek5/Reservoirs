@@ -101,6 +101,16 @@ RemoveMet$TIMESTAMP_end=ymd_hms(RemoveMet$TIMESTAMP_end, tz="Etc/GMT+4")
 for(i in 5:17) { #for loop to create new columns in data frame
   Met[,paste0("Flag_",colnames(Met[i]))] <- 0
   Met[,paste0("Note_",colnames(Met[i]))] <- NA
+  Met[which(is.na(Met[,i])),paste0("Flag_",colnames(Met[i]))] <-2 #puts in flag 2
+  Met[which(is.na(Met[,i])),paste0("Note_",colnames(Met[i]))] <- "Sample not collected" #note for flag 2
+  
+  if(i==c(5:7,9:17){ #flag 3 for negative values
+    Met[which(Met[,i])<0,paste0("Flag_",colnames(Met[i]))] <- 3
+    Met[which(Met[,i])<0,paste0("Note_",colnames(Met[i]))] <- "Negative value set to 0"
+  }
+  if(i==9){
+    
+  }
 }
 
 #create loop putting in all flags, order of flags in case of overwriting: 4 (?), 2 (NA not taken), 3 (0 or 100), 1 (NA main) 
