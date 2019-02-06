@@ -73,12 +73,13 @@ RemoveMet$TIMESTAMP_end=ymd_hms(RemoveMet$TIMESTAMP_end, tz="Etc/GMT+4")
 
 #### Flag creation ####
 #create flag + notes columns for data columns c(5:17)
-#### All Flags ####
+
 for(i in 5:17) { #for loop to create new columns in data frame
-  df[,i] <- 0
-  df[i+1] <- NA
+  Met[,paste0("Flag_",colnames(Met[i]))] <- 0
+  Met[,paste0("Note_",colnames(Met[i]))] <- NA
 }
 
+#create loop putting in all flags, order of flags in case of overwriting: 4 (?), 2 (NA not taken), 3 (0 or 100), 1 (NA main) 
 
 #Flag 1 & 4
 #for loop inserts flags and notes, then sets relevant data to NA
