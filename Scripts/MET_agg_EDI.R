@@ -42,10 +42,15 @@ Met = Met[Met$TIMESTAMP< "2019-01-01 00:00:00",] #all data before 2019
 ##Add rows for EDI and flagging
 Met$Site=50 #add site
 Met$Reservoir= "FCR"#add reservoir
-Met$Flag= 0 #add flags
-Met$Note = NA #add notes for flags
-Met$Flag_AirTemp = 0 #add flag for airtemp
-Met$Note_AirTemp = NA #add note for airtemp flag
+
+#fix column names and order
+Met_EDI=Met[,c(18:19,1:17)] #fixes order, does not fix names yet
+names(Met_EDI) = c("Site", "Reservoir", "DateTime","Record", "CR3000_Batt_V", "CR3000Panel_temp_C", 
+                     "PAR_Average_umol_s_m2", "PAR_Total_mmol_m2", "BP_Average_kPa", "AirTemp_Average_C", 
+                     "RH_percent", "Rain_Total_mm", "WindSpeed_Average_m_s", "WindDir_degrees", "ShortwaveRadiationUp_Average_W_m2",
+                     "ShortwaveRadiationDown_Average_W_m2", "InfaredRadiationUp_Average_W_m2",
+                     "InfaredRadiationDown_Average_W_m2", "Albedo_Average_W_m2") #finalized column names
+
 
 #order data by timestamp
 #dplyr::arrange(Met, TIMESTAMP)
@@ -363,8 +368,10 @@ for (i in nrow(Met)) {
 }
 
 #### All Flags ####
-for(i in namevector) #for loop to create new columns in data frame
-  df[,i] <- NA
+for(i in 5:17) { #for loop to create new columns in data frame
+  df[,i] <- 0
+  df[i+1] <- NA
+}
 
 #######Plots For Days ######
 plot(Met$TIMESTAMP, Met$BattV, type = 'l')
@@ -384,10 +391,3 @@ plot(Met$TIMESTAMP, Met$IR01UpCo_Avg, type = 'l')
 plot(Met$TIMESTAMP, Met$IR01DnCo_Avg, type = 'l')
 plot(Met$TIMESTAMP, Met$Flag, type = 'p')
 
-#fix column names and order
-Met_final=Met[,c(18:19,1:17,20:21)] #fixes order, does not fix names yet
-names(Met_final) = c("Site", "Reservoir", "DateTime","Record", "CR3000_Batt_V", "CR3000Panel_temp_C", 
-                   "PAR_Average_umol_s_m2", "PAR_Total_mmol_m2", "BP_Average_kPa", "AirTemp_Average_C", 
-                   "RH_percent", "Rain_Total_mm", "WindSpeed_Average_m_s", "WindDir_degrees", "ShortwaveRadiationUp_Average_W_m2",
-                   "ShortwaveRadiationDown_Average_W_m2", "InfaredRadiationUp_Average_W_m2",
-                   "InfaredRadiationDown_Average_W_m2", "Albedo_Average_W_m2", "Flag", "Notes") #finalized column names
