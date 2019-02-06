@@ -99,15 +99,18 @@ for(i in 5:17) { #for loop to create new columns in data frame
   Met[c(which(is.na(Met[,i]))),paste0("Note_",colnames(Met[i]))] <- "Sample not collected" #note for flag 2
 
   if(i!=8) { #flag 3 for negative values for everything except air temp
-    Met[c(which((Met[,i])<0)),paste0("Flag_",colnames(Met[i]))] <- 3
-    Met[c(which((Met[,i])<0)),paste0("Note_",colnames(Met[i]))] <- "Negative value set to 0"
-    Met[c(which((Met[,i])<0)),i] <- 0 #replaces value with 0
+    Met[c(which((Met[,i]<0))),paste0("Flag_",colnames(Met[i]))] <- 3
+    Met[c(which((Met[,i]<0))),paste0("Note_",colnames(Met[i]))] <- "Negative value set to 0"
+    Met[c(which((Met[,i]<0))),i] <- 0 #replaces value with 0
   }
   if(i==9) { #flag for RH over 100
-    Met[c(which((Met[,i])>100)),paste0("Flag_",colnames(Met[i]))] <- 3
-    Met[c(which((Met[,i])>100)),paste0("Note_",colnames(Met[i]))] <- "Value set to 100"
-    Met[c(which((Met[,i])>100)),i] <- 100 #replaces value with 100
+    Met[c(which((Met[,i]>100))),paste0("Flag_",colnames(Met[i]))] <- 3
+    Met[c(which((Met[,i]>100))),paste0("Note_",colnames(Met[i]))] <- "Value set to 100"
+    Met[c(which((Met[,i]>100))),i] <- 100 #replaces value with 100
   }
+  #create table of flag frequency
+  print(colnames(Met[i]))
+  print(table(Met[,paste0("Flag_",colnames(Met[i]))]))
 }
 
 #create loop putting in maintenance flags 1 + 4
@@ -121,10 +124,6 @@ for(j in 1:nrow(RemoveMet)){
   {Met[Met$TIMESTAMP>=RemoveMet$TIMESTAMP_start[i] & Met$TIMESTAMP<=RemoveMet$TIMESTAMP_end[i],
        RemoveMet$colnumber[i]] = NA}
 }
-
-#create table of flag frequency
-#as.data.frame(table(dummyData))
-#aggregate(data.frame(count = v), list(value = v), length)
 
 #Flag 1 & 4
 #for loop inserts flags and notes, then sets relevant data to NA
