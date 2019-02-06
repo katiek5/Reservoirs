@@ -90,6 +90,7 @@ RemoveMet$TIMESTAMP_end=ymd_hms(RemoveMet$TIMESTAMP_end, tz="Etc/GMT+4") #settin
 
 #### Flag creation ####
 #create flag + notes columns for data columns c(5:17)
+#set 2 + 3 flags
 
 for(i in 5:17) { #for loop to create new columns in data frame
   Met[,paste0("Flag_",colnames(Met[i]))] <- 0 #creates flag column + name of variable
@@ -97,19 +98,19 @@ for(i in 5:17) { #for loop to create new columns in data frame
   Met[c(which(is.na(Met[,i]))),paste0("Flag_",colnames(Met[i]))] <-2 #puts in flag 2
   Met[c(which(is.na(Met[,i]))),paste0("Note_",colnames(Met[i]))] <- "Sample not collected" #note for flag 2
 
-  # if(i!=8) { #flag 3 for negative values for everything except air temp
-  #   Met[which(Met[,i])<0,paste0("Flag_",colnames(Met[i]))] <- 3
-  #   Met[which(Met[,i])<0,paste0("Note_",colnames(Met[i]))] <- "Negative value set to 0"
-  #   Met[which(Met[,i])<0,i] <- 0 #replaces value with 0
-  # }
-  # if(i==9) { #flag for RH over 100
-  #   Met[which(Met[,i])>100,paste0("Flag_",colnames(Met[i]))] <- 3
-  #   Met[which(Met[,i])>100,paste0("Note_",colnames(Met[i]))] <- "Value set to 100"
-  #   Met[which(Met[,i])>100,i] <- 100 #replaces value with 100
-  # }
+  if(i!=8) { #flag 3 for negative values for everything except air temp
+    Met[c(which((Met[,i])<0)),paste0("Flag_",colnames(Met[i]))] <- 3
+    Met[c(which((Met[,i])<0)),paste0("Note_",colnames(Met[i]))] <- "Negative value set to 0"
+    Met[c(which((Met[,i])<0)),i] <- 0 #replaces value with 0
+  }
+  if(i==9) { #flag for RH over 100
+    Met[c(which((Met[,i])>100)),paste0("Flag_",colnames(Met[i]))] <- 3
+    Met[c(which((Met[,i])>100)),paste0("Note_",colnames(Met[i]))] <- "Value set to 100"
+    Met[c(which((Met[,i])>100)),i] <- 100 #replaces value with 100
+  }
 }
 
-#create loop putting in all flags, order of flags in case of overwriting: 4 (?), 2 (NA not taken), 3 (0 or 100), 1 (NA main) 
+#create loop putting in maintenance flags 1 + 4
 for(j in 1:nrow(RemoveMet)){
   if(RemoveMet$flag[j]==4&Met[,paste0("Flag_",colnames(Met[RemoveMet$colnumber[j]]))]==0){
   Met[,flagcolumn[Met[,1]>=RemoveMet[i,2] & Met[,1]<=RemoveMet[i,3]]]=RemoveMet$flag[i] #matching time frame, inserting flag
@@ -121,6 +122,9 @@ for(j in 1:nrow(RemoveMet)){
        RemoveMet$colnumber[i]] = NA}
 }
 
+#create table of flag frequency
+#as.data.frame(table(dummyData))
+#aggregate(data.frame(count = v), list(value = v), length)
 
 #Flag 1 & 4
 #for loop inserts flags and notes, then sets relevant data to NA
