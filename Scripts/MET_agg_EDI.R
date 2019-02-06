@@ -39,19 +39,6 @@ Met= Met_agg
 Met$TIMESTAMP=ymd_hms(Met$TIMESTAMP, tz="Etc/GMT+4") #formats timestamp as double check; resulted in 1 failed parse
 Met = Met[Met$TIMESTAMP< "2019-01-01 00:00:00",] #all data before 2019
 
-##Add rows for EDI and flagging
-Met$Site=50 #add site
-Met$Reservoir= "FCR"#add reservoir
-
-#fix column names and order
-Met_EDI=Met[,c(18:19,1:17)] #fixes order, does not fix names yet
-names(Met_EDI) = c("Site", "Reservoir", "DateTime","Record", "CR3000_Batt_V", "CR3000Panel_temp_C", 
-                     "PAR_Average_umol_s_m2", "PAR_Total_mmol_m2", "BP_Average_kPa", "AirTemp_Average_C", 
-                     "RH_percent", "Rain_Total_mm", "WindSpeed_Average_m_s", "WindDir_degrees", "ShortwaveRadiationUp_Average_W_m2",
-                     "ShortwaveRadiationDown_Average_W_m2", "InfaredRadiationUp_Average_W_m2",
-                     "InfaredRadiationDown_Average_W_m2", "Albedo_Average_W_m2") #finalized column names
-
-
 #order data by timestamp
 #dplyr::arrange(Met, TIMESTAMP)
 Met=Met[order(Met$TIMESTAMP),]
@@ -64,12 +51,53 @@ for(i in 2:length(Met$RECORD)){ #this identifies if there are any data gaps in t
 }
 #sum(is.na(Met$TIMESTAMP)) #checking NAs, looks good
 
+##Add rows for EDI and flagging
+Met$Site=50 #add site
+Met$Reservoir= "FCR"#add reservoir
+
+#EDI Column names
+names(Met) = c("DateTime","Record", "CR3000_Batt_V", "CR3000Panel_temp_C", 
+                     "PAR_Average_umol_s_m2", "PAR_Total_mmol_m2", "BP_Average_kPa", "AirTemp_Average_C", 
+                     "RH_percent", "Rain_Total_mm", "WindSpeed_Average_m_s", "WindDir_degrees", "ShortwaveRadiationUp_Average_W_m2",
+                     "ShortwaveRadiationDown_Average_W_m2", "InfaredRadiationUp_Average_W_m2",
+                     "InfaredRadiationDown_Average_W_m2", "Albedo_Average_W_m2", "Site", "Reservoir") #finalized column names
+
+
 #c. load in maintenance txt file
 RemoveMet=read.table("/Users/bethany1/Desktop/MET_EDI/MET_MaintenanceLog.txt", sep = ",", header = T)
 #str(RemoveMet)
 RemoveMet$TIMESTAMP_start=ymd_hms(RemoveMet$TIMESTAMP_start, tz="Etc/GMT+4")
 RemoveMet$TIMESTAMP_end=ymd_hms(RemoveMet$TIMESTAMP_end, tz="Etc/GMT+4")
 #set flags for flag 1 using maintenance log below
+
+
+#### Flag creation ####
+#create flag + notes columns for data columns c(5:17)
+#### All Flags ####
+for(i in 5:17) { #for loop to create new columns in data frame
+  df[,i] <- 0
+  df[i+1] <- NA
+}
+
+
+#Flag 1 & 4
+#for loop inserts flags and notes, then sets relevant data to NA
+for (i in 1:nrow(RemoveMet)){ #makes i # of rows in Maintenance log
+  #plug in flag and notes from timeframe
+  if(RemoveMet$colnumber[i]==8){ #set Air Temp flags
+    Met$Flag_AirTemp[Met$TIMESTAMP>=RemoveMet$TIMESTAMP_start[i] & Met$TIMESTAMP<=RemoveMet$TIMESTAMP_end[i]]=RemoveMet$flag[i]
+    Met$Notes_AirTemp[Met$TIMESTAMP>=RemoveMet$TIMESTAMP_start[i] & Met$TIMESTAMP<=RemoveMet$TIMESTAMP_end[i]]=RemoveMet$notes[i]
+  } 
+  #set all other flags
+  else {Met$Flag[Met$TIMESTAMP>=RemoveMet$TIMESTAMP_start[i] & Met$TIMESTAMP<=RemoveMet$TIMESTAMP_end[i]]=RemoveMet$flag[i]
+  Met$Notes[Met$TIMESTAMP>=RemoveMet$TIMESTAMP_start[i] & Met$TIMESTAMP<=RemoveMet$TIMESTAMP_end[i]]=RemoveMet$notes[i] 
+  } 
+  #if flag == 1, set parameter to NA
+  if(RemoveMet$flag[i]==1)
+  {Met[Met$TIMESTAMP>=RemoveMet$TIMESTAMP_start[i] & Met$TIMESTAMP<=RemoveMet$TIMESTAMP_end[i],
+       RemoveMet$colnumber[i]] = NA}
+  
+}
 
 ###############Data Cleaning in order of columns#####################
 #skips airtemp
@@ -318,24 +346,7 @@ plot(Met$TIMESTAMP, Met$AirTC_Avg, type = 'l')
 # abline(lm_Metlate18, col = "blue")
 # print(lm_Metlate18$coefficients)
 
-#Flag 1 & 4
-#for loop inserts flags and notes, then sets relevant data to NA
-for (i in 1:nrow(RemoveMet)){ #makes i # of rows in Maintenance log
-  #plug in flag and notes from timeframe
-  if(RemoveMet$colnumber[i]==8){ #set Air Temp flags
-    Met$Flag_AirTemp[Met$TIMESTAMP>=RemoveMet$TIMESTAMP_start[i] & Met$TIMESTAMP<=RemoveMet$TIMESTAMP_end[i]]=RemoveMet$flag[i]
-    Met$Notes_AirTemp[Met$TIMESTAMP>=RemoveMet$TIMESTAMP_start[i] & Met$TIMESTAMP<=RemoveMet$TIMESTAMP_end[i]]=RemoveMet$notes[i]
-      } 
-  #set all other flags
-  else {Met$Flag[Met$TIMESTAMP>=RemoveMet$TIMESTAMP_start[i] & Met$TIMESTAMP<=RemoveMet$TIMESTAMP_end[i]]=RemoveMet$flag[i]
-  Met$Notes[Met$TIMESTAMP>=RemoveMet$TIMESTAMP_start[i] & Met$TIMESTAMP<=RemoveMet$TIMESTAMP_end[i]]=RemoveMet$notes[i] 
- } 
-  #if flag == 1, set parameter to NA
-  if(RemoveMet$flag[i]==1)
-  {Met[Met$TIMESTAMP>=RemoveMet$TIMESTAMP_start[i] & Met$TIMESTAMP<=RemoveMet$TIMESTAMP_end[i],
-        RemoveMet$colnumber[i]] = NA}
-  
-}
+
 
 ### Alternative Flagging ####
 
@@ -367,11 +378,6 @@ for (i in nrow(Met)) {
   }
 }
 
-#### All Flags ####
-for(i in 5:17) { #for loop to create new columns in data frame
-  df[,i] <- 0
-  df[i+1] <- NA
-}
 
 #######Plots For Days ######
 plot(Met$TIMESTAMP, Met$BattV, type = 'l')
@@ -391,3 +397,4 @@ plot(Met$TIMESTAMP, Met$IR01UpCo_Avg, type = 'l')
 plot(Met$TIMESTAMP, Met$IR01DnCo_Avg, type = 'l')
 plot(Met$TIMESTAMP, Met$Flag, type = 'p')
 
+Met_final=Met[,c(18:19,1:17, 20:35)] #final column order
