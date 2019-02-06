@@ -64,7 +64,7 @@ names(Met) = c("DateTime","Record", "CR3000_Batt_V", "CR3000Panel_temp_C",
 
 
 #c. load in maintenance txt file
-RemoveMet=read.table("/Users/bethany1/Desktop/MET_EDI/MET_MaintenanceLog.txt", sep = ",", header = T)
+RemoveMet=read.table("https://raw.githubusercontent.com/CareyLabVT/SCCData/carina-data/MET_MaintenanceLog.txt", sep = ",", header = T)
 #str(RemoveMet)
 RemoveMet$TIMESTAMP_start=ymd_hms(RemoveMet$TIMESTAMP_start, tz="Etc/GMT+4")
 RemoveMet$TIMESTAMP_end=ymd_hms(RemoveMet$TIMESTAMP_end, tz="Etc/GMT+4")
@@ -81,9 +81,14 @@ for(i in 5:17) { #for loop to create new columns in data frame
 
 #create loop putting in all flags, order of flags in case of overwriting: 4 (?), 2 (NA not taken), 3 (0 or 100), 1 (NA main) 
 for(j in 1:nrow(RemoveMet)){
+  if(RemoveMet$flag[j]==4&Met[,paste0("Flag_",colnames(Met[RemoveMet$colnumber[j]]))]==0){
   Met[,flagcolumn[Met[,1]>=RemoveMet[i,2] & Met[,1]<=RemoveMet[i,3]]]=RemoveMet$flag[i] #matching time frame, inserting flag
   Met$Notes[Met$TIMESTAMP>=RemoveMet$TIMESTAMP_start[i] & Met$TIMESTAMP<=RemoveMet$TIMESTAMP_end[i]]=RemoveMet$notes[i] 
-  
+  }
+  #if flag == 1, set parameter to NA
+  if(RemoveMet$flag[i]==1)
+  {Met[Met$TIMESTAMP>=RemoveMet$TIMESTAMP_start[i] & Met$TIMESTAMP<=RemoveMet$TIMESTAMP_end[i],
+       RemoveMet$colnumber[i]] = NA}
 }
 #Flag 1 & 4
 #for loop inserts flags and notes, then sets relevant data to NA
@@ -130,6 +135,7 @@ for (i in nrow(Met)) {
 #Plot for flags 2&3
 plot(Met$Flag, type = 'h')
 #plot(Met$TIMESTAMP, Met$Flag, type = 'p')
+
 ########### AirTemp ###########
 
 #AirTemp flag 2
@@ -213,6 +219,7 @@ plot(Met$TIMESTAMP, Met$AirTC_Avg, type = 'l')
 
 
 #######Plots For Days ######
+#plots to check for any wonkiness
 plot(Met$TIMESTAMP, Met$BattV, type = 'l')
 plot(Met$TIMESTAMP, Met$PTemp_C, type = 'l')
 plot(Met$TIMESTAMP, Met$PAR_Den_Avg, type = 'l')
@@ -231,7 +238,7 @@ plot(Met$TIMESTAMP, Met$IR01DnCo_Avg, type = 'l')
 plot(Met$TIMESTAMP, Met$Flag, type = 'p')
 
 Met_final=Met[,c(18:19,1:17, 20:35)] #final column order
-
+#write.csv(etc)
 
 ###############Old Flagging Data Cleaning in order of columns#####################
 #skips airtemp
