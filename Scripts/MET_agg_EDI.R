@@ -72,16 +72,14 @@ for(i in 2:length(Met$RECORD)){ #this identifies if there are any data gaps in t
   }
 }
 
-##Add rows for EDI and flagging
-Met$Site=50 #add site
-Met$Reservoir= "FCR"#add reservoir
-
 #EDI Column names
 names(Met) = c("DateTime","Record", "CR3000_Batt_V", "CR3000Panel_temp_C", 
-                     "PAR_Average_umol_s_m2", "PAR_Total_mmol_m2", "BP_Average_kPa", "AirTemp_Average_C", 
-                     "RH_percent", "Rain_Total_mm", "WindSpeed_Average_m_s", "WindDir_degrees", "ShortwaveRadiationUp_Average_W_m2",
-                     "ShortwaveRadiationDown_Average_W_m2", "InfaredRadiationUp_Average_W_m2",
-                     "InfaredRadiationDown_Average_W_m2", "Albedo_Average_W_m2", "Site", "Reservoir") #finalized column names
+               "PAR_Average_umol_s_m2", "PAR_Total_mmol_m2", "BP_Average_kPa", "AirTemp_Average_C", 
+               "RH_percent", "Rain_Total_mm", "WindSpeed_Average_m_s", "WindDir_degrees", "ShortwaveRadiationUp_Average_W_m2",
+               "ShortwaveRadiationDown_Average_W_m2", "InfaredRadiationUp_Average_W_m2",
+               "InfaredRadiationDown_Average_W_m2", "Albedo_Average_W_m2") #finalized column names
+Met$Site=50 #add site
+Met$Reservoir= "FCR"#add reservoir
 
 
 #c. load in maintenance txt file
@@ -96,19 +94,19 @@ RemoveMet$TIMESTAMP_end=ymd_hms(RemoveMet$TIMESTAMP_end, tz="Etc/GMT+4") #settin
 for(i in 5:17) { #for loop to create new columns in data frame
   Met[,paste0("Flag_",colnames(Met[i]))] <- 0 #creates flag column + name of variable
   Met[,paste0("Note_",colnames(Met[i]))] <- NA #creates note column + names of variable
-  Met[which(is.na(Met[,i])),paste0("Flag_",colnames(Met[i]))] <-2 #puts in flag 2
-  Met[which(is.na(Met[,i])),paste0("Note_",colnames(Met[i]))] <- "Sample not collected" #note for flag 2
-  
-  if(i!=8) { #flag 3 for negative values for everything except air temp
-    Met[which(Met[,i])<0,paste0("Flag_",colnames(Met[i]))] <- 3
-    Met[which(Met[,i])<0,paste0("Note_",colnames(Met[i]))] <- "Negative value set to 0"
-    Met[which(Met[,i])<0,i] <- 0 #replaces value with 0
-  }
-  if(i==9) { #flag for RH over 100
-    Met[which(Met[,i])>100,paste0("Flag_",colnames(Met[i]))] <- 3
-    Met[which(Met[,i])>100,paste0("Note_",colnames(Met[i]))] <- "Value set to 100"
-    Met[which(Met[,i])>100,i] <- 100 #replaces value with 100
-  }
+  Met[c(which(is.na(Met[,i]))),paste0("Flag_",colnames(Met[i]))] <-2 #puts in flag 2
+  Met[c(which(is.na(Met[,i]))),paste0("Note_",colnames(Met[i]))] <- "Sample not collected" #note for flag 2
+
+  # if(i!=8) { #flag 3 for negative values for everything except air temp
+  #   Met[which(Met[,i])<0,paste0("Flag_",colnames(Met[i]))] <- 3
+  #   Met[which(Met[,i])<0,paste0("Note_",colnames(Met[i]))] <- "Negative value set to 0"
+  #   Met[which(Met[,i])<0,i] <- 0 #replaces value with 0
+  # }
+  # if(i==9) { #flag for RH over 100
+  #   Met[which(Met[,i])>100,paste0("Flag_",colnames(Met[i]))] <- 3
+  #   Met[which(Met[,i])>100,paste0("Note_",colnames(Met[i]))] <- "Value set to 100"
+  #   Met[which(Met[,i])>100,i] <- 100 #replaces value with 100
+  # }
 }
 
 #create loop putting in all flags, order of flags in case of overwriting: 4 (?), 2 (NA not taken), 3 (0 or 100), 1 (NA main) 
