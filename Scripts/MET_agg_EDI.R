@@ -104,12 +104,15 @@ for(i in 5:17) { #for loop to create new columns in data frame
   Met[which(is.na(Met[,i])),paste0("Flag_",colnames(Met[i]))] <-2 #puts in flag 2
   Met[which(is.na(Met[,i])),paste0("Note_",colnames(Met[i]))] <- "Sample not collected" #note for flag 2
   
-  if(i==c(5:7,9:17){ #flag 3 for negative values
+  if(i!=8) { #flag 3 for negative values
     Met[which(Met[,i])<0,paste0("Flag_",colnames(Met[i]))] <- 3
     Met[which(Met[,i])<0,paste0("Note_",colnames(Met[i]))] <- "Negative value set to 0"
+    Met[which(Met[,i])<0,i] <- 0
   }
-  if(i==9){
-    
+  if(i==9) { #flag for RH over 100
+    Met[which(Met[,i])>100,paste0("Flag_",colnames(Met[i]))] <- 3
+    Met[which(Met[,i])>100,paste0("Note_",colnames(Met[i]))] <- "Value set to 100"
+    Met[which(Met[,i])>100,i] <- 100
   }
 }
 
