@@ -139,26 +139,6 @@ for(i in 5:17) {
 print(colnames(Met[i]))
 print(table(Met[,paste0("Flag_",colnames(Met[i]))])) }
 
-#Flag 1 & 4
-#for loop inserts flags and notes, then sets relevant data to NA
-for (i in 1:nrow(RemoveMet)){ #makes i # of rows in Maintenance log
-  #plug in flag and notes from timeframe
-  if(RemoveMet$colnumber[i]==8){ #set Air Temp flags
-    Met$Flag_AirTemp[Met$TIMESTAMP>=RemoveMet$TIMESTAMP_start[i] & Met$TIMESTAMP<=RemoveMet$TIMESTAMP_end[i]]=RemoveMet$flag[i]
-    Met$Notes_AirTemp[Met$TIMESTAMP>=RemoveMet$TIMESTAMP_start[i] & Met$TIMESTAMP<=RemoveMet$TIMESTAMP_end[i]]=RemoveMet$notes[i]
-  } 
-  #set all other flags
-  else {Met$Flag[Met$TIMESTAMP>=RemoveMet$TIMESTAMP_start[i] & Met$TIMESTAMP<=RemoveMet$TIMESTAMP_end[i]]=RemoveMet$flag[i]
-  Met$Notes[Met$TIMESTAMP>=RemoveMet$TIMESTAMP_start[i] & Met$TIMESTAMP<=RemoveMet$TIMESTAMP_end[i]]=RemoveMet$notes[i] 
-  } 
-  #if flag == 1, set parameter to NA
-  if(RemoveMet$flag[i]==1)
-  {Met[Met$TIMESTAMP>=RemoveMet$TIMESTAMP_start[i] & Met$TIMESTAMP<=RemoveMet$TIMESTAMP_end[i],
-       RemoveMet$colnumber[i]] = NA}
-  
-}
-
-
 #Plot for flags 2&3
 plot(Met$Flag, type = 'h')
 #plot(Met$TIMESTAMP, Met$Flag, type = 'p')
