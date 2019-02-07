@@ -2,7 +2,7 @@
 
 ##Tasks/Questions Left:
 #1. Relative paths + Uploading Large Files to Github
-#2. Flag 1 & 4
+#2. Plot flags?
 #3. Airtemp correction + flagging
 #4. Finalize data
 
@@ -227,21 +227,22 @@ plot(Met$TIMESTAMP, Met$AirTC_Avg, type = 'l')
 
 #######Plots For Days ######
 #plots to check for any wonkiness
-plot(Met$TIMESTAMP, Met$BattV, type = 'l')
-plot(Met$TIMESTAMP, Met$PTemp_C, type = 'l')
-plot(Met$TIMESTAMP, Met$PAR_Den_Avg, type = 'l')
-plot(Met$TIMESTAMP, Met$PAR_Tot_Tot, type = 'l')
-plot(Met$TIMESTAMP, Met$BP_kPa_Avg, type = 'l')
-plot(Met$TIMESTAMP, Met$AirTC_Avg, type = 'l')
-plot(Met$TIMESTAMP, Met$RH, type = 'l')
-plot(Met$TIMESTAMP, Met$Rain_mm_Tot, type = 'h')
-plot(Met$TIMESTAMP, Met$WS_ms_Avg, type = 'l')
-plot(Met$TIMESTAMP, Met$WindDir, type = 'p')
-plot(Met$TIMESTAMP, Met$SR01Up_Avg, type = 'l')
-plot(Met$TIMESTAMP, Met$SR01Dn_Avg, type = 'l')
-plot(Met$TIMESTAMP, Met$Albedo_Avg, type = 'l')
-plot(Met$TIMESTAMP, Met$IR01UpCo_Avg, type = 'l')
-plot(Met$TIMESTAMP, Met$IR01DnCo_Avg, type = 'l')
+x11()
+plot(Met$DateTime, Met$CR3000_Batt_V, type = 'l')
+plot(Met$DateTime, Met$CR3000Panel_temp_C, type = 'l')
+plot(Met$DateTime, Met$PAR_Average_umol_s_m2, type = 'l')
+plot(Met$DateTime, Met$PAR_Total_mmol_m2, type = 'l')
+plot(Met$DateTime, Met$BP_Average_kPa, type = 'l')
+plot(Met$DateTime, Met$AirTemp_Average_C, type = 'l')
+plot(Met$DateTime, Met$RH_percent, type = 'l')
+plot(Met$DateTime, Met$Rain_Total_mm, type = 'h')
+plot(Met$DateTime, Met$WindSpeed_Average_m_s, type = 'l')
+plot(Met$DateTime, Met$WindDir_degrees, type = 'p')
+plot(Met$DateTime, Met$ShortwaveRadiationUp_Average_W_m2, type = 'l')
+plot(Met$DateTime, Met$ShortwaveRadiationDown_Average_W_m2, type = 'l')
+plot(Met$DateTime, Met$Albedo_Average_W_m2, type = 'l')
+plot(Met$DateTime, Met$InfaredRadiationUp_Average_W_m2, type = 'l')
+plot(Met$DateTime, Met$InfaredRadiationDown_Average_W_m2, type = 'l')
 
 Met_final=Met[,c(18:19,1:17, 20:45)] #final column order
 #write.csv(etc)
