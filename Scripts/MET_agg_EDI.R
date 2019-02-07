@@ -118,22 +118,24 @@ for(i in 5:17) { #for loop to create new columns in data frame
 
 #create loop putting in maintenance flags 1 + 4
 for(j in 1:nrow(RemoveMet)){
-  #if statement to only write in flag 4 if there are no other flags2
-  if(RemoveMet$flag[j]==4&Met[,paste0("Flag_",colnames(Met[RemoveMet$colnumber[j]]))]==0){
-  Met[Met[,1]>=RemoveMet[j,2] & Met[,1]<=RemoveMet[j,3], #when met timestamp is between remove timestamp
-      paste0("Flag_",colnames(Met[RemoveMet$colnumber[j]]))] #and met column derived from remove column
-       =RemoveMet$flag[j] #matching time frame, inserting flag
-  Met[Met[,1]>=RemoveMet[j,2] & Met[,1]<=RemoveMet[j,3], #same as above, but for notes
-            paste0("Note_",colnames(Met[RemoveMet$colnumber[j]]))]=RemoveMet$notes[i] 
-  }
+  # #if statement to only write in flag 4 if there are no other flags
+  # if(RemoveMet$flag[j]==4){
+  #   if(Met[,paste0("Flag_",colnames(Met[RemoveMet$colnumber[j]]))]==0){
+  # Met[c(which(Met[,1]>=RemoveMet[j,2] & Met[,1]<=RemoveMet[j,3])), #when met timestamp is between remove timestamp
+  #     paste0("Flag_",colnames(Met[RemoveMet$colnumber[j]]))] #and met column derived from remove column
+  #      <-RemoveMet$flag[j] #matching time frame, inserting flag
+  # Met[Met[,1]>=RemoveMet[j,2] & Met[,1]<=RemoveMet[j,3], #same as above, but for notes
+  #           paste0("Note_",colnames(Met[RemoveMet$colnumber[j]]))]=RemoveMet$notes[i] 
+  # }}
   #if flag == 1, set parameter to NA, overwrites any other flag
-  if(RemoveMet$flag[j]==1)
-  {  Met[Met[,1]>=RemoveMet[j,2] & Met[,1]<=RemoveMet[j,3], #when met timestamp is between remove timestamp
+  #if(RemoveMet$flag[j]==1)
+    Met[c(which((Met[,1]>=RemoveMet[j,2]) & (Met[,1]<=RemoveMet[j,3]))), #when met timestamp is between remove timestamp
          paste0("Flag_",colnames(Met[RemoveMet$colnumber[j]]))] #and met column derived from remove column
-    =RemoveMet$flag[j] #matching time frame, inserting flag
-  Met[Met[,1]>=RemoveMet[j,2] & Met[,1]<=RemoveMet[j,3], #same as above, but for notes
-      paste0("Note_",colnames(Met[RemoveMet$colnumber[j]]))]=RemoveMet$notes[i] 
-  Met[Met[,1]>=RemoveMet[j,2] & Met[,1]<=RemoveMet[j,3], colnames(Met[RemoveMet$colnumber[j]])] = NA} #replaces value of var with NA
+    <- RemoveMet$flag[j] #matching time frame, inserting flag
+  # Met[Met[,1]>=RemoveMet[j,2] & Met[,1]<=RemoveMet[j,3], #same as above, but for notes
+  #     paste0("Note_",colnames(Met[RemoveMet$colnumber[j]]))]=RemoveMet$notes[i] 
+  # Met[Met[,1]>=RemoveMet[j,2] & Met[,1]<=RemoveMet[j,3], colnames(Met[RemoveMet$colnumber[j]])] = NA
+  #} #replaces value of var with NA
 }
 
 #Flag 1 & 4
