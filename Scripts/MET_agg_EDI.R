@@ -97,7 +97,10 @@ for(i in 5:17) { #for loop to create new columns in data frame
   Met[,paste0("Note_",colnames(Met[i]))] <- NA #creates note column + names of variable
   Met[c(which(is.na(Met[,i]))),paste0("Flag_",colnames(Met[i]))] <-2 #puts in flag 2
   Met[c(which(is.na(Met[,i]))),paste0("Note_",colnames(Met[i]))] <- "Sample not collected" #note for flag 2
-
+  Met[c(which(is.infinite(Met[,i]))),paste0("Flag_",colnames(Met[i]))] <-3 #puts in flag 3
+  Met[c(which(is.infinite(Met[,i]))),paste0("Note_",colnames(Met[i]))] <- "Infinite value set to NA" #note for flag 3
+  Met[c(which(is.infinite(Met[,i]))),i] <- NA #set infinite vals to NA
+  
   if(i!=8) { #flag 3 for negative values for everything except air temp
     Met[c(which((Met[,i]<0))),paste0("Flag_",colnames(Met[i]))] <- 3
     Met[c(which((Met[,i]<0))),paste0("Note_",colnames(Met[i]))] <- "Negative value set to 0"
@@ -115,14 +118,22 @@ for(i in 5:17) { #for loop to create new columns in data frame
 
 #create loop putting in maintenance flags 1 + 4
 for(j in 1:nrow(RemoveMet)){
+  #if statement to only write in flag 4 if there are no other flags2
   if(RemoveMet$flag[j]==4&Met[,paste0("Flag_",colnames(Met[RemoveMet$colnumber[j]]))]==0){
-  Met[,flagcolumn[Met[,1]>=RemoveMet[i,2] & Met[,1]<=RemoveMet[i,3]]]=RemoveMet$flag[i] #matching time frame, inserting flag
-  Met$Notes[Met$TIMESTAMP>=RemoveMet$TIMESTAMP_start[i] & Met$TIMESTAMP<=RemoveMet$TIMESTAMP_end[i]]=RemoveMet$notes[i] 
+  Met[Met[,1]>=RemoveMet[j,2] & Met[,1]<=RemoveMet[j,3], #when met timestamp is between remove timestamp
+      paste0("Flag_",colnames(Met[RemoveMet$colnumber[j]]))] #and met column derived from remove column
+       =RemoveMet$flag[j] #matching time frame, inserting flag
+  Met[Met[,1]>=RemoveMet[j,2] & Met[,1]<=RemoveMet[j,3], #same as above, but for notes
+            paste0("Note_",colnames(Met[RemoveMet$colnumber[j]]))]=RemoveMet$notes[i] 
   }
-  #if flag == 1, set parameter to NA
-  if(RemoveMet$flag[i]==1)
-  {Met[Met$TIMESTAMP>=RemoveMet$TIMESTAMP_start[i] & Met$TIMESTAMP<=RemoveMet$TIMESTAMP_end[i],
-       RemoveMet$colnumber[i]] = NA}
+  #if flag == 1, set parameter to NA, overwrites any other flag
+  if(RemoveMet$flag[j]==1)
+  {  Met[Met[,1]>=RemoveMet[j,2] & Met[,1]<=RemoveMet[j,3], #when met timestamp is between remove timestamp
+         paste0("Flag_",colnames(Met[RemoveMet$colnumber[j]]))] #and met column derived from remove column
+    =RemoveMet$flag[j] #matching time frame, inserting flag
+  Met[Met[,1]>=RemoveMet[j,2] & Met[,1]<=RemoveMet[j,3], #same as above, but for notes
+      paste0("Note_",colnames(Met[RemoveMet$colnumber[j]]))]=RemoveMet$notes[i] 
+  Met[Met[,1]>=RemoveMet[j,2] & Met[,1]<=RemoveMet[j,3], colnames(Met[RemoveMet$colnumber[j]])] = NA} #replaces value of var with NA
 }
 
 #Flag 1 & 4
