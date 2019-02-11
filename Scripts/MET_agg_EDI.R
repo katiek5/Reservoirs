@@ -223,12 +223,12 @@ plot(Met$TIMESTAMP, Met$AirTC_Avg, type = 'l')
 # abline(lm_Metlate18, col = "blue")
 # print(lm_Metlate18$coefficients)
 
-#NDLAS comparison
+####NDLAS comparison####
 NLDAS=read.csv("https://raw.githubusercontent.com/CareyLabVT/FCR-GLM/master/NLDASData/FCR_GLM_met_NLDAS2_Dec14_Dec18.csv", header = T)
 N_AirTemp=NLDAS[,c(6,3)]
 N_AirTemp$time=ymd_hms(N_AirTemp$time)
 Met_air=Met[,c(1,4,8)]
-names(Met_air)<- c("time", "AirTemp_Average_C")
+names(Met_air)<- c("time", "Panel_temp","AirTemp_Average_C")
 #does NLDAS use GMT -4? or EST? What time zone is it??????????
 #for now, assuming GMT -4 for simplicity's sake
 compare<-merge(N_AirTemp, Met_air, by="time")
@@ -238,8 +238,16 @@ points(compare$time, compare$AirTemp, col="blue")
 legend("topleft", legend=c("MetStation","NLDAS"), col=c("black", "blue"), pch=1)
 plot(compare$AirTemp_Average_C,compare$AirTemp)
 abline(1,1, col="red")
+lm_Panel=lm(compare$AirTemp_Average_C ~ compare$Panel_temp)
+abline(lm_NLDAS, col="blue")
 
+legend("topleft", legend=c("MetStation Panel","NLDAS"), col=c("black", "blue"), pch=1)
+plot(compare$Panel_temp,compare$AirTemp)
+abline(0,1, col="red")
+lm_NLDAS=lm(compare$AirTemp_Average_C ~ compare$Panel_temp)
+abline(lm_Panel, col="blue")
 
+compare_winter=com
 
 #######Plots For Days ######
 #plots to check for any wonkiness
