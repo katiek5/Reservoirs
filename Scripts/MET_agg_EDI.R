@@ -223,11 +223,27 @@ plot(Met$TIMESTAMP, Met$AirTC_Avg, type = 'l')
 # abline(lm_Metlate18, col = "blue")
 # print(lm_Metlate18$coefficients)
 
+#NDLAS comparison
+NLDAS=read.csv("https://raw.githubusercontent.com/CareyLabVT/FCR-GLM/master/NLDASData/FCR_GLM_met_NLDAS2_Dec14_Dec18.csv", header = T)
+N_AirTemp=NLDAS[,c(6,3)]
+N_AirTemp$time=ymd_hms(N_AirTemp$time)
+Met_air=Met[,c(1,4,8)]
+names(Met_air)<- c("time", "AirTemp_Average_C")
+#does NLDAS use GMT -4? or EST? What time zone is it??????????
+#for now, assuming GMT -4 for simplicity's sake
+compare<-merge(N_AirTemp, Met_air, by="time")
+
+plot(compare$time, compare$AirTemp_Average_C, ylim=c(-15,50))
+points(compare$time, compare$AirTemp, col="blue")
+legend("topleft", legend=c("MetStation","NLDAS"), col=c("black", "blue"), pch=1)
+plot(compare$AirTemp_Average_C,compare$AirTemp)
+abline(1,1, col="red")
+
 
 
 #######Plots For Days ######
 #plots to check for any wonkiness
-x11()
+x11(); par(mfrow=c(1,2))
 plot(Met$DateTime, Met$CR3000_Batt_V, type = 'l')
 plot(Met$DateTime, Met$CR3000Panel_temp_C, type = 'l')
 plot(Met$DateTime, Met$PAR_Average_umol_s_m2, type = 'l')
@@ -237,7 +253,7 @@ plot(Met$DateTime, Met$AirTemp_Average_C, type = 'l')
 plot(Met$DateTime, Met$RH_percent, type = 'l')
 plot(Met$DateTime, Met$Rain_Total_mm, type = 'h')
 plot(Met$DateTime, Met$WindSpeed_Average_m_s, type = 'l')
-plot(Met$DateTime, Met$WindDir_degrees, type = 'p')
+hist(Met$WindDir_degrees)
 plot(Met$DateTime, Met$ShortwaveRadiationUp_Average_W_m2, type = 'l')
 plot(Met$DateTime, Met$ShortwaveRadiationDown_Average_W_m2, type = 'l')
 plot(Met$DateTime, Met$Albedo_Average_W_m2, type = 'l')
