@@ -205,95 +205,103 @@ plot(Met$Flag, type = 'h')
 # print(lm_Metlate18$coefficients)
 
 ####NDLAS comparison####
-NLDAS=read.csv("https://raw.githubusercontent.com/CareyLabVT/FCR-GLM/master/NLDASData/FCR_GLM_met_NLDAS2_Dec14_Dec18.csv", header = T)
-N_AirTemp=NLDAS[,c(6,3)]
-N_AirTemp$time=ymd_hms(N_AirTemp$time)
-Met_air=Met[,c(1,4,8)]
-names(Met_air)<- c("time", "Panel_temp","AirTemp_Average_C")
-#does NLDAS use GMT -4? or EST? What time zone is it??????????
-#for now, assuming GMT -4 for simplicity's sake
-compare<-merge(N_AirTemp, Met_air, by="time")
-
-#Met Air vs. NLDAS
-x11()
-par(mfrow=c(1,2))
-plot(compare$time, compare$AirTemp_Average_C, ylim=c(-15,60))
-points(compare$time, compare$AirTemp, col="blue")
-legend("topleft", legend=c("MetStation","NLDAS"), col=c("black", "blue"), pch=1)
-plot(compare$AirTemp_Average_C,compare$AirTemp)
-abline(0,1, col="red")
-lm_NLDAS=lm(compare$AirTemp_Average_C ~ compare$AirTemp)
-abline(lm_NLDAS, col="blue")
-legend("bottomright", legend=c("1:1","lm"), col=c("red", "blue"), lty = 1)
-mean(lm_NLDAS$residuals)
-range(lm_NLDAS$residuals)
-sd(lm_NLDAS$residuals)
-
-#Panel vs. Air
-x11()
-par(mfrow=c(1,2))
-plot(compare$time, compare$AirTemp_Average_C, ylim=c(-15,60))
-points(compare$time, compare$Panel_temp, col="green")
-legend("topleft", legend=c("MetStation AirTemp","MetStation Panel"), col=c("black", "green"), pch=1)
-plot(compare$Panel_temp,compare$AirTemp)
-abline(0,1, col="red")
-lm_Panel=lm(compare$AirTemp_Average_C ~ compare$Panel_temp)
-abline(lm_Panel, col="green")
-legend("bottomright", legend=c("1:1","lm"), col=c("red", "green"), lty = 1)
-mean(lm_Panel$residuals)
-range(lm_Panel$residuals)
-sd(lm_Panel$residuals)
-
-#NLDAS vs. Panel??
-legend("topleft", legend=c("MetStation Panel","NLDAS"), col=c("green", "blue"), pch=1)
-plot(compare$Panel_temp,compare$AirTemp)
-abline(0,1, col="red")
-lm_Panel=lm(compare$AirTemp_Average_C ~ compare$Panel_temp)
-abline(lm_Panel, col="blue")
-
-
-compare_2015=compare[compare$time<"2016-01-01 00:00:00",]
-
-#Met Air vs. NLDAS 2015
-x11()
-par(mfrow=c(1,2))
-plot(compare_2015$time, compare_2015$AirTemp_Average_C, ylim=c(-15,60))
-points(compare_2015$time, compare_2015$AirTemp, col="blue")
-legend("topleft", legend=c("MetStation","NLDAS"), col=c("black", "blue"), pch=1)
-plot(compare_2015$AirTemp_Average_C,compare_2015$AirTemp)
-abline(0,1, col="red")
-lm_NLDAS=lm(compare_2015$AirTemp_Average_C ~ compare_2015$AirTemp)
-abline(lm_NLDAS, col="blue")
-legend("bottomright", legend=c("1:1","lm"), col=c("red", "blue"), lty = 1)
-mean(lm_NLDAS$residuals)
-range(lm_NLDAS$residuals)
-sd(lm_NLDAS$residuals)
-
-#Panel vs. Air 2015
-x11()
-par(mfrow=c(1,2))
-plot(compare_2015$time, compare_2015$AirTemp_Average_C, ylim=c(-15,60))
-points(compare_2015$time, compare_2015$Panel_temp, col="green")
-legend("topleft", legend=c("MetStation AirTemp","MetStation Panel"), col=c("black", "green"), pch=1)
-plot(compare_2015$Panel_temp,compare_2015$AirTemp)
-abline(0,1, col="red")
-lm_Panel2015=lm(compare_2015$AirTemp_Average_C ~ compare_2015$Panel_temp)
-abline(lm_Panel, col="green")
-legend("bottomright", legend=c("1:1","lm"), col=c("red", "green"), lty = 1)
-mean(lm_Panel$residuals)
-range(lm_Panel$residuals)
-sd(lm_Panel$residuals)
+# NLDAS=read.csv("https://raw.githubusercontent.com/CareyLabVT/FCR-GLM/master/NLDASData/FCR_GLM_met_NLDAS2_Dec14_Dec18.csv", header = T)
+# N_AirTemp=NLDAS[,c(6,3)]
+# N_AirTemp$time=ymd_hms(N_AirTemp$time)
+# Met_air=Met[,c(1,4,8)]
+# names(Met_air)<- c("time", "Panel_temp","AirTemp_Average_C")
+# #does NLDAS use GMT -4? or EST? What time zone is it??????????
+# #for now, assuming GMT -4 for simplicity's sake
+# compare<-merge(N_AirTemp, Met_air, by="time")
+# 
+# #Met Air vs. NLDAS
+# x11()
+# par(mfrow=c(1,2))
+# plot(compare$time, compare$AirTemp_Average_C, ylim=c(-15,60))
+# points(compare$time, compare$AirTemp, col="blue")
+# legend("topleft", legend=c("MetStation","NLDAS"), col=c("black", "blue"), pch=1)
+# plot(compare$AirTemp_Average_C,compare$AirTemp)
+# abline(0,1, col="red")
+# lm_NLDAS=lm(compare$AirTemp_Average_C ~ compare$AirTemp)
+# abline(lm_NLDAS, col="blue")
+# legend("bottomright", legend=c("1:1","lm"), col=c("red", "blue"), lty = 1)
+# mean(lm_NLDAS$residuals)
+# range(lm_NLDAS$residuals)
+# sd(lm_NLDAS$residuals)
+# 
+# #Panel vs. Air
+# x11()
+# par(mfrow=c(1,2))
+# plot(compare$time, compare$AirTemp_Average_C, ylim=c(-15,60))
+# points(compare$time, compare$Panel_temp, col="green")
+# legend("topleft", legend=c("MetStation AirTemp","MetStation Panel"), col=c("black", "green"), pch=1)
+# plot(compare$Panel_temp,compare$AirTemp)
+# abline(0,1, col="red")
+# lm_Panel=lm(compare$AirTemp_Average_C ~ compare$Panel_temp)
+# abline(lm_Panel, col="green")
+# legend("bottomright", legend=c("1:1","lm"), col=c("red", "green"), lty = 1)
+# mean(lm_Panel$residuals)
+# range(lm_Panel$residuals)
+# sd(lm_Panel$residuals)
+# 
+# #NLDAS vs. Panel??
+# legend("topleft", legend=c("MetStation Panel","NLDAS"), col=c("green", "blue"), pch=1)
+# plot(compare$Panel_temp,compare$AirTemp)
+# abline(0,1, col="red")
+# lm_Panel=lm(compare$AirTemp_Average_C ~ compare$Panel_temp)
+# abline(lm_Panel, col="blue")
+# 
+# 
+# compare_2015=compare[compare$time<"2016-01-01 00:00:00",]
+# 
+# #Met Air vs. NLDAS 2015
+# x11()
+# par(mfrow=c(1,2))
+# plot(compare_2015$time, compare_2015$AirTemp_Average_C, ylim=c(-15,60))
+# points(compare_2015$time, compare_2015$AirTemp, col="blue")
+# legend("topleft", legend=c("MetStation","NLDAS"), col=c("black", "blue"), pch=1)
+# plot(compare_2015$AirTemp_Average_C,compare_2015$AirTemp)
+# abline(0,1, col="red")
+# lm_NLDAS=lm(compare_2015$AirTemp_Average_C ~ compare_2015$AirTemp)
+# abline(lm_NLDAS, col="blue")
+# legend("bottomright", legend=c("1:1","lm"), col=c("red", "blue"), lty = 1)
+# mean(lm_NLDAS$residuals)
+# range(lm_NLDAS$residuals)
+# sd(lm_NLDAS$residuals)
+# 
+# #Panel vs. Air 2015
+# x11()
+# par(mfrow=c(1,2))
+# plot(compare_2015$time, compare_2015$AirTemp_Average_C, ylim=c(-15,60))
+# points(compare_2015$time, compare_2015$Panel_temp, col="green")
+# legend("topleft", legend=c("MetStation AirTemp","MetStation Panel"), col=c("black", "green"), pch=1)
+# plot(compare_2015$Panel_temp,compare_2015$AirTemp)
+# abline(0,1, col="red")
+# lm_Panel2015=lm(compare_2015$AirTemp_Average_C ~ compare_2015$Panel_temp)
+# abline(lm_Panel, col="green")
+# legend("bottomright", legend=c("1:1","lm"), col=c("red", "green"), lty = 1)
+# mean(lm_Panel$residuals)
+# range(lm_Panel$residuals)
+# sd(lm_Panel$residuals)
 
 ##### Air TEMP cleaning #####
 #using lm_Panel2015 to clean airtemp.
 
-#first 3*sd(lm_Panel2015$residuals)
+
 Met_3sd=Met
+#create lm for 2015
+MetAir_2015=Met[Met$DateTime<"2016-01-01 00:00:00",c(1,4,8)]
+lm_Panel2015=lm(MetAir_2015$AirTemp_Average_C ~ MetAir_2015$CR3000Panel_temp_C)
+summary(lm_Panel2015)
 #if Air - Panel > 3 sd(lm_Panel2015) then replace with PanelTemp in lm equation
-Met_3sd$AirTemp_Average_C=ifelse((Met_3sd$AirTemp_Average_C - Met_3sd$CR3000Panel_temp_C)>(3*sd(lm_Panel2015$residuals)),(1.6261+(0.9015*Met_3sd$CR3000Panel_temp_C)), Met_3sd$AirTemp_Average_C)
-x11(); par(mfrow=c(1,2))
+Met_3sd$AirTemp_Average_C=ifelse((Met_3sd$AirTemp_Average_C - Met_3sd$CR3000Panel_temp_C)>(3*sd(lm_Panel2015$residuals)),(1.6278+(0.9008*Met_3sd$CR3000Panel_temp_C)), Met_3sd$AirTemp_Average_C)
+x11(); par(mfrow=c(1,3))
 plot(Met$DateTime, Met$AirTemp_Average_C, type = 'l', ylim = c(-15,65))
 plot(Met_3sd$DateTime, Met_3sd$AirTemp_Average_C, type = 'l', ylim = c(-15,65))
+plot(Met_3sd2$DateTime, Met_3sd2$AirTemp_Average_C, type = 'l', ylim = c(-15,65))
+
+Met_3sd2=Met
+Met_3sd2$AirTemp_Average_C=ifelse((Met_3sd2$AirTemp_Average_C - (1.6278+(0.9008*Met_3sd2$CR3000Panel_temp_C)))>(3*sd(lm_Panel2015$residuals)),(1.6278+(0.9008*Met_3sd2$CR3000Panel_temp_C)), Met_3sd2$AirTemp_Average_C)
 
 #######Plots For Days ######
 #plots to check for any wonkiness
