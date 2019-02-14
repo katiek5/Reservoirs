@@ -143,16 +143,7 @@ print(table(Met[,paste0("Flag_",colnames(Met[i]))])) }
 plot(Met$Flag, type = 'h')
 #plot(Met$TIMESTAMP, Met$Flag, type = 'p')
 
-########### AirTemp ###########
-
-#AirTemp flag 4
-#remove > 40.56
-Met$Flag_AirTemp=ifelse(Met$AirTC_Avg > 40.56 & Met$Flag_AirTemp == 0, 4, Met$Flag_AirTemp)
-Met$Note_AirTemp=ifelse(Met$AirTC_Avg > 40.56 & Met$Flag_AirTemp == 4, "AirTemp set to NA over max temp", Met$Note_AirTemp)
-Met$AirTC_Avg=ifelse(Met$AirTC_Avg > 40.56 & Met$Flag_AirTemp == 4, NA, Met$AirTC_Avg)
-
-#plots
-plot(Met$TIMESTAMP, Met$AirTC_Avg, type = 'l')
+########### AirTemp lm ###########
 
 # ####Air Temp vs. Panel Temp
 # #air temp red, p temp black
@@ -261,8 +252,6 @@ lm_Panel=lm(compare$AirTemp_Average_C ~ compare$Panel_temp)
 abline(lm_Panel, col="blue")
 
 
-
-
 compare_2015=compare[compare$time<"2016-01-01 00:00:00",]
 
 #Met Air vs. NLDAS 2015
@@ -288,13 +277,23 @@ points(compare_2015$time, compare_2015$Panel_temp, col="green")
 legend("topleft", legend=c("MetStation AirTemp","MetStation Panel"), col=c("black", "green"), pch=1)
 plot(compare_2015$Panel_temp,compare_2015$AirTemp)
 abline(0,1, col="red")
-lm_Panel=lm(compare_2015$AirTemp_Average_C ~ compare_2015$Panel_temp)
+lm_Panel2015=lm(compare_2015$AirTemp_Average_C ~ compare_2015$Panel_temp)
 abline(lm_Panel, col="green")
 legend("bottomright", legend=c("1:1","lm"), col=c("red", "green"), lty = 1)
 mean(lm_Panel$residuals)
 range(lm_Panel$residuals)
 sd(lm_Panel$residuals)
 
+##### Air TEMP cleaning #####
+#using lm_Panel2015 to clean airtemp.
+
+#first 3*sd(lm_Panel2015$residuals)
+Met_3sd=Met
+#if Air - Panel > 3 sd(lm_Panel2015) then replace with PanelTemp in lm equation
+Met_3sd$AirTemp_Average_C=ifelse((Met_3sd$AirTemp_Average_C - Met_3sd$CR3000Panel_temp_C)>(3*sd(lm_Panel2015$residuals)),(1.6261+(0.9015*Met_3sd$CR3000Panel_temp_C)), Met_3sd$AirTemp_Average_C)
+x11(); par(mfrow=c(1,2))
+plot(Met$DateTime, Met$AirTemp_Average_C, type = 'l', ylim = c(-15,65))
+plot(Met_3sd$DateTime, Met_3sd$AirTemp_Average_C, type = 'l', ylim = c(-15,65))
 
 #######Plots For Days ######
 #plots to check for any wonkiness
