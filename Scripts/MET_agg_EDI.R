@@ -301,10 +301,10 @@ plot(Met_3sd$DateTime, Met_3sd$AirTemp_Average_C, type = 'l', ylim = c(-15,65))
 plot(Met_3sd2$DateTime, Met_3sd2$AirTemp_Average_C, type = 'l', ylim = c(-15,65))
 
 Met_3sd2=Met
-
-Met_3sd2$Flag_AirTemp_Average_C=ifelse((Met_3sd2$AirTemp_Average_C - (1.6278+(0.9008*Met_3sd2$CR3000Panel_temp_C)))>(3*sd(lm_Panel2015$residuals)), 4, Met_3sd2$Flag_AirTemp_Average_C)
-Met_3sd2$Note_AirTemp_Average_C=ifelse((Met_3sd2$AirTemp_Average_C - (1.6278+(0.9008*Met_3sd2$CR3000Panel_temp_C)))>(3*sd(lm_Panel2015$residuals)),"Substituted value calculated from Panel Temp and linear model", Met_3sd2$Note_AirTemp_Average_C)
-Met_3sd2$AirTemp_Average_C=ifelse((Met_3sd2$AirTemp_Average_C - (1.6278+(0.9008*Met_3sd2$CR3000Panel_temp_C)))>(3*sd(lm_Panel2015$residuals)),(1.6278+(0.9008*Met_3sd2$CR3000Panel_temp_C)), Met_3sd2$AirTemp_Average_C)
+#run this
+Met$Flag_AirTemp_Average_C=ifelse((Met$AirTemp_Average_C - (1.6278+(0.9008*Met$CR3000Panel_temp_C)))>(3*sd(lm_Panel2015$residuals)), 4, Met$Flag_AirTemp_Average_C)
+Met$Note_AirTemp_Average_C=ifelse((Met$AirTemp_Average_C - (1.6278+(0.9008*Met$CR3000Panel_temp_C)))>(3*sd(lm_Panel2015$residuals)),"Substituted value calculated from Panel Temp and linear model", Met$Note_AirTemp_Average_C)
+Met$AirTemp_Average_C=ifelse((Met$AirTemp_Average_C - (1.6278+(0.9008*Met$CR3000Panel_temp_C)))>(3*sd(lm_Panel2015$residuals)),(1.6278+(0.9008*Met$CR3000Panel_temp_C)), Met$AirTemp_Average_C)
 
 ## fix PAR_Tot
 #Met$PAR_Total_mmol_m2=ifelse(Met$PAR_Total_mmol_m2>500, Met$PAR_Total_mmol_m2/1000, Met$PAR_Total_mmol_m2)
@@ -320,10 +320,10 @@ Met$Flag_ShortwaveRadiationUp_Average_W_m2=ifelse(Met$ShortwaveRadiationUp_Avera
 Met$Note_ShortwaveRadiationUp_Average_W_m2=ifelse(Met$ShortwaveRadiationUp_Average_W_m2>2000, "Outlier set to NA", Met$Note_ShortwaveRadiationUp_Average_W_m2)
 Met$PAR_ShortwaveRadiationUp_Average_W_m2=ifelse(Met$ShortwaveRadiationUp_Average_W_m2>2000, NA, Met$ShortwaveRadiationUp_Average_W_m2)
 
-Met$Flag_ShortwaveRadiationDn_Average_W_m2=ifelse(Met$ShortwaveRadiationDn_Average_W_m2>300, 4, Met$Flag_ShortwaveRadiationDn_Average_W_m2)
+Met$Flag_ShortwaveRadiationDown_Average_W_m2=ifelse(Met$ShortwaveRadiationDown_Average_W_m2>300, 4, Met$Flag_ShortwaveRadiationDown_Average_W_m2)
 #what should the note say?
-Met$Note_ShortwaveRadiationDn_Average_W_m2=ifelse(Met$ShortwaveRadiationDn_Average_W_m2>300, "Outlier set to NA", Met$Note_ShortwaveRadiationDn_Average_W_m2)
-Met$PAR_ShortwaveRadiationDn_Average_W_m2=ifelse(Met$ShortwaveRadiationDn_Average_W_m2>300, NA, Met$ShortwaveRadiationDn_Average_W_m2)
+Met$Note_ShortwaveRadiationDown_Average_W_m2=ifelse(Met$ShortwaveRadiationDown_Average_W_m2>300, "Outlier set to NA", Met$Note_ShortwaveRadiationDown_Average_W_m2)
+Met$PAR_ShortwaveRadiationDown_Average_W_m2=ifelse(Met$ShortwaveRadiationDown_Average_W_m2>300, NA, Met$ShortwaveRadiationDown_Average_W_m2)
 
 #fix albedo
 Met$Flag_Albedo_Average_W_m2=ifelse(is.na(Met$ShortwaveRadiationUp_Average_W_m2)|is.na(Met$ShortwaveRadiationDown_Average_W_m2), 4, Met$Flag_Albedo_Average_W_m2)
