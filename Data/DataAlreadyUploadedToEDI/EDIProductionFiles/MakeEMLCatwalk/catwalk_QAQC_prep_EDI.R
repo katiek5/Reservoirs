@@ -136,6 +136,10 @@ catdata <- catdata %>%
   mutate(EXOTDS_mgL_1 =ifelse(DateTime < "2018-09-01", NA, EXOTDS_mgL_1) )
 plot(catdata$Date, catdata$EXOTDS_mgL_1)
 
+# limit to 2018 data only
+catdata <- catdata[catdata$DateTime<'2019-01-01 00:00:00',]
+
+
 write.csv(catdata, "Catwalk_cleanedEDI.csv", row.names = FALSE)
 
 ###############################################################################################################################

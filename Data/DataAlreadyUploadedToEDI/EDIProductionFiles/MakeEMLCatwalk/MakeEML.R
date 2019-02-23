@@ -1,5 +1,5 @@
 # Install devtools
-install.packages("devtools")
+#install.packages("devtools")
 
 # Load devtools
 library(devtools)
@@ -29,7 +29,7 @@ make_eml(path = "C:/Users/wwoel/Desktop/Reservoirs/Data/DataAlreadyUploadedToEDI
          geographic.description = "Southwestern Virginia, USA, North America",
          maintenance.description = "ongoing",
          user.id = c("carylab1", "ccarey"),
-         package.id = "edi.271.1",
+         package.id = "edi.271.2", #### this is the one that I need to change!!!
          affiliation = c("EDI", "EDI"))
 
 
