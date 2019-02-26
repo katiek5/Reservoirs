@@ -155,7 +155,7 @@ Met$Albedo_Average_W_m2=ifelse(is.na(Met$ShortwaveRadiationUp_Average_W_m2)|is.n
 
 #######Plots For Days ######
 #plots to check for any wonkiness
-x11(); par(mfrow=c(1,2))
+x11(); par(mfrow=c(2,2))
 plot(Met$DateTime, Met$CR3000_Batt_V, type = 'l')
 plot(Met$DateTime, Met$CR3000Panel_temp_C, type = 'l')
 plot(Met$DateTime, Met$PAR_Average_umol_s_m2, type = 'l')
@@ -182,6 +182,7 @@ Met_final=Met[,c(18:19,1:17, 20:45)] #final column order
 
 
 #BONUS CODE#
+#justification for using panel temp lm from 2015 to substitue erroneous data
 ########### AirTemp lm ###########
 
 # ####Air Temp vs. Panel Temp
@@ -323,49 +324,34 @@ Met_final=Met[,c(18:19,1:17, 20:45)] #final column order
 # range(lm_Panel$residuals)
 # sd(lm_Panel$residuals)
 
-#MET Agg script. Do I want to make this work? Probably...
-# manualMet<-"https://github.com/CareyLabVT/FCR-GLM/tree/master/MetStationData/"
-# 
-# metfiles<-list.files(path='https://github.com/CareyLabVT/FCR-GLM/tree/master/MetStationData/') #creates a list of all met station files within the working directory
-# #sorted automatically by date. All files in here should be of the format:
-# #"CR3000_FCRmet_YYYYMMDD.dat"
-# 
-# obs<-read.csv(file=metfiles[1],skip=4,header=FALSE) #read in first file
-# names(obs) = c("TIMESTAMP","RECORD","BattV","PTemp_C","PAR_Den_Avg","PAR_Tot_Tot","BP_kPa_Avg","AirTC_Avg","RH","Rain_mm_Tot","WS_ms_Avg","WindDir","SR01Up_Avg","SR01Dn_Avg","IR01UpCo_Avg","IR01DnCo_Avg","Albedo_Avg")
-# units = c("TS","RN","Volts","Deg C","umol/s/m^2","mmol/m^2","kPa","Deg C","%","mm","meters/second","degrees","W/m^2","W/m^2","W/m^2","W/m^2","W/m^2") #creates list of units, skipped in line above
-# obs$TIMESTAMP = ymd_hms(obs$TIMESTAMP, tz="Etc/GMT+4") #CCC what do you think of this?
-# 
-# for(i in 2:length(metfiles)){ #reads in all files within folder in Github
-#   temp<-read.csv(file=metfiles[i],skip=4,header=FALSE)
-#   if(length(names(temp))>17){ #removes NR01TK_Avg column, which was downloaded on some but not all days
-#     temp$V17<-NULL #remove extra column
-#   }
-#   names(temp) = c("TIMESTAMP","RECORD","BattV","PTemp_C","PAR_Den_Avg","PAR_Tot_Tot","BP_kPa_Avg","AirTC_Avg","RH","Rain_mm_Tot","WS_ms_Avg","WindDir","SR01Up_Avg","SR01Dn_Avg","IR01UpCo_Avg","IR01DnCo_Avg","Albedo_Avg")
-#   temp$TIMESTAMP = ymd_hms(temp$TIMESTAMP, tz="Etc/GMT+4") #NOTE TO BETHANY to add lubridate here!!! #cayelan, how is this?
-#   obs<-rbind(obs,temp)
-#   #print(i)
-# }
-
-#make pdf
-pdf(paste0(getwd(),"/MetDataFigures_PostQAQC_", Sys.Date(), ".pdf")) #call PDF file
-#par(mfrow=c(14,1))
-plot(Met$DateTime, Met$CR3000_Batt_V, type = 'l')
-plot(Met$DateTime, Met$CR3000Panel_temp_C, type = 'l')
-plot(Met$DateTime, Met$PAR_Average_umol_s_m2, type = 'l')
-plot(Met$DateTime, Met$PAR_Total_mmol_m2, type = 'l')
-plot(Met$DateTime, Met$BP_Average_kPa, type = 'l')
-plot(Met$DateTime, Met$AirTemp_Average_C, type = 'l')
-plot(Met$DateTime, Met$RH_percent, type = 'l')
-plot(Met$DateTime, Met$Rain_Total_mm, type = 'h')
-plot(Met$DateTime, Met$WindSpeed_Average_m_s, type = 'l')
-#hist(Met$WindDir_degrees)
-plot(Met$DateTime, Met$ShortwaveRadiationUp_Average_W_m2, type = 'l')
-plot(Met$DateTime, Met$ShortwaveRadiationDown_Average_W_m2, type = 'l')
-plot(Met$DateTime, Met$Albedo_Average_W_m2, type = 'l')
-plot(Met$DateTime, Met$InfaredRadiationUp_Average_W_m2, type = 'l')
-plot(Met$DateTime, Met$InfaredRadiationDown_Average_W_m2, type = 'l')
-dev.off()
 
 #Met unique values for notes
-MetFLags=Met[,c(20:45)]
-print(unique(MetFLags))
+MetFlags=Met[,c(20:45)]
+for (u in 1:length(MetFlags)) {
+  print(colnames(MetFlags[u]))
+  print(unique(MetFlags[,u]))
+}
+
+##New way to do flags 1+4
+for(j in 1:nrow(RemoveMet)){
+  # #if statement to only write in flag 4 if there are no other flags
+  if(RemoveMet$flag[j]==4){
+    Met[c(which(Met[,1]>=RemoveMet[j,2] & Met[,1]<=RemoveMet[j,3] & (Met[,paste0("Flag_",colnames(Met[RemoveMet$colnumber[j]]))]==0))), paste0("Flag_",colnames(Met[RemoveMet$colnumber[j]]))]<-RemoveMet$flag[j]#when met timestamp is between remove timestamp
+    #and met column derived from remove column
+    #matching time frame, inserting flag
+    Met[c(which(Met[,1]>=RemoveMet[j,2] & Met[,1]<=RemoveMet[j,3]& (Met[,paste0("Flag_",colnames(Met[RemoveMet$colnumber[j]]))]==0))), paste0("Note_",colnames(Met[RemoveMet$colnumber[j]]))]=RemoveMet$notes[j]#same as above, but for notes
+    
+  }
+  #if flag == 1, set parameter to NA, overwrites any other flag
+  if(RemoveMet$flag[j]==1){
+    Met[c(which((Met[,1]>=RemoveMet[j,2]) & (Met[,1]<=RemoveMet[j,3]))),paste0("Flag_",colnames(Met[RemoveMet$colnumber[j]]))] <- RemoveMet$flag[j] #when met timestamp is between remove timestamp
+    #and met column derived from remove column
+    #matching time frame, inserting flag
+    Met[Met[,1]>=RemoveMet[j,2] & Met[,1]<=RemoveMet[j,3], paste0("Note_",colnames(Met[RemoveMet$colnumber[j]]))]=RemoveMet$notes[j]#same as above, but for notes
+    
+    Met[Met[,1]>=RemoveMet[j,2] & Met[,1]<=RemoveMet[j,3], colnames(Met[RemoveMet$colnumber[j]])] = NA
+  } #replaces value of var with NA
+}
+
+
+##Infrared???
