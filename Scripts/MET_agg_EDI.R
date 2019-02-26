@@ -4,7 +4,6 @@
 #1. Relative paths + Uploading Large Files to Github
 #2. Plot flags?
 #3. PAR TOT weirdness at end of 2018
-#4. 
 
 ###packages needed
 library("lubridate")
@@ -69,7 +68,6 @@ RemoveMet$TIMESTAMP_end=ymd_hms(RemoveMet$TIMESTAMP_end, tz="Etc/GMT+4") #settin
 #### Flag creation ####
 #create flag + notes columns for data columns c(5:17)
 #set 2 + 3 flags
-
 for(i in 5:17) { #for loop to create new columns in data frame
   Met[,paste0("Flag_",colnames(Met[i]))] <- 0 #creates flag column + name of variable
   Met[,paste0("Note_",colnames(Met[i]))] <- NA #creates note column + names of variable
@@ -98,7 +96,7 @@ for(j in 1:nrow(RemoveMet)){
       Met[c(which(Met[,1]>=RemoveMet[j,2] & Met[,1]<=RemoveMet[j,3] & (Met[,paste0("Flag_",colnames(Met[RemoveMet$colnumber[j]]))]==0))), paste0("Flag_",colnames(Met[RemoveMet$colnumber[j]]))]<-RemoveMet$flag[j]#when met timestamp is between remove timestamp
        #and met column derived from remove column
         #matching time frame, inserting flag
-  Met[c(which(Met[,1]>=RemoveMet[j,2] & Met[,1]<=RemoveMet[j,3]& (Met[,paste0("Flag_",colnames(Met[RemoveMet$colnumber[j]]))]==0))), paste0("Note_",colnames(Met[RemoveMet$colnumber[j]]))]=RemoveMet$notes[i]#same as above, but for notes
+  Met[c(which(Met[,1]>=RemoveMet[j,2] & Met[,1]<=RemoveMet[j,3]& (Met[,paste0("Flag_",colnames(Met[RemoveMet$colnumber[j]]))]==0))), paste0("Note_",colnames(Met[RemoveMet$colnumber[j]]))]=RemoveMet$notes[j]#same as above, but for notes
             
   }
   #if flag == 1, set parameter to NA, overwrites any other flag
@@ -106,17 +104,11 @@ for(j in 1:nrow(RemoveMet)){
     Met[c(which((Met[,1]>=RemoveMet[j,2]) & (Met[,1]<=RemoveMet[j,3]))),paste0("Flag_",colnames(Met[RemoveMet$colnumber[j]]))] <- RemoveMet$flag[j] #when met timestamp is between remove timestamp
           #and met column derived from remove column
      #matching time frame, inserting flag
-  Met[Met[,1]>=RemoveMet[j,2] & Met[,1]<=RemoveMet[j,3], paste0("Note_",colnames(Met[RemoveMet$colnumber[j]]))]=RemoveMet$notes[i]#same as above, but for notes
+  Met[Met[,1]>=RemoveMet[j,2] & Met[,1]<=RemoveMet[j,3], paste0("Note_",colnames(Met[RemoveMet$colnumber[j]]))]=RemoveMet$notes[j]#same as above, but for notes
       
   Met[Met[,1]>=RemoveMet[j,2] & Met[,1]<=RemoveMet[j,3], colnames(Met[RemoveMet$colnumber[j]])] = NA
   } #replaces value of var with NA
 }
-
-#prints table of flag frequency
-for(i in 5:17) {
-print(colnames(Met[i]))
-print(table(Met[,paste0("Flag_",colnames(Met[i]))])) }
-
 
 ##### Air TEMP cleaning #####
 #using lm_Panel2015 to clean airtemp.
@@ -129,8 +121,11 @@ Met$Flag_AirTemp_Average_C=ifelse((Met$AirTemp_Average_C - (1.6278+(0.9008*Met$C
 Met$Note_AirTemp_Average_C=ifelse((Met$AirTemp_Average_C - (1.6278+(0.9008*Met$CR3000Panel_temp_C)))>(3*sd(lm_Panel2015$residuals)),"Substituted value calculated from Panel Temp and linear model", Met$Note_AirTemp_Average_C)
 Met$AirTemp_Average_C=ifelse((Met$AirTemp_Average_C - (1.6278+(0.9008*Met$CR3000Panel_temp_C)))>(3*sd(lm_Panel2015$residuals)),(1.6278+(0.9008*Met$CR3000Panel_temp_C)), Met$AirTemp_Average_C)
 
+##BP low outliers
+Met$Flag_BP_Average_kPa=ifelse(Met$BP_Average_kPa<95,4,Met$Flag_BP_Average_kPa)
+Met$Note_BP_Average_kPa=ifelse(Met$BP_Average_kPa<95,"Outlier set to NA",Met$Note_BP_Average_kPa)
+Met$BP_Average_kPa=ifelse(Met$BP_Average_kPa<95,NA,Met$BP_Average_kPa)
 
-###Not all ifelse statments are working correctly. Trying to fix that..
 ## fix PAR_Tot
 #Met$PAR_Total_mmol_m2=ifelse(Met$PAR_Total_mmol_m2>500, Met$PAR_Total_mmol_m2/1000, Met$PAR_Total_mmol_m2) #seeing if this makes PAR into reasonable values. 
 #it does not..
@@ -142,16 +137,18 @@ Met$PAR_Total_mmol_m2=ifelse(Met$PAR_Total_mmol_m2>200, NA, Met$PAR_Total_mmol_m
 
 #Remove SW Rad outliers
 Met$Flag_ShortwaveRadiationUp_Average_W_m2=ifelse(Met$ShortwaveRadiationUp_Average_W_m2>2000, 4, Met$Flag_ShortwaveRadiationUp_Average_W_m2)
-#what should the note say?
 Met$Note_ShortwaveRadiationUp_Average_W_m2=ifelse(Met$ShortwaveRadiationUp_Average_W_m2>2000, "Outlier set to NA", Met$Note_ShortwaveRadiationUp_Average_W_m2)
-Met$PAR_ShortwaveRadiationUp_Average_W_m2=ifelse(Met$ShortwaveRadiationUp_Average_W_m2>2000, NA, Met$ShortwaveRadiationUp_Average_W_m2)
+Met$ShortwaveRadiationUp_Average_W_m2=ifelse(Met$ShortwaveRadiationUp_Average_W_m2>2000, NA, Met$ShortwaveRadiationUp_Average_W_m2)
 
 Met$Flag_ShortwaveRadiationDown_Average_W_m2=ifelse(Met$ShortwaveRadiationDown_Average_W_m2>300, 4, Met$Flag_ShortwaveRadiationDown_Average_W_m2)
-#what should the note say?
 Met$Note_ShortwaveRadiationDown_Average_W_m2=ifelse(Met$ShortwaveRadiationDown_Average_W_m2>300, "Outlier set to NA", Met$Note_ShortwaveRadiationDown_Average_W_m2)
-Met$PAR_ShortwaveRadiationDown_Average_W_m2=ifelse(Met$ShortwaveRadiationDown_Average_W_m2>300, NA, Met$ShortwaveRadiationDown_Average_W_m2)
+Met$ShortwaveRadiationDown_Average_W_m2=ifelse(Met$ShortwaveRadiationDown_Average_W_m2>300, NA, Met$ShortwaveRadiationDown_Average_W_m2)
 
 #fix albedo
+Met$Flag_Albedo_Average_W_m2=ifelse(Met$Albedo_Average_W_m2>1000, 4, Met$Flag_Albedo_Average_W_m2)
+Met$Note_Albedo_Average_W_m2=ifelse(Met$Albedo_Average_W_m2>1000, "Outliers set to NA", Met$Note_Albedo_Average_W_m2)
+Met$Albedo_Average_W_m2=ifelse(Met$Albedo_Average_W_m2>1000, NA, Met$Albedo_Average_W_m2)
+
 Met$Flag_Albedo_Average_W_m2=ifelse(is.na(Met$ShortwaveRadiationUp_Average_W_m2)|is.na(Met$ShortwaveRadiationDown_Average_W_m2), 4, Met$Flag_Albedo_Average_W_m2)
 Met$Note_Albedo_Average_W_m2=ifelse(is.na(Met$ShortwaveRadiationUp_Average_W_m2)|is.na(Met$ShortwaveRadiationDown_Average_W_m2), "Set to NA because Shortwave = NA", Met$Note_Albedo_Average_W_m2)
 Met$Albedo_Average_W_m2=ifelse(is.na(Met$ShortwaveRadiationUp_Average_W_m2)|is.na(Met$ShortwaveRadiationDown_Average_W_m2), NA, Met$Albedo_Average_W_m2)
@@ -174,6 +171,11 @@ plot(Met$DateTime, Met$ShortwaveRadiationDown_Average_W_m2, type = 'l')
 plot(Met$DateTime, Met$Albedo_Average_W_m2, type = 'l')
 plot(Met$DateTime, Met$InfaredRadiationUp_Average_W_m2, type = 'l')
 plot(Met$DateTime, Met$InfaredRadiationDown_Average_W_m2, type = 'l')
+
+#prints table of flag frequency
+for(i in 5:17) {
+  print(colnames(Met[i]))
+  print(table(Met[,paste0("Flag_",colnames(Met[i]))])) }
 
 Met_final=Met[,c(18:19,1:17, 20:45)] #final column order
 #write.csv(etc)
@@ -343,3 +345,27 @@ Met_final=Met[,c(18:19,1:17, 20:45)] #final column order
 #   obs<-rbind(obs,temp)
 #   #print(i)
 # }
+
+#make pdf
+pdf(paste0(getwd(),"/MetDataFigures_PostQAQC_", Sys.Date(), ".pdf")) #call PDF file
+#par(mfrow=c(14,1))
+plot(Met$DateTime, Met$CR3000_Batt_V, type = 'l')
+plot(Met$DateTime, Met$CR3000Panel_temp_C, type = 'l')
+plot(Met$DateTime, Met$PAR_Average_umol_s_m2, type = 'l')
+plot(Met$DateTime, Met$PAR_Total_mmol_m2, type = 'l')
+plot(Met$DateTime, Met$BP_Average_kPa, type = 'l')
+plot(Met$DateTime, Met$AirTemp_Average_C, type = 'l')
+plot(Met$DateTime, Met$RH_percent, type = 'l')
+plot(Met$DateTime, Met$Rain_Total_mm, type = 'h')
+plot(Met$DateTime, Met$WindSpeed_Average_m_s, type = 'l')
+#hist(Met$WindDir_degrees)
+plot(Met$DateTime, Met$ShortwaveRadiationUp_Average_W_m2, type = 'l')
+plot(Met$DateTime, Met$ShortwaveRadiationDown_Average_W_m2, type = 'l')
+plot(Met$DateTime, Met$Albedo_Average_W_m2, type = 'l')
+plot(Met$DateTime, Met$InfaredRadiationUp_Average_W_m2, type = 'l')
+plot(Met$DateTime, Met$InfaredRadiationDown_Average_W_m2, type = 'l')
+dev.off()
+
+#Met unique values for notes
+MetFLags=Met[,c(20:45)]
+print(unique(MetFLags))
