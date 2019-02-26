@@ -64,6 +64,7 @@ RemoveMet=read.table("https://raw.githubusercontent.com/CareyLabVT/SCCData/carin
 #str(RemoveMet)
 RemoveMet$TIMESTAMP_start=ymd_hms(RemoveMet$TIMESTAMP_start, tz="Etc/GMT+4") #setting time zone
 RemoveMet$TIMESTAMP_end=ymd_hms(RemoveMet$TIMESTAMP_end, tz="Etc/GMT+4") #setting time zone
+RemoveMet$notes=as.character(RemoveMet$notes)
 
 #### Flag creation ####
 #create flag + notes columns for data columns c(5:17)
@@ -93,11 +94,10 @@ for(i in 5:17) { #for loop to create new columns in data frame
 for(j in 1:nrow(RemoveMet)){
   # #if statement to only write in flag 4 if there are no other flags
   if(RemoveMet$flag[j]==4){
-      Met[c(which(Met[,1]>=RemoveMet[j,2] & Met[,1]<=RemoveMet[j,3] & (Met[,paste0("Flag_",colnames(Met[RemoveMet$colnumber[j]]))]==0))), paste0("Flag_",colnames(Met[RemoveMet$colnumber[j]]))]<-RemoveMet$flag[j]#when met timestamp is between remove timestamp
+    Met[c(which(Met[,1]>=RemoveMet[j,2] & Met[,1]<=RemoveMet[j,3]& (Met[,paste0("Flag_",colnames(Met[RemoveMet$colnumber[j]]))]==0))), paste0("Note_",colnames(Met[RemoveMet$colnumber[j]]))]=RemoveMet$notes[j]#same as above, but for notes
+    Met[c(which(Met[,1]>=RemoveMet[j,2] & Met[,1]<=RemoveMet[j,3] & (Met[,paste0("Flag_",colnames(Met[RemoveMet$colnumber[j]]))]==0))), paste0("Flag_",colnames(Met[RemoveMet$colnumber[j]]))]<-RemoveMet$flag[j]#when met timestamp is between remove timestamp
        #and met column derived from remove column
         #matching time frame, inserting flag
-  Met[c(which(Met[,1]>=RemoveMet[j,2] & Met[,1]<=RemoveMet[j,3]& (Met[,paste0("Flag_",colnames(Met[RemoveMet$colnumber[j]]))]==0))), paste0("Note_",colnames(Met[RemoveMet$colnumber[j]]))]=RemoveMet$notes[j]#same as above, but for notes
-            
   }
   #if flag == 1, set parameter to NA, overwrites any other flag
   if(RemoveMet$flag[j]==1){
@@ -331,27 +331,5 @@ for (u in 1:length(MetFlags)) {
   print(colnames(MetFlags[u]))
   print(unique(MetFlags[,u]))
 }
-
-##New way to do flags 1+4
-for(j in 1:nrow(RemoveMet)){
-  # #if statement to only write in flag 4 if there are no other flags
-  if(RemoveMet$flag[j]==4){
-    Met[c(which(Met[,1]>=RemoveMet[j,2] & Met[,1]<=RemoveMet[j,3] & (Met[,paste0("Flag_",colnames(Met[RemoveMet$colnumber[j]]))]==0))), paste0("Flag_",colnames(Met[RemoveMet$colnumber[j]]))]<-RemoveMet$flag[j]#when met timestamp is between remove timestamp
-    #and met column derived from remove column
-    #matching time frame, inserting flag
-    Met[c(which(Met[,1]>=RemoveMet[j,2] & Met[,1]<=RemoveMet[j,3]& (Met[,paste0("Flag_",colnames(Met[RemoveMet$colnumber[j]]))]==0))), paste0("Note_",colnames(Met[RemoveMet$colnumber[j]]))]=RemoveMet$notes[j]#same as above, but for notes
-    
-  }
-  #if flag == 1, set parameter to NA, overwrites any other flag
-  if(RemoveMet$flag[j]==1){
-    Met[c(which((Met[,1]>=RemoveMet[j,2]) & (Met[,1]<=RemoveMet[j,3]))),paste0("Flag_",colnames(Met[RemoveMet$colnumber[j]]))] <- RemoveMet$flag[j] #when met timestamp is between remove timestamp
-    #and met column derived from remove column
-    #matching time frame, inserting flag
-    Met[Met[,1]>=RemoveMet[j,2] & Met[,1]<=RemoveMet[j,3], paste0("Note_",colnames(Met[RemoveMet$colnumber[j]]))]=RemoveMet$notes[j]#same as above, but for notes
-    
-    Met[Met[,1]>=RemoveMet[j,2] & Met[,1]<=RemoveMet[j,3], colnames(Met[RemoveMet$colnumber[j]])] = NA
-  } #replaces value of var with NA
-}
-
 
 ##Infrared???
