@@ -3,8 +3,8 @@
 ##Tasks/Questions Left:
 #1. Relative paths + Uploading Large Files to Github
 #2. Plot flags?
-#3. Airtemp correction + flagging
-#4. Finalize data
+#3. PAR TOT weirdness at end of 2018
+#4. 
 
 ###packages needed
 library("lubridate")
@@ -132,12 +132,13 @@ Met$AirTemp_Average_C=ifelse((Met$AirTemp_Average_C - (1.6278+(0.9008*Met$CR3000
 
 ###Not all ifelse statments are working correctly. Trying to fix that..
 ## fix PAR_Tot
-#Met$PAR_Total_mmol_m2=ifelse(Met$PAR_Total_mmol_m2>500, Met$PAR_Total_mmol_m2/1000, Met$PAR_Total_mmol_m2)
+#Met$PAR_Total_mmol_m2=ifelse(Met$PAR_Total_mmol_m2>500, Met$PAR_Total_mmol_m2/1000, Met$PAR_Total_mmol_m2) #seeing if this makes PAR into reasonable values. 
+#it does not..
 
-Met$Flag_PAR_Total_mmol_m2=ifelse(Met$PAR_Total_mmol_m2>500, 4, Met$Flag_PAR_Total_mmol_m2)
+Met$Flag_PAR_Total_mmol_m2=ifelse(Met$PAR_Total_mmol_m2>200, 4, Met$Flag_PAR_Total_mmol_m2)
 #what should the note say?
-Met$Note_PAR_Total_mmol_m2=ifelse(Met$PAR_Total_mmol_m2>500, "Outlier set to NA", Met$Note_PAR_Total_mmol_m2)
-Met$PAR_Total_mmol_m2=ifelse(Met$PAR_Total_mmol_m2>500, NA, Met$PAR_Total_mmol_m2)
+Met$Note_PAR_Total_mmol_m2=ifelse(Met$PAR_Total_mmol_m2>200, "Outlier set to NA", Met$Note_PAR_Total_mmol_m2)
+Met$PAR_Total_mmol_m2=ifelse(Met$PAR_Total_mmol_m2>200, NA, Met$PAR_Total_mmol_m2)
 
 #Remove SW Rad outliers
 Met$Flag_ShortwaveRadiationUp_Average_W_m2=ifelse(Met$ShortwaveRadiationUp_Average_W_m2>2000, 4, Met$Flag_ShortwaveRadiationUp_Average_W_m2)
@@ -154,6 +155,7 @@ Met$PAR_ShortwaveRadiationDown_Average_W_m2=ifelse(Met$ShortwaveRadiationDown_Av
 Met$Flag_Albedo_Average_W_m2=ifelse(is.na(Met$ShortwaveRadiationUp_Average_W_m2)|is.na(Met$ShortwaveRadiationDown_Average_W_m2), 4, Met$Flag_Albedo_Average_W_m2)
 Met$Note_Albedo_Average_W_m2=ifelse(is.na(Met$ShortwaveRadiationUp_Average_W_m2)|is.na(Met$ShortwaveRadiationDown_Average_W_m2), "Set to NA because Shortwave = NA", Met$Note_Albedo_Average_W_m2)
 Met$Albedo_Average_W_m2=ifelse(is.na(Met$ShortwaveRadiationUp_Average_W_m2)|is.na(Met$ShortwaveRadiationDown_Average_W_m2), NA, Met$Albedo_Average_W_m2)
+
 #######Plots For Days ######
 #plots to check for any wonkiness
 x11(); par(mfrow=c(1,2))
