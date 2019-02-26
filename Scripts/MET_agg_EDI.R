@@ -15,34 +15,11 @@ library(tidyverse)
 #a. Past Met data, manual downloads
 setwd("/Users/bethany1/Desktop/MET_EDI/") #need to make into a relative path for EDI folder..
 
-#ADD IN FCR MET COMPILE SCRIPT
+#ADD IN FCR MET COMPILE SCRIPT???
 Met_past=read.csv("AllRawMetData_20181119.csv", sep = ",") #loads in data from FCR_GLM repository
 Met_past$TIMESTAMP=ymd_hms(Met_past$TIMESTAMP, tz="Etc/GMT+4")
 
-# manualMet<-"https://github.com/CareyLabVT/FCR-GLM/tree/master/MetStationData/"
-# 
-# metfiles<-list.files(path='https://github.com/CareyLabVT/FCR-GLM/tree/master/MetStationData/') #creates a list of all met station files within the working directory
-# #sorted automatically by date. All files in here should be of the format:
-# #"CR3000_FCRmet_YYYYMMDD.dat"
-# 
-# obs<-read.csv(file=metfiles[1],skip=4,header=FALSE) #read in first file
-# names(obs) = c("TIMESTAMP","RECORD","BattV","PTemp_C","PAR_Den_Avg","PAR_Tot_Tot","BP_kPa_Avg","AirTC_Avg","RH","Rain_mm_Tot","WS_ms_Avg","WindDir","SR01Up_Avg","SR01Dn_Avg","IR01UpCo_Avg","IR01DnCo_Avg","Albedo_Avg")
-# units = c("TS","RN","Volts","Deg C","umol/s/m^2","mmol/m^2","kPa","Deg C","%","mm","meters/second","degrees","W/m^2","W/m^2","W/m^2","W/m^2","W/m^2") #creates list of units, skipped in line above
-# obs$TIMESTAMP = ymd_hms(obs$TIMESTAMP, tz="Etc/GMT+4") #CCC what do you think of this?
-# 
-# for(i in 2:length(metfiles)){ #reads in all files within folder in Github
-#   temp<-read.csv(file=metfiles[i],skip=4,header=FALSE)
-#   if(length(names(temp))>17){ #removes NR01TK_Avg column, which was downloaded on some but not all days
-#     temp$V17<-NULL #remove extra column
-#   }
-#   names(temp) = c("TIMESTAMP","RECORD","BattV","PTemp_C","PAR_Den_Avg","PAR_Tot_Tot","BP_kPa_Avg","AirTC_Avg","RH","Rain_mm_Tot","WS_ms_Avg","WindDir","SR01Up_Avg","SR01Dn_Avg","IR01UpCo_Avg","IR01DnCo_Avg","Albedo_Avg")
-#   temp$TIMESTAMP = ymd_hms(temp$TIMESTAMP, tz="Etc/GMT+4") #NOTE TO BETHANY to add lubridate here!!! #cayelan, how is this?
-#   obs<-rbind(obs,temp)
-#   #print(i)
-# }
-
-
-#b. Current Met data, loaded to Github by Carina
+#### b. Current Met data, loaded to Github by Carina ####
 Met_now=read.csv("https://raw.githubusercontent.com/CareyLabVT/SCCData/carina-data/FCRmet.csv", skip = 4, header = F) #loads in data from SCC_data repository for latest push
 if(length(names(Met_now))>17){ #removes NR01TK_Avg column, which was downloaded on some but not all days
   Met_now$V17<-NULL #remove extra column
@@ -57,12 +34,13 @@ Met_now$PAR_Tot_Tot=as.numeric(Met_now$PAR_Tot_Tot) #matching str to past data
 Met_agg<-rbind(Met_past,Met_now) #binds past and current data from Met station
 Met_agg = Met_agg[!duplicated(Met_agg$TIMESTAMP),] #takes out duplicated values by timestamp
 
+#### Aggregated data set for QA/QC ####
 Met= Met_agg
 Met$TIMESTAMP=ymd_hms(Met$TIMESTAMP, tz="Etc/GMT+4") #formats timestamp as double check; resulted in 1 failed parse
 Met = Met[Met$TIMESTAMP< "2019-01-01 00:00:00",] #all data before 2019
 
 #order data by timestamp
-#dplyr::arrange(Met, TIMESTAMP)
+#dplyr::arrange(Met, TIMESTAMP) #tidyverse version
 Met=Met[order(Met$TIMESTAMP),]
 
 #check record for gaps
@@ -82,7 +60,7 @@ Met$Site=50 #add site
 Met$Reservoir= "FCR"#add reservoir
 
 
-#c. load in maintenance txt file
+#### c. load in maintenance txt file #### 
 RemoveMet=read.table("https://raw.githubusercontent.com/CareyLabVT/SCCData/carina-data/MET_MaintenanceLog.txt", sep = ",", header = T)
 #str(RemoveMet)
 RemoveMet$TIMESTAMP_start=ymd_hms(RemoveMet$TIMESTAMP_start, tz="Etc/GMT+4") #setting time zone
@@ -139,10 +117,67 @@ for(i in 5:17) {
 print(colnames(Met[i]))
 print(table(Met[,paste0("Flag_",colnames(Met[i]))])) }
 
-#Plot for flags 2&3
-plot(Met$Flag, type = 'h')
-#plot(Met$TIMESTAMP, Met$Flag, type = 'p')
 
+##### Air TEMP cleaning #####
+#using lm_Panel2015 to clean airtemp.
+#create lm for 2015
+MetAir_2015=Met[Met$DateTime<"2016-01-01 00:00:00",c(1,4,8)]
+lm_Panel2015=lm(MetAir_2015$AirTemp_Average_C ~ MetAir_2015$CR3000Panel_temp_C)
+summary(lm_Panel2015)
+#if Air - Panel > 3 sd(lm_Panel2015) then replace with PanelTemp in lm equation
+Met$Flag_AirTemp_Average_C=ifelse((Met$AirTemp_Average_C - (1.6278+(0.9008*Met$CR3000Panel_temp_C)))>(3*sd(lm_Panel2015$residuals)), 4, Met$Flag_AirTemp_Average_C)
+Met$Note_AirTemp_Average_C=ifelse((Met$AirTemp_Average_C - (1.6278+(0.9008*Met$CR3000Panel_temp_C)))>(3*sd(lm_Panel2015$residuals)),"Substituted value calculated from Panel Temp and linear model", Met$Note_AirTemp_Average_C)
+Met$AirTemp_Average_C=ifelse((Met$AirTemp_Average_C - (1.6278+(0.9008*Met$CR3000Panel_temp_C)))>(3*sd(lm_Panel2015$residuals)),(1.6278+(0.9008*Met$CR3000Panel_temp_C)), Met$AirTemp_Average_C)
+
+
+###Not all ifelse statments are working correctly. Trying to fix that..
+## fix PAR_Tot
+#Met$PAR_Total_mmol_m2=ifelse(Met$PAR_Total_mmol_m2>500, Met$PAR_Total_mmol_m2/1000, Met$PAR_Total_mmol_m2)
+
+Met$Flag_PAR_Total_mmol_m2=ifelse(Met$PAR_Total_mmol_m2>500, 4, Met$Flag_PAR_Total_mmol_m2)
+#what should the note say?
+Met$Note_PAR_Total_mmol_m2=ifelse(Met$PAR_Total_mmol_m2>500, "Outlier set to NA", Met$Note_PAR_Total_mmol_m2)
+Met$PAR_Total_mmol_m2=ifelse(Met$PAR_Total_mmol_m2>500, NA, Met$PAR_Total_mmol_m2)
+
+#Remove SW Rad outliers
+Met$Flag_ShortwaveRadiationUp_Average_W_m2=ifelse(Met$ShortwaveRadiationUp_Average_W_m2>2000, 4, Met$Flag_ShortwaveRadiationUp_Average_W_m2)
+#what should the note say?
+Met$Note_ShortwaveRadiationUp_Average_W_m2=ifelse(Met$ShortwaveRadiationUp_Average_W_m2>2000, "Outlier set to NA", Met$Note_ShortwaveRadiationUp_Average_W_m2)
+Met$PAR_ShortwaveRadiationUp_Average_W_m2=ifelse(Met$ShortwaveRadiationUp_Average_W_m2>2000, NA, Met$ShortwaveRadiationUp_Average_W_m2)
+
+Met$Flag_ShortwaveRadiationDown_Average_W_m2=ifelse(Met$ShortwaveRadiationDown_Average_W_m2>300, 4, Met$Flag_ShortwaveRadiationDown_Average_W_m2)
+#what should the note say?
+Met$Note_ShortwaveRadiationDown_Average_W_m2=ifelse(Met$ShortwaveRadiationDown_Average_W_m2>300, "Outlier set to NA", Met$Note_ShortwaveRadiationDown_Average_W_m2)
+Met$PAR_ShortwaveRadiationDown_Average_W_m2=ifelse(Met$ShortwaveRadiationDown_Average_W_m2>300, NA, Met$ShortwaveRadiationDown_Average_W_m2)
+
+#fix albedo
+Met$Flag_Albedo_Average_W_m2=ifelse(is.na(Met$ShortwaveRadiationUp_Average_W_m2)|is.na(Met$ShortwaveRadiationDown_Average_W_m2), 4, Met$Flag_Albedo_Average_W_m2)
+Met$Note_Albedo_Average_W_m2=ifelse(is.na(Met$ShortwaveRadiationUp_Average_W_m2)|is.na(Met$ShortwaveRadiationDown_Average_W_m2), "Set to NA because Shortwave = NA", Met$Note_Albedo_Average_W_m2)
+Met$Albedo_Average_W_m2=ifelse(is.na(Met$ShortwaveRadiationUp_Average_W_m2)|is.na(Met$ShortwaveRadiationDown_Average_W_m2), NA, Met$Albedo_Average_W_m2)
+#######Plots For Days ######
+#plots to check for any wonkiness
+x11(); par(mfrow=c(1,2))
+plot(Met$DateTime, Met$CR3000_Batt_V, type = 'l')
+plot(Met$DateTime, Met$CR3000Panel_temp_C, type = 'l')
+plot(Met$DateTime, Met$PAR_Average_umol_s_m2, type = 'l')
+plot(Met$DateTime, Met$PAR_Total_mmol_m2, type = 'l')
+plot(Met$DateTime, Met$BP_Average_kPa, type = 'l')
+plot(Met$DateTime, Met$AirTemp_Average_C, type = 'l')
+plot(Met$DateTime, Met$RH_percent, type = 'l')
+plot(Met$DateTime, Met$Rain_Total_mm, type = 'h')
+plot(Met$DateTime, Met$WindSpeed_Average_m_s, type = 'l')
+hist(Met$WindDir_degrees)
+plot(Met$DateTime, Met$ShortwaveRadiationUp_Average_W_m2, type = 'l')
+plot(Met$DateTime, Met$ShortwaveRadiationDown_Average_W_m2, type = 'l')
+plot(Met$DateTime, Met$Albedo_Average_W_m2, type = 'l')
+plot(Met$DateTime, Met$InfaredRadiationUp_Average_W_m2, type = 'l')
+plot(Met$DateTime, Met$InfaredRadiationDown_Average_W_m2, type = 'l')
+
+Met_final=Met[,c(18:19,1:17, 20:45)] #final column order
+#write.csv(etc)
+
+
+#BONUS CODE#
 ########### AirTemp lm ###########
 
 # ####Air Temp vs. Panel Temp
@@ -284,69 +319,25 @@ plot(Met$Flag, type = 'h')
 # range(lm_Panel$residuals)
 # sd(lm_Panel$residuals)
 
-##### Air TEMP cleaning #####
-#using lm_Panel2015 to clean airtemp.
-
-
-Met_3sd=Met
-#create lm for 2015
-MetAir_2015=Met[Met$DateTime<"2016-01-01 00:00:00",c(1,4,8)]
-lm_Panel2015=lm(MetAir_2015$AirTemp_Average_C ~ MetAir_2015$CR3000Panel_temp_C)
-summary(lm_Panel2015)
-#if Air - Panel > 3 sd(lm_Panel2015) then replace with PanelTemp in lm equation
-Met_3sd$AirTemp_Average_C=ifelse((Met_3sd$AirTemp_Average_C - Met_3sd$CR3000Panel_temp_C)>(3*sd(lm_Panel2015$residuals)),(1.6278+(0.9008*Met_3sd$CR3000Panel_temp_C)), Met_3sd$AirTemp_Average_C)
-x11(); par(mfrow=c(1,3))
-plot(Met$DateTime, Met$AirTemp_Average_C, type = 'l', ylim = c(-15,65))
-plot(Met_3sd$DateTime, Met_3sd$AirTemp_Average_C, type = 'l', ylim = c(-15,65))
-plot(Met_3sd2$DateTime, Met_3sd2$AirTemp_Average_C, type = 'l', ylim = c(-15,65))
-
-Met_3sd2=Met
-#run this
-Met$Flag_AirTemp_Average_C=ifelse((Met$AirTemp_Average_C - (1.6278+(0.9008*Met$CR3000Panel_temp_C)))>(3*sd(lm_Panel2015$residuals)), 4, Met$Flag_AirTemp_Average_C)
-Met$Note_AirTemp_Average_C=ifelse((Met$AirTemp_Average_C - (1.6278+(0.9008*Met$CR3000Panel_temp_C)))>(3*sd(lm_Panel2015$residuals)),"Substituted value calculated from Panel Temp and linear model", Met$Note_AirTemp_Average_C)
-Met$AirTemp_Average_C=ifelse((Met$AirTemp_Average_C - (1.6278+(0.9008*Met$CR3000Panel_temp_C)))>(3*sd(lm_Panel2015$residuals)),(1.6278+(0.9008*Met$CR3000Panel_temp_C)), Met$AirTemp_Average_C)
-
-## fix PAR_Tot
-#Met$PAR_Total_mmol_m2=ifelse(Met$PAR_Total_mmol_m2>500, Met$PAR_Total_mmol_m2/1000, Met$PAR_Total_mmol_m2)
-
-Met$Flag_PAR_Total_mmol_m2=ifelse(Met$PAR_Total_mmol_m2>500, 4, Met$Flag_PAR_Total_mmol_m2)
-#what should the note say?
-Met$Note_PAR_Total_mmol_m2=ifelse(Met$PAR_Total_mmol_m2>500, "Outlier set to NA", Met$Note_PAR_Total_mmol_m2)
-Met$PAR_Total_mmol_m2=ifelse(Met$PAR_Total_mmol_m2>500, NA, Met$PAR_Total_mmol_m2)
-
-#Remove SW Rad outliers
-Met$Flag_ShortwaveRadiationUp_Average_W_m2=ifelse(Met$ShortwaveRadiationUp_Average_W_m2>2000, 4, Met$Flag_ShortwaveRadiationUp_Average_W_m2)
-#what should the note say?
-Met$Note_ShortwaveRadiationUp_Average_W_m2=ifelse(Met$ShortwaveRadiationUp_Average_W_m2>2000, "Outlier set to NA", Met$Note_ShortwaveRadiationUp_Average_W_m2)
-Met$PAR_ShortwaveRadiationUp_Average_W_m2=ifelse(Met$ShortwaveRadiationUp_Average_W_m2>2000, NA, Met$ShortwaveRadiationUp_Average_W_m2)
-
-Met$Flag_ShortwaveRadiationDown_Average_W_m2=ifelse(Met$ShortwaveRadiationDown_Average_W_m2>300, 4, Met$Flag_ShortwaveRadiationDown_Average_W_m2)
-#what should the note say?
-Met$Note_ShortwaveRadiationDown_Average_W_m2=ifelse(Met$ShortwaveRadiationDown_Average_W_m2>300, "Outlier set to NA", Met$Note_ShortwaveRadiationDown_Average_W_m2)
-Met$PAR_ShortwaveRadiationDown_Average_W_m2=ifelse(Met$ShortwaveRadiationDown_Average_W_m2>300, NA, Met$ShortwaveRadiationDown_Average_W_m2)
-
-#fix albedo
-Met$Flag_Albedo_Average_W_m2=ifelse(is.na(Met$ShortwaveRadiationUp_Average_W_m2)|is.na(Met$ShortwaveRadiationDown_Average_W_m2), 4, Met$Flag_Albedo_Average_W_m2)
-Met$Note_Albedo_Average_W_m2=ifelse(is.na(Met$ShortwaveRadiationUp_Average_W_m2)|is.na(Met$ShortwaveRadiationDown_Average_W_m2), "Set to NA because Shortwave = NA", Met$Note_Albedo_Average_W_m2)
-Met$Albedo_Average_W_m2=ifelse(is.na(Met$ShortwaveRadiationUp_Average_W_m2)|is.na(Met$ShortwaveRadiationDown_Average_W_m2), NA, Met$Albedo_Average_W_m2)
-#######Plots For Days ######
-#plots to check for any wonkiness
-x11(); par(mfrow=c(1,2))
-plot(Met$DateTime, Met$CR3000_Batt_V, type = 'l')
-plot(Met$DateTime, Met$CR3000Panel_temp_C, type = 'l')
-plot(Met$DateTime, Met$PAR_Average_umol_s_m2, type = 'l')
-plot(Met$DateTime, Met$PAR_Total_mmol_m2, type = 'l')
-plot(Met$DateTime, Met$BP_Average_kPa, type = 'l')
-plot(Met$DateTime, Met$AirTemp_Average_C, type = 'l')
-plot(Met$DateTime, Met$RH_percent, type = 'l')
-plot(Met$DateTime, Met$Rain_Total_mm, type = 'h')
-plot(Met$DateTime, Met$WindSpeed_Average_m_s, type = 'l')
-hist(Met$WindDir_degrees)
-plot(Met$DateTime, Met$ShortwaveRadiationUp_Average_W_m2, type = 'l')
-plot(Met$DateTime, Met$ShortwaveRadiationDown_Average_W_m2, type = 'l')
-plot(Met$DateTime, Met$Albedo_Average_W_m2, type = 'l')
-plot(Met$DateTime, Met$InfaredRadiationUp_Average_W_m2, type = 'l')
-plot(Met$DateTime, Met$InfaredRadiationDown_Average_W_m2, type = 'l')
-
-Met_final=Met[,c(18:19,1:17, 20:45)] #final column order
-#write.csv(etc)
+#MET Agg script. Do I want to make this work? Probably...
+# manualMet<-"https://github.com/CareyLabVT/FCR-GLM/tree/master/MetStationData/"
+# 
+# metfiles<-list.files(path='https://github.com/CareyLabVT/FCR-GLM/tree/master/MetStationData/') #creates a list of all met station files within the working directory
+# #sorted automatically by date. All files in here should be of the format:
+# #"CR3000_FCRmet_YYYYMMDD.dat"
+# 
+# obs<-read.csv(file=metfiles[1],skip=4,header=FALSE) #read in first file
+# names(obs) = c("TIMESTAMP","RECORD","BattV","PTemp_C","PAR_Den_Avg","PAR_Tot_Tot","BP_kPa_Avg","AirTC_Avg","RH","Rain_mm_Tot","WS_ms_Avg","WindDir","SR01Up_Avg","SR01Dn_Avg","IR01UpCo_Avg","IR01DnCo_Avg","Albedo_Avg")
+# units = c("TS","RN","Volts","Deg C","umol/s/m^2","mmol/m^2","kPa","Deg C","%","mm","meters/second","degrees","W/m^2","W/m^2","W/m^2","W/m^2","W/m^2") #creates list of units, skipped in line above
+# obs$TIMESTAMP = ymd_hms(obs$TIMESTAMP, tz="Etc/GMT+4") #CCC what do you think of this?
+# 
+# for(i in 2:length(metfiles)){ #reads in all files within folder in Github
+#   temp<-read.csv(file=metfiles[i],skip=4,header=FALSE)
+#   if(length(names(temp))>17){ #removes NR01TK_Avg column, which was downloaded on some but not all days
+#     temp$V17<-NULL #remove extra column
+#   }
+#   names(temp) = c("TIMESTAMP","RECORD","BattV","PTemp_C","PAR_Den_Avg","PAR_Tot_Tot","BP_kPa_Avg","AirTC_Avg","RH","Rain_mm_Tot","WS_ms_Avg","WindDir","SR01Up_Avg","SR01Dn_Avg","IR01UpCo_Avg","IR01DnCo_Avg","Albedo_Avg")
+#   temp$TIMESTAMP = ymd_hms(temp$TIMESTAMP, tz="Etc/GMT+4") #NOTE TO BETHANY to add lubridate here!!! #cayelan, how is this?
+#   obs<-rbind(obs,temp)
+#   #print(i)
+# }
