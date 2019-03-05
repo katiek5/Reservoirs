@@ -58,7 +58,7 @@ names(Met) = c("DateTime","Record", "CR3000_Batt_V", "CR3000Panel_temp_C",
 Met$Site=50 #add site
 Met$Reservoir= "FCR"#add reservoir
 
-
+Met_raw=Met
 #### c. load in maintenance txt file #### 
 RemoveMet=read.table("https://raw.githubusercontent.com/CareyLabVT/SCCData/carina-data/MET_MaintenanceLog.txt", sep = ",", header = T)
 #str(RemoveMet)
@@ -159,18 +159,30 @@ x11(); par(mfrow=c(2,2))
 plot(Met$DateTime, Met$CR3000_Batt_V, type = 'l')
 plot(Met$DateTime, Met$CR3000Panel_temp_C, type = 'l')
 plot(Met$DateTime, Met$PAR_Average_umol_s_m2, type = 'l')
+points(Met_raw$DateTime, Met_raw$, col="red", type='l', lwd=1.5)
 plot(Met$DateTime, Met$PAR_Total_mmol_m2, type = 'l')
+points(Met_raw$DateTime, Met_raw$, col="red", type='l', lwd=1.5)
 plot(Met$DateTime, Met$BP_Average_kPa, type = 'l')
+points(Met_raw$DateTime, Met_raw$, col="red", type='l', lwd=1.5)
 plot(Met$DateTime, Met$AirTemp_Average_C, type = 'l')
+points(Met_raw$DateTime, Met_raw$, col="red", type='l', lwd=1.5)
 plot(Met$DateTime, Met$RH_percent, type = 'l')
+points(Met_raw$DateTime, Met_raw$, col="red", type='l', lwd=1.5)
 plot(Met$DateTime, Met$Rain_Total_mm, type = 'h')
+points(Met_raw$DateTime, Met_raw$, col="red", type='l', lwd=1.5)
 plot(Met$DateTime, Met$WindSpeed_Average_m_s, type = 'l')
+points(Met_raw$DateTime, Met_raw$, col="red", type='l', lwd=1.5)
 hist(Met$WindDir_degrees)
 plot(Met$DateTime, Met$ShortwaveRadiationUp_Average_W_m2, type = 'l')
+points(Met_raw$DateTime, Met_raw$, col="red", type='l', lwd=1.5)
 plot(Met$DateTime, Met$ShortwaveRadiationDown_Average_W_m2, type = 'l')
+points(Met_raw$DateTime, Met_raw$, col="red", type='l', lwd=1.5)
 plot(Met$DateTime, Met$Albedo_Average_W_m2, type = 'l')
+points(Met_raw$DateTime, Met_raw$, col="red", type='l', lwd=1.5)
 plot(Met$DateTime, Met$InfaredRadiationUp_Average_W_m2, type = 'l')
+points(Met_raw$DateTime, Met_raw$, col="red", type='l', lwd=1.5)
 plot(Met$DateTime, Met$InfaredRadiationDown_Average_W_m2, type = 'l')
+points(Met_raw$DateTime, Met_raw$, col="red", type='l', lwd=1.5)
 
 #prints table of flag frequency
 for(i in 5:17) {
