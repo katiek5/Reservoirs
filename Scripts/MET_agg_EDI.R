@@ -13,16 +13,10 @@ library(tidyverse)
 
 ###Loading in 3 datasets and aggregating: 
 #a. Past Met data, manual downloads
-setwd("/Users/bethany1/Desktop/MET_EDI/") #need to make into a relative path for EDI folder..
-
-#ADD IN FCR MET COMPILE SCRIPT???
 #Met_past=read.csv("AllRawMetData_20181119.csv", sep = ",") #loads in data from FCR_GLM repository
 RawMet_1516=read.csv('https://raw.githubusercontent.com/CareyLabVT/FCR-GLM/master/RawMetData_2015_2016.csv',header = T) #2015-2016 data
-RawMet_1516$TIMESTAMP=ymd_hms(RawMet_1516$TIMESTAMP, tz="Etc/GMT+4")
 RawMet_17=read.csv('https://raw.githubusercontent.com/CareyLabVT/FCR-GLM/master/RawMetData_2017.csv',header = T) #2017 data
-RawMet_17$TIMESTAMP=ymd_hms(RawMet_17$TIMESTAMP, tz="Etc/GMT+4")
 RawMet_18=read.csv('https://raw.githubusercontent.com/CareyLabVT/FCR-GLM/master/RawMetData_2018.csv',header = T) #2018 data
-RawMet_18$TIMESTAMP=ymd_hms(RawMet_18$TIMESTAMP, tz="Etc/GMT+4")
 mytempdata = rbind(RawMet_1516, RawMet_17) #merges first 3 years
 Met_past = rbind(mytempdata, RawMet_18) #merges 2018 with data
 Met_past$TIMESTAMP=ymd_hms(Met_past$TIMESTAMP, tz="Etc/GMT+4") #formats to be same
@@ -214,6 +208,7 @@ for (u in 20:45) {
 }
 
 Met_final=Met[,c(18:19,1:17, 20:45)] #final column order
+setwd('./Data/DataNotYetUploadedtoEDI/Raw_Met/')
 #write.csv(etc)
 
 
