@@ -177,6 +177,12 @@ for(i in 5:17) {
   print(colnames(Met[i]))
   print(table(Met[,paste0("Flag_",colnames(Met[i]))])) }
 
+#Met unique values for notes
+for (u in 20:45) {
+  print(colnames(Met[u]))
+  print(unique(Met[,u]))
+}
+
 Met_final=Met[,c(18:19,1:17, 20:45)] #final column order
 #write.csv(etc)
 
@@ -324,12 +330,13 @@ Met_final=Met[,c(18:19,1:17, 20:45)] #final column order
 # range(lm_Panel$residuals)
 # sd(lm_Panel$residuals)
 
-
-#Met unique values for notes
-MetFlags=Met[,c(20:45)]
-for (u in 1:length(MetFlags)) {
-  print(colnames(MetFlags[u]))
-  print(unique(MetFlags[,u]))
-}
-
 ##Infrared???
+####NDLAS comparison####
+# NLDAS=read.csv("https://raw.githubusercontent.com/CareyLabVT/FCR-GLM/master/NLDASData/FCR_GLM_met_NLDAS2_Dec14_Dec18.csv", header = T)
+# N_AirTemp=NLDAS[,c(6,3)]
+# N_AirTemp$time=ymd_hms(N_AirTemp$time)
+# Met_air=Met[,c(1,4,8)]
+# names(Met_air)<- c("time", "Panel_temp","AirTemp_Average_C")
+# #does NLDAS use GMT -4? or EST? What time zone is it??????????
+# #for now, assuming GMT -4 for simplicity's sake
+# compare<-merge(N_AirTemp, Met_air, by="time")
