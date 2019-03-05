@@ -13,7 +13,6 @@ library(tidyverse)
 
 ###Loading in 3 datasets and aggregating: 
 #a. Past Met data, manual downloads
-#Met_past=read.csv("AllRawMetData_20181119.csv", sep = ",") #loads in data from FCR_GLM repository
 RawMet_1516=read.csv('https://raw.githubusercontent.com/CareyLabVT/FCR-GLM/master/RawMetData_2015_2016.csv',header = T) #2015-2016 data
 RawMet_17=read.csv('https://raw.githubusercontent.com/CareyLabVT/FCR-GLM/master/RawMetData_2017.csv',header = T) #2017 data
 RawMet_18=read.csv('https://raw.githubusercontent.com/CareyLabVT/FCR-GLM/master/RawMetData_2018.csv',header = T) #2018 data
@@ -71,49 +70,15 @@ RemoveMet$notes=as.character(RemoveMet$notes)
 
 #### Flag creation ####
 #create flag + notes columns for data columns c(5:17)
-#set 2 + 3 flags
+#set flag 2
 for(i in 5:17) { #for loop to create new columns in data frame
   Met[,paste0("Flag_",colnames(Met[i]))] <- 0 #creates flag column + name of variable
   Met[,paste0("Note_",colnames(Met[i]))] <- NA #creates note column + names of variable
   Met[c(which(is.na(Met[,i]))),paste0("Flag_",colnames(Met[i]))] <-2 #puts in flag 2
   Met[c(which(is.na(Met[,i]))),paste0("Note_",colnames(Met[i]))] <- "Sample not collected" #note for flag 2
-  Met[c(which(is.infinite(Met[,i]))),paste0("Flag_",colnames(Met[i]))] <-3 #puts in flag 3
-  Met[c(which(is.infinite(Met[,i]))),paste0("Note_",colnames(Met[i]))] <- "Infinite value set to NA" #note for flag 3
-  Met[c(which(is.infinite(Met[,i]))),i] <- NA #set infinite vals to NA
-  
-  if(i!=8) { #flag 3 for negative values for everything except air temp
-    Met[c(which((Met[,i]<0))),paste0("Flag_",colnames(Met[i]))] <- 3
-    Met[c(which((Met[,i]<0))),paste0("Note_",colnames(Met[i]))] <- "Negative value set to 0"
-    Met[c(which((Met[,i]<0))),i] <- 0 #replaces value with 0
-  }
-  if(i==9) { #flag for RH over 100
-    Met[c(which((Met[,i]>100))),paste0("Flag_",colnames(Met[i]))] <- 3
-    Met[c(which((Met[,i]>100))),paste0("Note_",colnames(Met[i]))] <- "Value set to 100"
-    Met[c(which((Met[,i]>100))),i] <- 100 #replaces value with 100
-  }
 }
 
-#create loop putting in maintenance flags 1 + 4
-for(j in 1:nrow(RemoveMet)){
-  # #if statement to only write in flag 4 if there are no other flags
-  if(RemoveMet$flag[j]==4){
-    Met[c(which(Met[,1]>=RemoveMet[j,2] & Met[,1]<=RemoveMet[j,3]& (Met[,paste0("Flag_",colnames(Met[RemoveMet$colnumber[j]]))]==0))), paste0("Note_",colnames(Met[RemoveMet$colnumber[j]]))]=RemoveMet$notes[j]#same as above, but for notes
-    Met[c(which(Met[,1]>=RemoveMet[j,2] & Met[,1]<=RemoveMet[j,3] & (Met[,paste0("Flag_",colnames(Met[RemoveMet$colnumber[j]]))]==0))), paste0("Flag_",colnames(Met[RemoveMet$colnumber[j]]))]<-RemoveMet$flag[j]#when met timestamp is between remove timestamp
-       #and met column derived from remove column
-        #matching time frame, inserting flag
-  }
-  #if flag == 1, set parameter to NA, overwrites any other flag
-  if(RemoveMet$flag[j]==1){
-    Met[c(which((Met[,1]>=RemoveMet[j,2]) & (Met[,1]<=RemoveMet[j,3]))),paste0("Flag_",colnames(Met[RemoveMet$colnumber[j]]))] <- RemoveMet$flag[j] #when met timestamp is between remove timestamp
-          #and met column derived from remove column
-     #matching time frame, inserting flag
-  Met[Met[,1]>=RemoveMet[j,2] & Met[,1]<=RemoveMet[j,3], paste0("Note_",colnames(Met[RemoveMet$colnumber[j]]))]=RemoveMet$notes[j]#same as above, but for notes
-      
-  Met[Met[,1]>=RemoveMet[j,2] & Met[,1]<=RemoveMet[j,3], colnames(Met[RemoveMet$colnumber[j]])] = NA
-  } #replaces value of var with NA
-}
-
-##### Air TEMP cleaning #####
+##Air TEMP cleaning
 #using lm_Panel2015 to clean airtemp.
 #create lm for 2015
 MetAir_2015=Met[Met$DateTime<"2016-01-01 00:00:00",c(1,4,8)]
@@ -123,6 +88,15 @@ summary(lm_Panel2015)
 Met$Flag_AirTemp_Average_C=ifelse((Met$AirTemp_Average_C - (1.6278+(0.9008*Met$CR3000Panel_temp_C)))>(3*sd(lm_Panel2015$residuals)), 4, Met$Flag_AirTemp_Average_C)
 Met$Note_AirTemp_Average_C=ifelse((Met$AirTemp_Average_C - (1.6278+(0.9008*Met$CR3000Panel_temp_C)))>(3*sd(lm_Panel2015$residuals)),"Substituted value calculated from Panel Temp and linear model", Met$Note_AirTemp_Average_C)
 Met$AirTemp_Average_C=ifelse((Met$AirTemp_Average_C - (1.6278+(0.9008*Met$CR3000Panel_temp_C)))>(3*sd(lm_Panel2015$residuals)),(1.6278+(0.9008*Met$CR3000Panel_temp_C)), Met$AirTemp_Average_C)
+
+#fix infrared radiation voltage reading, must be after airtemp correction
+Met$Flag_InfaredRadiationUp_Average_W_m2=ifelse(Met$InfaredRadiationUp_Average_W_m2<100,4,Met$Flag_InfaredRadiationUp_Average_W_m2)
+Met$Note_InfaredRadiationUp_Average_W_m2=ifelse(Met$InfaredRadiationUp_Average_W_m2<100,"Value corrected from Voltage with InfRadUp equation as decribed in metadata",Met$Note_InfaredRadiationUp_Average_W_m2)
+Met$InfaredRadiationUp_Average_W_m2=ifelse(Met$InfaredRadiationUp_Average_W_m2<100,Met$InfaredRadiationUp_Average_W_m2+5.67*10^-8*(Met$AirTemp_Average_C+273.15)^4,Met$InfaredRadiationUp_Average_W_m2)
+
+Met$Flag_InfaredRadiationDown_Average_W_m2=ifelse(Met$InfaredRadiationDown_Average_W_m2<200,4,Met$Flag_InfaredRadiationDown_Average_W_m2)
+Met$Note_InfaredRadiationDown_Average_W_m2=ifelse(Met$InfaredRadiationDown_Average_W_m2<200,"Value corrected from Voltage with InfRadDn equation as decribed in metadata",Met$Note_InfaredRadiationDown_Average_W_m2)
+Met$InfaredRadiationDown_Average_W_m2=ifelse(Met$InfaredRadiationDown_Average_W_m2<200,5.67*10^-8*(Met$AirTemp_Average_C+273.15)^4,Met$InfaredRadiationDown_Average_W_m2)
 
 ##BP low outliers
 Met$Flag_BP_Average_kPa=ifelse(Met$BP_Average_kPa<95,4,Met$Flag_BP_Average_kPa)
@@ -156,14 +130,42 @@ Met$Flag_Albedo_Average_W_m2=ifelse(is.na(Met$ShortwaveRadiationUp_Average_W_m2)
 Met$Note_Albedo_Average_W_m2=ifelse(is.na(Met$ShortwaveRadiationUp_Average_W_m2)|is.na(Met$ShortwaveRadiationDown_Average_W_m2), "Set to NA because Shortwave = NA", Met$Note_Albedo_Average_W_m2)
 Met$Albedo_Average_W_m2=ifelse(is.na(Met$ShortwaveRadiationUp_Average_W_m2)|is.na(Met$ShortwaveRadiationDown_Average_W_m2), NA, Met$Albedo_Average_W_m2)
 
-#fix infrared radiation in 2015 - 2016, must be after infrared correction
-Met$Flag_InfaredRadiationUp_Average_W_m2=ifelse(Met$InfaredRadiationUp_Average_W_m2<100,4,Met$Flag_InfaredRadiationUp_Average_W_m2)
-Met$Note_InfaredRadiationUp_Average_W_m2=ifelse(Met$InfaredRadiationUp_Average_W_m2<100,"Value corrected from Voltage with InfRadUp equation as decribed in metadata",Met$Note_InfaredRadiationUp_Average_W_m2)
-Met$InfaredRadiationUp_Average_W_m2=ifelse(Met$InfaredRadiationUp_Average_W_m2<100,Met$InfaredRadiationUp_Average_W_m2+5.67*10^-8*(Met$AirTemp_Average_C+273.15)^4,Met$InfaredRadiationUp_Average_W_m2)
-
-Met$Flag_InfaredRadiationDown_Average_W_m2=ifelse(Met$InfaredRadiationDown_Average_W_m2<200,4,Met$Flag_InfaredRadiationDown_Average_W_m2)
-Met$Note_InfaredRadiationDown_Average_W_m2=ifelse(Met$InfaredRadiationDown_Average_W_m2<200,"Value corrected from Voltage with InfRadDn equation as decribed in metadata",Met$Note_InfaredRadiationDown_Average_W_m2)
-Met$InfaredRadiationDown_Average_W_m2=ifelse(Met$InfaredRadiationDown_Average_W_m2<200,5.67*10^-8*(Met$AirTemp_Average_C+273.15)^4,Met$InfaredRadiationDown_Average_W_m2)
+#set flag 3
+for(i in 5:17) { #for loop to create new columns in data frame
+  Met[c(which(is.infinite(Met[,i]))),paste0("Flag_",colnames(Met[i]))] <-3 #puts in flag 3
+  Met[c(which(is.infinite(Met[,i]))),paste0("Note_",colnames(Met[i]))] <- "Infinite value set to NA" #note for flag 3
+  Met[c(which(is.infinite(Met[,i]))),i] <- NA #set infinite vals to NA
+  
+  if(i!=8) { #flag 3 for negative values for everything except air temp
+    Met[c(which((Met[,i]<0))),paste0("Flag_",colnames(Met[i]))] <- 3
+    Met[c(which((Met[,i]<0))),paste0("Note_",colnames(Met[i]))] <- "Negative value set to 0"
+    Met[c(which((Met[,i]<0))),i] <- 0 #replaces value with 0
+  }
+  if(i==9) { #flag for RH over 100
+    Met[c(which((Met[,i]>100))),paste0("Flag_",colnames(Met[i]))] <- 3
+    Met[c(which((Met[,i]>100))),paste0("Note_",colnames(Met[i]))] <- "Value set to 100"
+    Met[c(which((Met[,i]>100))),i] <- 100 #replaces value with 100
+  }
+}
+#create loop putting in maintenance flags 1 + 4
+for(j in 1:nrow(RemoveMet)){
+  # #if statement to only write in flag 4 if there are no other flags
+  if(RemoveMet$flag[j]==4){
+    Met[c(which(Met[,1]>=RemoveMet[j,2] & Met[,1]<=RemoveMet[j,3]& (Met[,paste0("Flag_",colnames(Met[RemoveMet$colnumber[j]]))]==0))), paste0("Note_",colnames(Met[RemoveMet$colnumber[j]]))]=RemoveMet$notes[j]#same as above, but for notes
+    Met[c(which(Met[,1]>=RemoveMet[j,2] & Met[,1]<=RemoveMet[j,3] & (Met[,paste0("Flag_",colnames(Met[RemoveMet$colnumber[j]]))]==0))), paste0("Flag_",colnames(Met[RemoveMet$colnumber[j]]))]<-RemoveMet$flag[j]#when met timestamp is between remove timestamp
+    #and met column derived from remove column
+    #matching time frame, inserting flag
+  }
+  #if flag == 1, set parameter to NA, overwrites any other flag
+  if(RemoveMet$flag[j]==1){
+    Met[c(which((Met[,1]>=RemoveMet[j,2]) & (Met[,1]<=RemoveMet[j,3]))),paste0("Flag_",colnames(Met[RemoveMet$colnumber[j]]))] <- RemoveMet$flag[j] #when met timestamp is between remove timestamp
+    #and met column derived from remove column
+    #matching time frame, inserting flag
+    Met[Met[,1]>=RemoveMet[j,2] & Met[,1]<=RemoveMet[j,3], paste0("Note_",colnames(Met[RemoveMet$colnumber[j]]))]=RemoveMet$notes[j]#same as above, but for notes
+    
+    Met[Met[,1]>=RemoveMet[j,2] & Met[,1]<=RemoveMet[j,3], colnames(Met[RemoveMet$colnumber[j]])] = NA
+  } #replaces value of var with NA
+}
 
 #######Plots For Days ######
 #plots to check for any wonkiness
