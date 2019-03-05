@@ -1,10 +1,11 @@
 ###EDI MET STATION File
 
 ##Tasks/Questions Left:
-#1. Relative paths + Uploading Large Files to Github
+#1a. Uploading Large Files to Github
+#1b. (opt) Relative paths in smarter way?
 #2. Plot flags?
 #3. PAR TOT weirdness at end of 2018
-
+#4. Inf Rad fix
 ###packages needed
 library("lubridate")
 ##install.packages("lubridate"); install.packages("tidyverse")
@@ -17,10 +18,13 @@ setwd("/Users/bethany1/Desktop/MET_EDI/") #need to make into a relative path for
 #ADD IN FCR MET COMPILE SCRIPT???
 #Met_past=read.csv("AllRawMetData_20181119.csv", sep = ",") #loads in data from FCR_GLM repository
 RawMet_1516=read.csv('https://raw.githubusercontent.com/CareyLabVT/FCR-GLM/master/RawMetData_2015_2016.csv',header = T) #2015-2016 data
+RawMet_1516$TIMESTAMP=ymd_hms(RawMet_1516$TIMESTAMP, tz="Etc/GMT+4")
 RawMet_17=read.csv('https://raw.githubusercontent.com/CareyLabVT/FCR-GLM/master/RawMetData_2017.csv',header = T) #2017 data
+RawMet_17$TIMESTAMP=ymd_hms(RawMet_17$TIMESTAMP, tz="Etc/GMT+4")
 RawMet_18=read.csv('https://raw.githubusercontent.com/CareyLabVT/FCR-GLM/master/RawMetData_2018.csv',header = T) #2018 data
-mytempdata = merge(RawMet_1516, RawMet_17) #merges first 3 years
-Met_past = merge(mytempdata, RawMet_18) #merges 2018 with data
+RawMet_18$TIMESTAMP=ymd_hms(RawMet_18$TIMESTAMP, tz="Etc/GMT+4")
+mytempdata = rbind(RawMet_1516, RawMet_17) #merges first 3 years
+Met_past = rbind(mytempdata, RawMet_18) #merges 2018 with data
 Met_past$TIMESTAMP=ymd_hms(Met_past$TIMESTAMP, tz="Etc/GMT+4") #formats to be same
 
 #### b. Current Met data, loaded to Github by Carina ####
@@ -41,7 +45,7 @@ Met_agg = Met_agg[!duplicated(Met_agg$TIMESTAMP),] #takes out duplicated values 
 #### Aggregated data set for QA/QC ####
 Met= Met_agg
 Met$TIMESTAMP=ymd_hms(Met$TIMESTAMP, tz="Etc/GMT+4") #formats timestamp as double check; resulted in 1 failed parse
-Met = Met[Met$TIMESTAMP< "2019-01-01 00:00:00",] #all data before 2019
+Met = Met[year(Met$TIMESTAMP)<2019,] #all data before 2019
 
 #order data by timestamp
 #dplyr::arrange(Met, TIMESTAMP) #tidyverse version
@@ -158,36 +162,45 @@ Met$Flag_Albedo_Average_W_m2=ifelse(is.na(Met$ShortwaveRadiationUp_Average_W_m2)
 Met$Note_Albedo_Average_W_m2=ifelse(is.na(Met$ShortwaveRadiationUp_Average_W_m2)|is.na(Met$ShortwaveRadiationDown_Average_W_m2), "Set to NA because Shortwave = NA", Met$Note_Albedo_Average_W_m2)
 Met$Albedo_Average_W_m2=ifelse(is.na(Met$ShortwaveRadiationUp_Average_W_m2)|is.na(Met$ShortwaveRadiationDown_Average_W_m2), NA, Met$Albedo_Average_W_m2)
 
+#fix infrared radiation in 2015 - 2016, must be after infrared correction
+Met$Flag_InfaredRadiationUp_Average_W_m2=ifelse(Met$InfaredRadiationUp_Average_W_m2<100,4,Met$Flag_InfaredRadiationUp_Average_W_m2)
+Met$Note_InfaredRadiationUp_Average_W_m2=ifelse(Met$InfaredRadiationUp_Average_W_m2<100,"Value corrected from Voltage with InfRadUp equation as decribed in metadata",Met$Note_InfaredRadiationUp_Average_W_m2)
+Met$InfaredRadiationUp_Average_W_m2=ifelse(Met$InfaredRadiationUp_Average_W_m2<100,Met$InfaredRadiationUp_Average_W_m2+5.67*10^-8*(Met$AirTemp_Average_C+273.15)^4,Met$InfaredRadiationUp_Average_W_m2)
+
+Met$Flag_InfaredRadiationDown_Average_W_m2=ifelse(Met$InfaredRadiationDown_Average_W_m2<200,4,Met$Flag_InfaredRadiationDown_Average_W_m2)
+Met$Note_InfaredRadiationDown_Average_W_m2=ifelse(Met$InfaredRadiationDown_Average_W_m2<200,"Value corrected from Voltage with InfRadDn equation as decribed in metadata",Met$Note_InfaredRadiationDown_Average_W_m2)
+Met$InfaredRadiationDown_Average_W_m2=ifelse(Met$InfaredRadiationDown_Average_W_m2<200,5.67*10^-8*(Met$AirTemp_Average_C+273.15)^4,Met$InfaredRadiationDown_Average_W_m2)
+
 #######Plots For Days ######
 #plots to check for any wonkiness
 x11(); par(mfrow=c(2,2))
 plot(Met$DateTime, Met$CR3000_Batt_V, type = 'l')
 plot(Met$DateTime, Met$CR3000Panel_temp_C, type = 'l')
 plot(Met$DateTime, Met$PAR_Average_umol_s_m2, type = 'l')
-points(Met_raw$DateTime, Met_raw$, col="red", type='l', lwd=1.5)
+points(Met_raw$DateTime, Met_raw$PAR_Average_umol_s_m2, col="red", type='l', lwd=1.5)
 plot(Met$DateTime, Met$PAR_Total_mmol_m2, type = 'l')
-points(Met_raw$DateTime, Met_raw$, col="red", type='l', lwd=1.5)
+points(Met_raw$DateTime, Met_raw$PAR_Total_mmol_m2, col="red", type='l', lwd=1.5)
 plot(Met$DateTime, Met$BP_Average_kPa, type = 'l')
-points(Met_raw$DateTime, Met_raw$, col="red", type='l', lwd=1.5)
+points(Met_raw$DateTime, Met_raw$BP_Average_kPa, col="red", type='l', lwd=1.5)
 plot(Met$DateTime, Met$AirTemp_Average_C, type = 'l')
-points(Met_raw$DateTime, Met_raw$, col="red", type='l', lwd=1.5)
+points(Met_raw$DateTime, Met_raw$AirTemp_Average_C, col="red", type='l', lwd=1.5)
 plot(Met$DateTime, Met$RH_percent, type = 'l')
-points(Met_raw$DateTime, Met_raw$, col="red", type='l', lwd=1.5)
+points(Met_raw$DateTime, Met_raw$RH_percent, col="red", type='l', lwd=1.5)
 plot(Met$DateTime, Met$Rain_Total_mm, type = 'h')
-points(Met_raw$DateTime, Met_raw$, col="red", type='l', lwd=1.5)
+points(Met_raw$DateTime, Met_raw$Rain_Total_mm, col="red", type='l', lwd=1.5)
 plot(Met$DateTime, Met$WindSpeed_Average_m_s, type = 'l')
-points(Met_raw$DateTime, Met_raw$, col="red", type='l', lwd=1.5)
+points(Met_raw$DateTime, Met_raw$WindSpeed_Average_m_s, col="red", type='l', lwd=1.5)
 hist(Met$WindDir_degrees)
 plot(Met$DateTime, Met$ShortwaveRadiationUp_Average_W_m2, type = 'l')
-points(Met_raw$DateTime, Met_raw$, col="red", type='l', lwd=1.5)
+points(Met_raw$DateTime, Met_raw$ShortwaveRadiationUp_Average_W_m2, col="red", type='l', lwd=1.5)
 plot(Met$DateTime, Met$ShortwaveRadiationDown_Average_W_m2, type = 'l')
-points(Met_raw$DateTime, Met_raw$, col="red", type='l', lwd=1.5)
+points(Met_raw$DateTime, Met_raw$ShortwaveRadiationDown_Average_W_m2, col="red", type='l', lwd=1.5)
 plot(Met$DateTime, Met$Albedo_Average_W_m2, type = 'l')
-points(Met_raw$DateTime, Met_raw$, col="red", type='l', lwd=1.5)
+points(Met_raw$DateTime, Met_raw$Albedo_Average_W_m2, col="red", type='l', lwd=1.5)
 plot(Met$DateTime, Met$InfaredRadiationUp_Average_W_m2, type = 'l')
-points(Met_raw$DateTime, Met_raw$, col="red", type='l', lwd=1.5)
+points(Met_raw$DateTime, Met_raw$InfaredRadiationUp_Average_W_m2, col="red", type='l', lwd=1.5)
 plot(Met$DateTime, Met$InfaredRadiationDown_Average_W_m2, type = 'l')
-points(Met_raw$DateTime, Met_raw$, col="red", type='l', lwd=1.5)
+points(Met_raw$DateTime, Met_raw$InfaredRadiationDown_Average_W_m2, col="red", type='l', lwd=1.5)
 
 #prints table of flag frequency
 for(i in 5:17) {
