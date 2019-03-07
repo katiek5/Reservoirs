@@ -3,10 +3,14 @@
 ##Tasks/Questions Left:
 #1a. Uploading Large Files to Github
 #1b. (opt) Relative paths in smarter way?
-#2. Plot flags?
-#3. PAR TOT weirdness at end of 2018
-#4. Inf Rad fix
-#5. Flagging Ice fouling for Wind??
+#2. PAR TOT weirdness at end of 2018
+#Trim PAR TOT by highest value in 2016
+#3. Inf Rad fix
+#4. BP check low dates with weather reports
+#5. SW rad up highest val 
+#6. make table for flags to publish with data
+#7. Inf Rad DN with sin curve equation, by DOY
+
 ###packages needed
 library("lubridate")
 ##install.packages("lubridate"); install.packages("tidyverse")
@@ -95,9 +99,18 @@ Met$Flag_InfaredRadiationUp_Average_W_m2=ifelse(Met$InfaredRadiationUp_Average_W
 Met$Note_InfaredRadiationUp_Average_W_m2=ifelse(Met$InfaredRadiationUp_Average_W_m2<100,"Value corrected from Voltage with InfRadUp equation as decribed in metadata",Met$Note_InfaredRadiationUp_Average_W_m2)
 Met$InfaredRadiationUp_Average_W_m2=ifelse(Met$InfaredRadiationUp_Average_W_m2<100,Met$InfaredRadiationUp_Average_W_m2+5.67*10^-8*(Met$AirTemp_Average_C+273.15)^4,Met$InfaredRadiationUp_Average_W_m2)
 
-Met$Flag_InfaredRadiationDown_Average_W_m2=ifelse(Met$InfaredRadiationDown_Average_W_m2<200,4,Met$Flag_InfaredRadiationDown_Average_W_m2)
-Met$Note_InfaredRadiationDown_Average_W_m2=ifelse(Met$InfaredRadiationDown_Average_W_m2<200,"Value corrected from Voltage with InfRadDn equation as decribed in metadata",Met$Note_InfaredRadiationDown_Average_W_m2)
-Met$InfaredRadiationDown_Average_W_m2=ifelse(Met$InfaredRadiationDown_Average_W_m2<200,5.67*10^-8*(Met$AirTemp_Average_C+273.15)^4,Met$InfaredRadiationDown_Average_W_m2)
+Met$Flag_InfaredRadiationDown_Average_W_m2=ifelse(Met$InfaredRadiationDown_Average_W_m2<250,4,Met$Flag_InfaredRadiationDown_Average_W_m2)
+Met$Note_InfaredRadiationDown_Average_W_m2=ifelse(Met$InfaredRadiationDown_Average_W_m2<250,"Value corrected from Voltage with InfRadDn equation as decribed in metadata",Met$Note_InfaredRadiationDown_Average_W_m2)
+Met$InfaredRadiationDown_Average_W_m2=ifelse(Met$InfaredRadiationDown_Average_W_m2<250,5.67*10^-8*(Met$AirTemp_Average_C+273.15)^4,Met$InfaredRadiationDown_Average_W_m2)
+
+#Inf outliers, must go after corrections
+Met$Flag_InfaredRadiationUp_Average_W_m2=ifelse(Met$InfaredRadiationUp_Average_W_m2<150,4,Met$Flag_InfaredRadiationUp_Average_W_m2)
+Met$Note_InfaredRadiationUp_Average_W_m2=ifelse(Met$InfaredRadiationUp_Average_W_m2<150,"Outlier set to NA",Met$Note_InfaredRadiationUp_Average_W_m2)
+Met$InfaredRadiationUp_Average_W_m2=ifelse(Met$InfaredRadiationUp_Average_W_m2<150,NA,Met$InfaredRadiationUp_Average_W_m2)
+
+# Met$Flag_InfaredRadiationDown_Average_W_m2=ifelse(Met$InfaredRadiationDown_Average_W_m2<200,4,Met$Flag_InfaredRadiationDown_Average_W_m2)
+# Met$Note_InfaredRadiationDown_Average_W_m2=ifelse(Met$InfaredRadiationDown_Average_W_m2<200,"Outlier set to NA",Met$Note_InfaredRadiationDown_Average_W_m2)
+# Met$InfaredRadiationDown_Average_W_m2=ifelse(Met$InfaredRadiationDown_Average_W_m2<200,NA,Met$InfaredRadiationDown_Average_W_m2)
 
 ##BP low outliers
 Met$Flag_BP_Average_kPa=ifelse(Met$BP_Average_kPa<95,4,Met$Flag_BP_Average_kPa)
@@ -170,7 +183,7 @@ for(j in 1:nrow(RemoveMet)){
 
 #######Plots For Days ######
 #plots to check for any wonkiness
-x11(); par(mfrow=c(2,1))
+x11(); par(mfrow=c(2,2))
 plot(Met$DateTime, Met$CR3000_Batt_V, type = 'l')
 plot(Met$DateTime, Met$CR3000Panel_temp_C, type = 'l')
 #PAR
@@ -182,26 +195,31 @@ plot(Met$DateTime, Met$PAR_Total_mmol_m2, type = 'l')
 plot(Met_raw$DateTime, Met_raw$BP_Average_kPa, col="red", type='l')
 plot(Met$DateTime, Met$BP_Average_kPa, type = 'l')
 #Air Temp
-points(Met_raw$DateTime, Met_raw$AirTemp_Average_C, col="red", type='l', lwd=1.5)
-plot(Met$DateTime, Met$AirTemp_Average_C, type = 'l')
-
-plot(Met$DateTime, Met$RH_percent, type = 'l')
-points(Met_raw$DateTime, Met_raw$RH_percent, col="red", type='l', lwd=1.5)
-plot(Met$DateTime, Met$Rain_Total_mm, type = 'h')
-points(Met_raw$DateTime, Met_raw$Rain_Total_mm, col="red", type='l', lwd=1.5)
+plot(Met_raw$DateTime, Met_raw$AirTemp_Average_C, col="red", type='l')
+points(Met$DateTime, Met$AirTemp_Average_C, type = 'l')
+#RH
+plot(Met_raw$DateTime, Met_raw$RH_percent, col="red", type='l')
+points(Met$DateTime, Met$RH_percent, type = 'l')
+#Rain
+plot(Met_raw$DateTime, Met_raw$Rain_Total_mm, col="red", type='h')
+points(Met$DateTime, Met$Rain_Total_mm, type = 'h')
+#Wind
 plot(Met$DateTime, Met$WindSpeed_Average_m_s, type = 'l')
-points(Met_raw$DateTime, Met_raw$WindSpeed_Average_m_s, col="red", type='l', lwd=1.5)
 hist(Met$WindDir_degrees)
+#SW Rad
+plot(Met_raw$DateTime, Met_raw$ShortwaveRadiationUp_Average_W_m2, col="red", type='l')
 plot(Met$DateTime, Met$ShortwaveRadiationUp_Average_W_m2, type = 'l')
-points(Met_raw$DateTime, Met_raw$ShortwaveRadiationUp_Average_W_m2, col="red", type='l', lwd=1.5)
+plot(Met_raw$DateTime, Met_raw$ShortwaveRadiationDown_Average_W_m2, col="red", type='l')
 plot(Met$DateTime, Met$ShortwaveRadiationDown_Average_W_m2, type = 'l')
-points(Met_raw$DateTime, Met_raw$ShortwaveRadiationDown_Average_W_m2, col="red", type='l', lwd=1.5)
+#Albedo
+plot(Met_raw$DateTime, Met_raw$Albedo_Average_W_m2, col="red", type='l')
 plot(Met$DateTime, Met$Albedo_Average_W_m2, type = 'l')
-points(Met_raw$DateTime, Met_raw$Albedo_Average_W_m2, col="red", type='l', lwd=1.5)
+#InfRad
+plot(Met_raw$DateTime, Met_raw$InfaredRadiationUp_Average_W_m2, col="red", type='l')
 plot(Met$DateTime, Met$InfaredRadiationUp_Average_W_m2, type = 'l')
-points(Met_raw$DateTime, Met_raw$InfaredRadiationUp_Average_W_m2, col="red", type='l', lwd=1.5)
+plot(Met_raw$DateTime, Met_raw$InfaredRadiationDown_Average_W_m2, col="red", type='l')
 plot(Met$DateTime, Met$InfaredRadiationDown_Average_W_m2, type = 'l')
-points(Met_raw$DateTime, Met_raw$InfaredRadiationDown_Average_W_m2, col="red", type='l', lwd=1.5)
+
 
 #prints table of flag frequency
 for(i in 5:17) {
