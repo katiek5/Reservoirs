@@ -6,6 +6,7 @@
 #2. Plot flags?
 #3. PAR TOT weirdness at end of 2018
 #4. Inf Rad fix
+#5. Flagging Ice fouling for Wind??
 ###packages needed
 library("lubridate")
 ##install.packages("lubridate"); install.packages("tidyverse")
@@ -169,17 +170,21 @@ for(j in 1:nrow(RemoveMet)){
 
 #######Plots For Days ######
 #plots to check for any wonkiness
-x11(); par(mfrow=c(2,2))
+x11(); par(mfrow=c(2,1))
 plot(Met$DateTime, Met$CR3000_Batt_V, type = 'l')
 plot(Met$DateTime, Met$CR3000Panel_temp_C, type = 'l')
+#PAR
+plot(Met_raw$DateTime, Met_raw$PAR_Average_umol_s_m2, col="red", type='l')
 plot(Met$DateTime, Met$PAR_Average_umol_s_m2, type = 'l')
-points(Met_raw$DateTime, Met_raw$PAR_Average_umol_s_m2, col="red", type='l', lwd=1.5)
+plot(Met_raw$DateTime, Met_raw$PAR_Total_mmol_m2, col="red", type='l')
 plot(Met$DateTime, Met$PAR_Total_mmol_m2, type = 'l')
-points(Met_raw$DateTime, Met_raw$PAR_Total_mmol_m2, col="red", type='l', lwd=1.5)
+#BP
+plot(Met_raw$DateTime, Met_raw$BP_Average_kPa, col="red", type='l')
 plot(Met$DateTime, Met$BP_Average_kPa, type = 'l')
-points(Met_raw$DateTime, Met_raw$BP_Average_kPa, col="red", type='l', lwd=1.5)
-plot(Met$DateTime, Met$AirTemp_Average_C, type = 'l')
+#Air Temp
 points(Met_raw$DateTime, Met_raw$AirTemp_Average_C, col="red", type='l', lwd=1.5)
+plot(Met$DateTime, Met$AirTemp_Average_C, type = 'l')
+
 plot(Met$DateTime, Met$RH_percent, type = 'l')
 points(Met_raw$DateTime, Met_raw$RH_percent, col="red", type='l', lwd=1.5)
 plot(Met$DateTime, Met$Rain_Total_mm, type = 'h')
@@ -324,7 +329,6 @@ setwd('./Data/DataNotYetUploadedtoEDI/Raw_Met/')
 # lm_Panel=lm(compare$AirTemp_Average_C ~ compare$Panel_temp)
 # abline(lm_Panel, col="blue")
 # 
-# 
 # compare_2015=compare[compare$time<"2016-01-01 00:00:00",]
 # 
 # #Met Air vs. NLDAS 2015
@@ -356,14 +360,3 @@ setwd('./Data/DataNotYetUploadedtoEDI/Raw_Met/')
 # mean(lm_Panel$residuals)
 # range(lm_Panel$residuals)
 # sd(lm_Panel$residuals)
-
-##Infrared???
-####NDLAS comparison####
-# NLDAS=read.csv("https://raw.githubusercontent.com/CareyLabVT/FCR-GLM/master/NLDASData/FCR_GLM_met_NLDAS2_Dec14_Dec18.csv", header = T)
-# N_AirTemp=NLDAS[,c(6,3)]
-# N_AirTemp$time=ymd_hms(N_AirTemp$time)
-# Met_air=Met[,c(1,4,8)]
-# names(Met_air)<- c("time", "Panel_temp","AirTemp_Average_C")
-# #does NLDAS use GMT -4? or EST? What time zone is it??????????
-# #for now, assuming GMT -4 for simplicity's sake
-# compare<-merge(N_AirTemp, Met_air, by="time")
