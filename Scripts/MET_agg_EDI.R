@@ -127,9 +127,9 @@ Met$Note_PAR_Total_mmol_m2=ifelse(Met$PAR_Total_mmol_m2>200, "Outlier set to NA"
 Met$PAR_Total_mmol_m2=ifelse(Met$PAR_Total_mmol_m2>200, NA, Met$PAR_Total_mmol_m2)
 
 #Remove SW Rad outliers
-Met$Flag_ShortwaveRadiationUp_Average_W_m2=ifelse(Met$ShortwaveRadiationUp_Average_W_m2>2000, 4, Met$Flag_ShortwaveRadiationUp_Average_W_m2)
-Met$Note_ShortwaveRadiationUp_Average_W_m2=ifelse(Met$ShortwaveRadiationUp_Average_W_m2>2000, "Outlier set to NA", Met$Note_ShortwaveRadiationUp_Average_W_m2)
-Met$ShortwaveRadiationUp_Average_W_m2=ifelse(Met$ShortwaveRadiationUp_Average_W_m2>2000, NA, Met$ShortwaveRadiationUp_Average_W_m2)
+Met$Flag_ShortwaveRadiationUp_Average_W_m2=ifelse(Met$ShortwaveRadiationUp_Average_W_m2>1600, 4, Met$Flag_ShortwaveRadiationUp_Average_W_m2)
+Met$Note_ShortwaveRadiationUp_Average_W_m2=ifelse(Met$ShortwaveRadiationUp_Average_W_m2>1600, "Outlier set to NA", Met$Note_ShortwaveRadiationUp_Average_W_m2)
+Met$ShortwaveRadiationUp_Average_W_m2=ifelse(Met$ShortwaveRadiationUp_Average_W_m2>1600, NA, Met$ShortwaveRadiationUp_Average_W_m2)
 
 Met$Flag_ShortwaveRadiationDown_Average_W_m2=ifelse(Met$ShortwaveRadiationDown_Average_W_m2>300, 4, Met$Flag_ShortwaveRadiationDown_Average_W_m2)
 Met$Note_ShortwaveRadiationDown_Average_W_m2=ifelse(Met$ShortwaveRadiationDown_Average_W_m2>300, "Outlier set to NA", Met$Note_ShortwaveRadiationDown_Average_W_m2)
