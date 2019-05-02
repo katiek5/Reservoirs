@@ -378,3 +378,24 @@ setwd('./Data/DataNotYetUploadedtoEDI/Raw_Met/')
 # mean(lm_Panel$residuals)
 # range(lm_Panel$residuals)
 # sd(lm_Panel$residuals)
+
+
+#fitting sin curve
+Data <- read.table(file="900days.txt", header=TRUE, sep="")
+Time <- date(Met_past$TIMESTAMP) 
+temperature <- Met_past$AirTC_Avg
+
+xc<-cos(2*pi*Time/366)
+xs<-sin(2*pi*Time/366)
+fit.lm <- lm(temperature~xc+xs)
+
+# access the fitted series (for plotting)
+fit <- fitted(fit.lm)  
+
+# find predictions for original time series
+pred <- predict(fit.lm, newdata=data.frame(Time=Time))    
+
+plot(temperature ~ Time, data= Data, xlim=c(1, 900))
+lines(fit, col="red")
+lines(Time, pred, col="blue")
+
