@@ -401,3 +401,9 @@ plot(infdown ~ Time, xlim=c(1, 900))
 lines(fit, col="red")
 lines(Time, pred, col="blue")
 
+#How do I use this equation to correct the data? Having trouble figuring it out. 
+Met$InfaredRadiationDown_Average_W_m2=ifelse((Met$InfaredRadiationDown_Average_W_m2 - (1.6278+(0.9008*Met$CR3000Panel_temp_C)))>(3*sd(lm_Panel2015$residuals)),(1.6278+(0.9008*Met$CR3000Panel_temp_C)), Met$InfaredRadiationDown_Average_W_m2)
+
+#met_inf=
+#if met_inf is outside range of lm during this doy, then correct based on this equation
+
