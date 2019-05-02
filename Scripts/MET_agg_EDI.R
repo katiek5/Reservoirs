@@ -382,12 +382,13 @@ setwd('./Data/DataNotYetUploadedtoEDI/Raw_Met/')
 
 #fitting sin curve
 Data <- read.table(file="900days.txt", header=TRUE, sep="")
-Time <- date(Met_past$TIMESTAMP) 
-temperature <- Met_past$AirTC_Avg
+Met_1516=Met[year(Met$DateTime)>2017,]
+Time <- yday(Met_1516$DateTime) 
+infdown <- Met_1516$InfaredRadiationDown_Average_W_m2
 
 xc<-cos(2*pi*Time/366)
 xs<-sin(2*pi*Time/366)
-fit.lm <- lm(temperature~xc+xs)
+fit.lm <- lm(infdown~xc+xs)
 
 # access the fitted series (for plotting)
 fit <- fitted(fit.lm)  
@@ -395,7 +396,8 @@ fit <- fitted(fit.lm)
 # find predictions for original time series
 pred <- predict(fit.lm, newdata=data.frame(Time=Time))    
 
-plot(temperature ~ Time, data= Data, xlim=c(1, 900))
+x11()
+plot(infdown ~ Time, xlim=c(1, 900))
 lines(fit, col="red")
 lines(Time, pred, col="blue")
 
