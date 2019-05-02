@@ -113,9 +113,9 @@ Met$InfaredRadiationUp_Average_W_m2=ifelse(Met$InfaredRadiationUp_Average_W_m2<1
 # Met$InfaredRadiationDown_Average_W_m2=ifelse(Met$InfaredRadiationDown_Average_W_m2<200,NA,Met$InfaredRadiationDown_Average_W_m2)
 
 ##BP low outliers
-Met$Flag_BP_Average_kPa=ifelse(Met$BP_Average_kPa<95,4,Met$Flag_BP_Average_kPa)
-Met$Note_BP_Average_kPa=ifelse(Met$BP_Average_kPa<95,"Outlier set to NA",Met$Note_BP_Average_kPa)
-Met$BP_Average_kPa=ifelse(Met$BP_Average_kPa<95,NA,Met$BP_Average_kPa)
+Met$Flag_BP_Average_kPa=ifelse(Met$BP_Average_kPa<99,4,Met$Flag_BP_Average_kPa)
+Met$Note_BP_Average_kPa=ifelse(Met$BP_Average_kPa<99,"Outlier set to NA",Met$Note_BP_Average_kPa)
+Met$BP_Average_kPa=ifelse(Met$BP_Average_kPa<99,NA,Met$BP_Average_kPa)
 
 ## fix PAR_Tot
 #Met$PAR_Total_mmol_m2=ifelse(Met$PAR_Total_mmol_m2>500, Met$PAR_Total_mmol_m2/1000, Met$PAR_Total_mmol_m2) #seeing if this makes PAR into reasonable values. 
